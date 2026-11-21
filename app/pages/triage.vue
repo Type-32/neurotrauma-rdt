@@ -101,8 +101,12 @@ const groups = computed(() => {
 		}))
 })
 
+const resultsEl = useTemplateRef<HTMLElement>('results')
+/** The phone shortcut to the results hides once they're on screen. */
+const resultsVisible = useElementVisibility(resultsEl)
+
 function scrollToResults() {
-	document.getElementById('triage-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+	resultsEl.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 </script>
 
@@ -147,7 +151,7 @@ function scrollToResults() {
 				</section>
 
 				<!-- Results -->
-				<section id="triage-results" class="scroll-mt-20 space-y-6 lg:sticky lg:top-[calc(var(--ui-header-height)+1rem)] lg:max-h-[calc(100dvh-var(--ui-header-height)-2rem)] lg:overflow-y-auto lg:pe-1">
+				<section id="triage-results" ref="results" class="scroll-mt-20 space-y-6 lg:sticky lg:top-[calc(var(--ui-header-height)+1rem)] lg:max-h-[calc(100dvh-var(--ui-header-height)-2rem)] lg:overflow-y-auto lg:pe-1">
 					<!-- Selected -->
 					<div>
 						<h2 class="text-lg font-semibold text-highlighted">{{ t('triage.selected') }}</h2>
@@ -267,7 +271,7 @@ function scrollToResults() {
 			</div>
 
 			<!-- On phones the results are below the chips: a shortcut to them. -->
-			<div v-if="selected.length" class="fixed inset-x-4 bottom-4 z-10 lg:hidden">
+			<div v-if="selected.length && !resultsVisible" class="fixed inset-x-4 bottom-4 z-10 lg:hidden">
 				<UButton :label="t('triage.jumpToResults', { count: selected.length })" icon="i-lucide-arrow-down" block size="lg" @click="scrollToResults" />
 			</div>
 		</ClientOnly>

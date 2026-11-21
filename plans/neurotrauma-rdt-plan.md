@@ -161,7 +161,20 @@ Original plan:
 
 **Done when:** typing three characters in English, Chinese or pinyin and pressing Enter lands on the right entry.
 
-## Phase 5: Symptom checker
+## Phase 5: Symptom checker (built as the triage page)
+
+**Status:** done, as `/triage`, which is broader than the original plan below. Only 29 of 76 afflictions are reachable from symptoms, but 67 are shown directly by the health interface, scanner or analyzer. So the page takes both: you tap what you see, symptoms and visible afflictions alike, and it handles diagnosis and treatment together.
+
+- **Findings:** every symptom and visible affliction as a large chip, grouped by where the game shows it (symptoms, health interface, scanner, analyzer). Common symptoms come first, and there's a filter box for rare ones. No typing needed.
+- **Likely causes:** conditions that would explain the selected findings that nothing marked present already explains. They're ranked by how many findings they explain, then lethal first, then by how telling the findings are (rare ones weigh more). Each shows what it explains and what else to look for. "Present" adds it.
+- **Check next:** the findings that best split the leading candidates (about half lead to each). With one candidate left, these are its other findings, to confirm it.
+- **Treatment plan:** for everything present, one list. First aid comes first, then treatment, in the order of the guide's 治疗顺序 card (`TREATMENT_ORDER` in `shared/utils/triage.ts`). Conditions the card doesn't mention are placed by lethality. Then one merged list of items to bring.
+- **Shareable:** the selection is in the URL (`/triage?f=s:headache,a:pneumothorax`), so a link shares the patient and the back button undoes a tap.
+- **Data:** `/triage-index.json`, prerendered (102 afflictions and symptoms, 242 "leads to" links from both `causes` and `causedBy`, 59 KB). Logic in `shared/utils/triage.ts`.
+- **Tests:** `bun run test:triage` (in CI). For all 46 afflictions with two or more observable findings, selecting them ranks the affliction first. With only the two rarest of 3+ findings, all are in the top 3, and "check next" points at one of their other findings 83% of the time. The plan order matches the card.
+- **Data gaps:** `check:content` warns (without failing) about "leads to" lines that name a symptom or affliction without linking it, since triage can't see those. 8 at the moment.
+
+Original plan:
 
 - Select symptoms and Health Scanner readings as chips.
 - Rank afflictions by how many selected symptoms they cause, weighting rare symptoms more than common ones.
@@ -171,6 +184,8 @@ Original plan:
 **Done when:** selecting the symptoms listed on an affliction's card puts that affliction at or near the top.
 
 ## Phase 6: Treatment and procedure views
+
+**Status:** partly covered already. The treatment card is the entry detail page (Phase 3). The patient scratchpad is the triage page's shareable selection (Phase 5), with no `localStorage` needed. The 治疗顺序 and 医疗箱建议 cards exist as info pages. Still to do: tickable procedure checklists, quick-reference pages designed for speed rather than imported text, and the "report an error" link.
 
 - **Treatment card:** first aid, then full treatment, then required items as chips, then a link to the procedure. Large text, dark mode, Chinese and English side by side or toggled.
 - **Procedure checklists:** surgery steps as a tickable list, with a reminder to close the surgery, and Medical Misconduct warnings inline.
