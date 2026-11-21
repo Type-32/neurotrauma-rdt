@@ -9,8 +9,8 @@ useHead({
 
 const $rc = useRuntimeConfig()
 
-const title = $rc.public.siteName as string || 'My Site';
-const description = "My awesome website.";
+const title = $rc.public.siteName as string || 'Neurotrauma RDT';
+const description = "Rapid diagnosis and treatment reference for the Barotrauma Neurotrauma mod.";
 
 useSeoMeta({
 	title,
