@@ -1,5 +1,6 @@
 import { readdirSync } from 'node:fs'
 import { join } from 'node:path'
+import { ENTRY_TYPES } from './shared/utils/content'
 
 const LOCALES = ['en', 'zh'] as const
 const DEFAULT_LOCALE = 'en'
@@ -72,7 +73,7 @@ export default defineNuxtConfig({
 
 	nitro: {
 		prerender: {
-			routes: ['/', ...contentRoutes()],
+			routes: ['/', ...ENTRY_TYPES.map(type => `/${type}`), ...contentRoutes()],
 		},
 	},
 

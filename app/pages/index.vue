@@ -1,12 +1,30 @@
 <script setup lang="ts">
-useHead({ title: "Neurotrauma RDT" });
+const { t } = useI18n()
+const $rc = useRuntimeConfig()
+
+const TYPE_ICONS: Record<EntryType, string> = {
+	afflictions: 'i-lucide-activity',
+	symptoms: 'i-lucide-stethoscope',
+	items: 'i-lucide-pill',
+	procedures: 'i-lucide-list-ordered',
+	info: 'i-lucide-info',
+}
 </script>
 
 <template>
-	<UContainer class="py-16">
-		<h1 class="text-3xl font-brand text-highlighted">Neurotrauma RDT</h1>
-		<p class="mt-2 text-muted">
-			Rapid diagnosis and treatment reference for the Neurotrauma mod. 神经创伤快速诊疗参考。
-		</p>
+	<UContainer class="pb-16">
+		<UPageHeader :title="$rc.public.siteName as string" :description="t('site.intro')" />
+
+		<UPageGrid class="mt-8">
+			<UPageCard
+				v-for="type in ENTRY_TYPES"
+				:key="type"
+				:to="`/${type}`"
+				:icon="TYPE_ICONS[type]"
+				:title="t(`types.${type}`)"
+				:description="t(`typeDescriptions.${type}`)"
+				spotlight
+			/>
+		</UPageGrid>
 	</UContainer>
 </template>

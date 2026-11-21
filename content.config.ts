@@ -1,4 +1,5 @@
-import { defineCollection, defineContentConfig, z } from '@nuxt/content'
+import { defineCollection, defineContentConfig } from '@nuxt/content'
+import { schemas } from './content.schemas'
 import { CONTENT_LOCALES, entryCollection, ENTRY_TYPES } from './shared/utils/content'
 
 /**
@@ -8,54 +9,14 @@ import { CONTENT_LOCALES, entryCollection, ENTRY_TYPES } from './shared/utils/co
  * `content/en/` holds the full guide as imported from Trello. Its bodies are
  * bilingual, so it is also what Chinese readers see by default. `content/zh/`
  * holds optional Chinese-only overrides at the same relative path; any entry
- * missing there falls back to `en` (see app/pages/[...slug].vue).
+ * missing there falls back to `en` (see app/utils/entries.ts).
  *
  * Paths have no locale in them: content/en/afflictions/pneumothorax.md and
  * content/zh/afflictions/pneumothorax.md are both /afflictions/pneumothorax.
- * The i18n module adds the /zh prefix to the route.
  *
- * The schema is deliberately loose for now; Phase 3 tightens it per type.
+ * Schemas are in content.schemas.ts. Nuxt Content doesn't enforce them, so
+ * `bun run check:content` validates every file.
  */
-
-const sectionItem = z.object({
-	text: z.string(),
-	refs: z.array(z.string()).optional(),
-	threshold: z.number().optional(),
-	amount: z.number().optional(),
-})
-const section = z.array(sectionItem).optional()
-
-const entrySchema = z.object({
-	nameZh: z.string().optional(),
-	nameEn: z.string().optional(),
-	category: z.string(),
-	alsoIn: z.array(z.string()).optional(),
-	source: z.string(),
-	order: z.number(),
-	tags: z.array(z.string()).default([]),
-	lethal: z.boolean().optional(),
-	pinyin: z.string().optional(),
-	pinyinInitials: z.string().optional(),
-	aliases: z.array(z.string()).default([]),
-	skill: z.object({
-		medical: z.number().optional(),
-		mechanical: z.number().optional(),
-	}).optional(),
-	causedBy: section,
-	causes: section,
-	treatment: section,
-	firstAid: section,
-	treats: section,
-	onSuccess: section,
-	onFailure: section,
-	effects: section,
-	steps: section,
-	trello: z.object({
-		shortLink: z.string(),
-		url: z.string(),
-	}).optional(),
-})
-
 const collections = Object.fromEntries(
 	ENTRY_TYPES.flatMap(type => CONTENT_LOCALES.map(locale => [
 		entryCollection(type, locale),
@@ -65,7 +26,7 @@ const collections = Object.fromEntries(
 				include: `${locale}/${type}/**`,
 				prefix: `/${type}`,
 			},
-			schema: entrySchema,
+			schema: schemas[type],
 		}),
 	])),
 )

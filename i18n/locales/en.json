@@ -1,6 +1,7 @@
 {
 	"site": {
-		"description": "Rapid diagnosis and treatment reference for the Barotrauma Neurotrauma mod."
+		"description": "Rapid diagnosis and treatment reference for the Barotrauma Neurotrauma mod.",
+		"intro": "Rapid diagnosis and treatment reference for the Neurotrauma mod. Content is bilingual, from the Chinese community guide."
 	},
 	"locale": {
 		"switchTo": "中文",
@@ -16,5 +17,88 @@
 		"items": "Items",
 		"procedures": "Procedures",
 		"info": "Information"
+	},
+	"typeDescriptions": {
+		"afflictions": "Injuries and conditions, by body part.",
+		"symptoms": "What you see on the patient, and what causes it.",
+		"items": "Medicine, tools and equipment, with skill checks.",
+		"procedures": "Surgery steps, in order.",
+		"info": "How to diagnose, treatment order, medkit advice and FAQ."
+	},
+	"entries": "No entries | 1 entry | {count} entries",
+	"sections": {
+		"firstAid": "First aid",
+		"treatment": "Treatment",
+		"steps": "Steps",
+		"treats": "Treats",
+		"onSuccess": "On success",
+		"onFailure": "On failure",
+		"causes": "Leads to",
+		"causedBy": "Caused by",
+		"effects": "Effects"
+	},
+	"entry": {
+		"fullText": "Full guide text",
+		"threshold": "from {value}%",
+		"medicalSkill": "Medical {value}",
+		"mechanicalSkill": "Mechanical {value}",
+		"noSkillCheck": "No skill check",
+		"alsoIn": "Also under {list}",
+		"lethal": "Lethal",
+		"possiblyLethal": "Possibly lethal"
+	},
+	"categories": {
+		"head": "Head / brain",
+		"lungs": "Lungs",
+		"heart": "Heart",
+		"torso": "Torso",
+		"extremities": "Extremities",
+		"bones": "Bones",
+		"any": "Any body part",
+		"blood": "Blood",
+		"surgery": "Surgery",
+		"cybernetics": "Cybernetics expansion",
+		"surgery-plus": "Surgery Plus expansion",
+		"eyes": "Eyes expansion",
+		"symptom": "Symptoms",
+		"item": "Items",
+		"procedure": "Procedures",
+		"general": "General",
+		"expansions": "Expansions",
+		"expansion-guides": "Expansion guides"
+	},
+	"sources": {
+		"base": "Base mod",
+		"cybernetics": "Cybernetics expansion",
+		"surgery-plus": "Surgery Plus expansion",
+		"eyes": "Eyes expansion",
+		"expansions": "Expansions"
+	},
+	"tags": {
+		"lethal": "Lethal",
+		"possibly-lethal": "Possibly lethal",
+		"non-lethal": "Non-lethal",
+		"essential": "Essential",
+		"very-important": "Very important",
+		"important": "Important",
+		"first-aid": "First aid",
+		"interface-visible": "Health interface",
+		"scanner-visible": "Health scanner",
+		"analyzer-visible": "Hematology analyzer",
+		"not-visible": "Not visible in game",
+		"mental-symptom": "Mental symptom",
+		"mechanic": "Mechanic",
+		"surgery": "Surgery",
+		"niche": "Niche",
+		"cybernetics": "Cybernetics",
+		"surgery-plus": "Surgery Plus",
+		"known-issue": "Known issue",
+		"translator-note": "Translator's note",
+		"affliction": "Affliction",
+		"item": "Item",
+		"procedure": "Procedure",
+		"info": "Information",
+		"symptom": "Symptom",
+		"unfinished": "Unfinished"
 	}
 }

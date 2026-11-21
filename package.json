@@ -9,7 +9,8 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "typecheck": "nuxt typecheck",
-    "import:trello": "bun scripts/import-trello.ts"
+    "import:trello": "bun scripts/import-trello.ts",
+    "check:content": "bun scripts/check-content.ts"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.157",

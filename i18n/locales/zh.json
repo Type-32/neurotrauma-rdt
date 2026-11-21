@@ -1,6 +1,7 @@
 {
 	"site": {
-		"description": "Barotrauma 神经创伤 mod 快速诊疗参考。"
+		"description": "Barotrauma 神经创伤 mod 快速诊疗参考。",
+		"intro": "神经创伤 mod 快速诊疗参考。内容为中英双语，来自中文社区指南。"
 	},
 	"locale": {
 		"switchTo": "English",
@@ -16,5 +17,88 @@
 		"items": "物品",
 		"procedures": "流程",
 		"info": "信息"
+	},
+	"typeDescriptions": {
+		"afflictions": "伤病与状态，按身体部位分类。",
+		"symptoms": "患者身上能看到的症状及其成因。",
+		"items": "药物、工具与设备，含技能需求。",
+		"procedures": "按顺序排列的手术步骤。",
+		"info": "如何诊断、治疗顺序、医疗箱建议与常见问题。"
+	},
+	"entries": "无条目 | {count} 个条目 | {count} 个条目",
+	"sections": {
+		"firstAid": "急救",
+		"treatment": "治疗措施",
+		"steps": "步骤",
+		"treats": "用于治疗",
+		"onSuccess": "应用成功时",
+		"onFailure": "应用失败时",
+		"causes": "导致",
+		"causedBy": "由以下原因造成",
+		"effects": "效果"
+	},
+	"entry": {
+		"fullText": "完整说明",
+		"threshold": "{value}% 起",
+		"medicalSkill": "医疗 {value}",
+		"mechanicalSkill": "机械 {value}",
+		"noSkillCheck": "无技能需求",
+		"alsoIn": "另见：{list}",
+		"lethal": "致命",
+		"possiblyLethal": "可能致命"
+	},
+	"categories": {
+		"head": "头部 / 脑部",
+		"lungs": "肺部",
+		"heart": "心脏",
+		"torso": "躯干",
+		"extremities": "四肢",
+		"bones": "骨骼",
+		"any": "任何身体部位",
+		"blood": "血液",
+		"surgery": "手术",
+		"cybernetics": "赛博肢体拓展",
+		"surgery-plus": "外科Plus拓展",
+		"eyes": "眼部拓展",
+		"symptom": "症状",
+		"item": "物品",
+		"procedure": "流程",
+		"general": "综合",
+		"expansions": "拓展mod",
+		"expansion-guides": "各拓展的指南"
+	},
+	"sources": {
+		"base": "本体",
+		"cybernetics": "赛博肢体拓展",
+		"surgery-plus": "外科Plus拓展",
+		"eyes": "眼部拓展",
+		"expansions": "拓展mod"
+	},
+	"tags": {
+		"lethal": "致命",
+		"possibly-lethal": "可能致命",
+		"non-lethal": "非致命",
+		"essential": "必需",
+		"very-important": "非常重要",
+		"important": "重要",
+		"first-aid": "急救",
+		"interface-visible": "健康界面可见",
+		"scanner-visible": "健康扫描仪可见",
+		"analyzer-visible": "血液分析仪可见",
+		"not-visible": "游戏内不可见",
+		"mental-symptom": "精神症状",
+		"mechanic": "机制",
+		"surgery": "外科手术",
+		"niche": "小众",
+		"cybernetics": "赛博肢体拓展",
+		"surgery-plus": "外科Plus拓展",
+		"known-issue": "已知问题",
+		"translator-note": "译者补充",
+		"affliction": "苦痛",
+		"item": "物品",
+		"procedure": "程序",
+		"info": "信息",
+		"symptom": "症状",
+		"unfinished": "疑问/未完成"
 	}
 }

@@ -9,15 +9,17 @@ async function toggleLocale() {
 	await setLocale(locale.value === 'en' ? 'zh' : 'en');
 }
 
-const navigationItems = ref<NavigationMenuItem[]>([]);
+const navigationItems = computed<NavigationMenuItem[]>(() =>
+	ENTRY_TYPES.map(type => ({ label: t(`types.${type}`), to: `/${type}` })),
+);
 </script>
 
 <template>
 	<UHeader>
 		<template #left>
 			<NuxtLink to="/" class="flex items-center justify-center gap-1.5 select-none">
-				<Logo class="h-8 w-auto shrink-0"/>
-				<span class="text-xl font-brand text-highlighted">{{$rc.public.siteName}}</span>
+				<Logo class="size-7 shrink-0"/>
+				<span class="whitespace-nowrap text-lg font-brand text-highlighted sm:text-xl">{{$rc.public.siteName}}</span>
 			</NuxtLink>
 		</template>
 		<UNavigationMenu

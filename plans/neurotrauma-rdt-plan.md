@@ -100,7 +100,9 @@ The repo is a Nuxt 4 starter with Logto login, user management, a Postgres datab
 
 ## Phase 3: Content collections and detail pages
 
-`content.config.ts` already defines one collection per type and locale (see "Localization") with one loose schema shared by all types. This phase tightens it into a schema per type, matching what the importer writes:
+**Status:** done. Detail pages, type index pages and the home page are built; schemas are per type and enforced by `bun run check:content`.
+
+`content.config.ts` defines one collection per type and locale (see "Localization"). The schemas live in `content.schemas.ts`, one per type, matching what the importer writes:
 
 ```ts
 // every type
@@ -116,7 +118,11 @@ info:       {}
 
 - `source` is the base mod or an expansion (Cybernetics, Surgery Plus, Eyes, Pharmacy, Infections), so expansion content can be filtered out.
 - The symptom-to-affliction index is computed at build time from `causes`. It is not stored.
-- The catch-all page already renders every entry (title and body). This phase adds per-type layouts using the structured fields, plus a category index page.
+- `category`, `source` and `tags` are fixed lists (in `shared/utils/content.ts`), so a typo fails the check instead of creating a new category.
+- **Nuxt Content does not reject files that break the schema**; it only uses schemas for types. `scripts/check-content.ts` (`bun run check:content`, run in CI before the build) validates every file. It also checks that every internal link and `refs` target exists, and that every `zh` override has an `en` entry.
+- **Detail page** (`app/pages/[...slug].vue`): names (the locale's language first), badges for lethality, skill checks, in-game visibility and expansion, then the structured sections as cards. First aid and treatment come first and are highlighted. Thresholds and amounts show as badges. The original card text is in a collapsible "Full guide text" section, open by default when an entry has no structured sections.
+- **Type index pages** (`app/pages/[type]/index.vue`, e.g. `/afflictions`): entries grouped by category in board order, with lethal entries marked.
+- **Home page:** links to the five types. The header navigation lists them too.
 
 **Done when:** every imported entry renders at its own URL and internal links resolve.
 

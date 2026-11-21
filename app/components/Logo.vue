@@ -1,11 +1,3 @@
-<script setup lang="ts">
-
-</script>
-
 <template>
-	<NuxtImg src="/logo.png" alt="app logo"/>
+	<UIcon name="i-lucide-brain" class="text-primary" />
 </template>
-
-<style scoped>
-
-</style>
