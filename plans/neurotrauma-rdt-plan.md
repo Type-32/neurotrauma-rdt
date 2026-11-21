@@ -223,6 +223,105 @@ Original plan:
 - `/200.html` is prerendered explicitly and `i18n.experimental.prerenderMessages` is on, so `bun run build` also succeeds (it was the original Vercel failure: "glob pattern doesn't match 200.html").
 - CI runs lint, typecheck, `check:content`, the build, and both search and triage tests.
 
+## Art direction: medic terminal
+
+**Status:** entry pages, triage, header and status bar are done (commit `905eb85`). Phases 9 and 10 finish it.
+
+- **Palettes:** dark is "graphite HUD", light is "orbital ops" (sage paper). Both are defined as `--ui-*` variables in `app/assets/css/main.css`.
+- **Colour carries meaning:** signal orange is first aid and actions, red is lethal, amber is possibly lethal, mint is treated or done. Everything else is ink on paper.
+- **Building blocks:** the `micro` utility, `.micro-frame`, `.micro-grid`, `.micro-rule`, and the `Micro*` components (`Panel`, `Rule`, `Bar`, `Scramble`, `Graphic`). SVGs come from the Micrographics Vol.1 pack through `scripts/import-micrographics.ts`.
+- **Motion rule:** content never starts hidden. Only decoration animates, and reduced motion turns it off.
+
+## Phase 9: Finish the reskin
+
+**Status:** not started. Four surfaces still use stock Nuxt UI cards and headers: home, the type indexes, the quick reference and the search palette. No behaviour changes in this phase.
+
+**9.0 Shared pieces (do first)**
+
+- `Micro/PageHead.vue`: the page header used by entry pages, as a component: code band, large `font-brand` title with `MicroScramble`, description, and a right-hand slot for a count or action. Replaces `UPageHeader` on the three pages below.
+- `Entry/Row.vue`: one entry as a dense row: code stamp (`entryCode`), primary and secondary name, and a lethal marker (red or amber bar, not a skull icon). Used by the type indexes and the search palette.
+- Move `TYPE_ICONS` out of `pages/index.vue` and `SearchPalette.vue` into `app/utils/entries.ts`; it is duplicated today.
+
+**9.1 Home (`app/pages/index.vue`)**
+
+- Lay it out as a console, not a card grid.
+- Triage is the one primary panel: orange frame, `orbit` graphic, short description. Quick reference sits beside it as a default-tone panel.
+- A search prompt line (`> search_` with `.micro-cursor`) that opens the palette, with the `/` shortcut shown.
+- The five types as a numbered index table: `01 // AFFLICTIONS … [076]`, each row a link. Counts come from `queryCollection(...).count()` in one `useAsyncData`.
+- A small readout strip: total entries, lethal count, content locale.
+
+**9.2 Type indexes (`app/pages/[type]/index.vue`)**
+
+- `MicroPageHead` with the type code (`AFF`, `SYM`…) and entry count.
+- Category headers become micro-labels with a count and a `MicroRule`: `03 // HEART [08]`.
+- Entries become `EntryRow`s in the existing 1, 2 or 3 column grid.
+- Afflictions have 12 categories, so add a sticky jump bar of category codes, the same pattern as the reference page.
+
+**9.3 Quick reference (`app/pages/reference.vue`)**
+
+- Each section becomes a `MicroPanel` numbered 01 to 04, with the entry title as meta.
+- The jump bar becomes micro-label tabs. The current section is marked using `useIntersectionObserver` (VueUse is installed).
+- Prose stays as `ContentRenderer` output. Check tables and lists inside a panel in both themes.
+
+**9.4 Search palette (`app/components/SearchPalette.vue`)**
+
+- Restyle through `UCommandPalette`'s `ui` prop and item slots; keep the ranking and shortcuts untouched.
+- Result rows: name, secondary name, then the mono code stamp on the right; lethal marker on the left edge.
+- Prompt glyph `>` in the input, micro-label group headings, and a `[n]` result count.
+- The search index has `type` but neither `category` nor `order`. Add both to `search-index.json` (with `Number(order)`) so the palette can show the code stamp.
+
+**Done when**
+
+- All four surfaces match the entry and triage pages in both themes and both locales, at 375 px and desktop widths.
+- Reduced motion shows everything with no animation.
+- `lint`, `typecheck`, `check:content`, `generate`, `test:search` and `test:triage` pass, and the home page still works offline.
+
+## Phase 10: Triage body schematic
+
+**Status:** not started. A body diagram on the triage page, as a faster way to narrow findings by where they are. It filters the existing finding chips; it does not replace them.
+
+**Data**
+
+- Regions are the body categories: head, lungs, heart, torso, extremities, bones. `any` and `blood` are whole-body and shown as a ring around the figure.
+- Afflictions already carry `category` and `alsoIn`.
+- Symptoms all have the category `symptom`, so a symptom's regions are derived: the regions of the afflictions that lead to it. `triage-index.json` already holds those links; add a `regions` array per entry there.
+- Extend `scripts/test-triage.ts` to check the derivation on a few known cases.
+
+**Drawing**
+
+- One hand-authored inline SVG in HUD style: a geometric front-view figure, with lungs and heart as shapes inside the torso and bones as a toggled overlay. Nothing in the micrographics pack is a body, so it is drawn for this.
+- Strokes use `currentColor` and the `--micro-*` variables, so both themes work without separate art.
+
+**Interaction**
+
+- Each region is a real button with `aria-pressed`. Tapping it filters the findings list to that region; tapping again clears it.
+- Regions with selected findings are filled. Regions of the current candidates are outlined, red or amber when a candidate there is lethal.
+- A count per region (`HRT 03`) shows how many findings are available there.
+- The region filter is not part of the shareable URL; the selected findings still are.
+
+**Layout**
+
+- Desktop: at the top of the `IN //` column, above the filter box.
+- Mobile: a collapsed panel that opens on tap, so the chips stay reachable with one thumb.
+
+**Risks**
+
+- A symptom caused by afflictions in many regions appears under several. That is correct but may make the filter feel weak; if so, weight by how many causing afflictions sit in each region.
+- The 8 unlinked "leads to" warnings (Phase 11) are missing links that this depends on. Fix those first.
+
+## Phase 11: Content cleanup
+
+**Status:** not started. From the Phase 2 import report.
+
+- **8 unlinked "leads to" mentions:** fix by hand in `content/en`. These also improve triage, so do them before Phase 10.
+- **42 links to cards that only exist on the original board** (mainly 伤口 Wounds and several pill cards): read those cards from the original board, add them as entries, and point the links at them. Unlink any that are not worth an entry.
+- **217 images still hosted on Trello:** download them in the importer to `public/img/entries/`, rewrite the URLs, and serve them through `@nuxt/image`. Keep them out of the precache and cache them at runtime (CacheFirst), so the first-visit download stays near 5 MB. Check the total size and whether Trello's attachment URLs need a signed-in request before committing to this.
+- **Still to confirm by hand:** the Vercel deploy from `dev`, and the Install button in a real Chrome or Edge.
+
+**Decision needed before this phase:** once entries are edited by hand, re-running `import:trello` would overwrite the edits. Either the content folder becomes the source of truth and the importer is retired, or the importer learns to skip hand-edited files (a `manual: true` frontmatter flag).
+
+**Suggested order:** Phase 9, then the "leads to" fixes from Phase 11, then Phase 10, then the rest of Phase 11.
+
 ## Phase 8 (optional): Server features
 
 Add these only if wanted. Content pages stay prerendered and search stays in the browser. None of them needs user accounts.
