@@ -8,7 +8,8 @@
     "dev": "nuxt dev",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "typecheck": "nuxt typecheck"
+    "typecheck": "nuxt typecheck",
+    "import:trello": "bun scripts/import-trello.ts"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.157",
@@ -31,7 +32,8 @@
   "devDependencies": {
     "pinyin-pro": "^3.29.5",
     "typescript": "6.0.3",
-    "vue-tsc": "^3.3.14"
+    "vue-tsc": "^3.3.14",
+    "yaml": "^2.9.1"
   },
   "packageManager": "bun@1.4.5",
   "trustedDependencies": [
