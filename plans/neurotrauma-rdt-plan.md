@@ -128,6 +128,25 @@ info:       {}
 
 ## Phase 4: Search
 
+**Status:** done. `bun run test:search` (run in CI after the build) measures the criterion below.
+
+| Query kind (one per entry) | Enter lands on it | In top 3 |
+|---|---|---|
+| Chinese name | 100% | 100% |
+| Full pinyin | 100% | 100% |
+| Pinyin initials | 99% | 100% |
+| First 3 letters of the English name | 66% | 92% |
+
+The English misses are names that share a prefix ("Hyp", "Sur", "Cyb"), where 3 letters can't pick one entry. 22 curated queries a medic would type ("pne", "qx", "肾上腺", "cardiac arr", "naus"…) all land first, except "band", which ties between Bandaged and Bandages.
+
+As built:
+
+- **Index:** `server/routes/search-index.json.ts` is prerendered to a static `/search-index.json` (224 records, about 43 KB). Each record has the names, aliases, pinyin and initials, a lethal flag, and the names of what the entry leads to (so "nausea" also finds its causes, ranked below Nausea itself).
+- **Ranking:** `shared/utils/search.ts`. Fuse with the weights below, plus a directness tier applied first. The tiers, best first: an exact name, pinyin or initials; then a name that starts with the query; then pinyin that starts with it; then a word inside an English name; then fuzzy matches. Names outrank pinyin, so "sho" finds Shortness of Breath before 手术 (*shoushu*).
+- **Palette:** `app/components/SearchPalette.vue`, a `UCommandPalette` in a modal, opened by `/`, Ctrl/⌘+K or the header button. It runs Fuse itself and passes pre-ranked results with `ignoreFilter`. The palette's own Fuse options would merge its default keys into ours, and it groups results by type rather than best first. The index downloads on first open; after that, search makes no network requests.
+
+Original plan:
+
 - Build one search index at build time from the collections, including pinyin and pinyin initials generated with `pinyin-pro`, so `qx` finds 气胸 without switching input method.
 - Feed it to `UCommandPalette` as `groups`, opened with `/` or `Ctrl+K`, and weight the Fuse keys through its `fuse` prop:
 

@@ -89,11 +89,14 @@ const emptyText = computed(() => failed.value
 				:groups="groups"
 				:placeholder="t('search.placeholder')"
 				:loading="open && !ready && !failed"
-				:empty="emptyText"
 				close
 				class="h-[min(32rem,80dvh)]"
 				@update:open="open = $event"
-			/>
+			>
+				<template #empty>
+					{{ emptyText }}
+				</template>
+			</UCommandPalette>
 		</template>
 	</UModal>
 </template>
