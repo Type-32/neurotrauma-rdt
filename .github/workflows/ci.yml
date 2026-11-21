@@ -37,3 +37,6 @@ jobs:
 
       - name: Test search
         run: bun run test:search
+
+      - name: Test triage
+        run: bun run test:triage

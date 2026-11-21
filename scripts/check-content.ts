@@ -35,6 +35,22 @@ const baseEntries = new Set(ENTRY_TYPES.flatMap(type =>
 
 const INTERNAL_LINK = /\]\(\/([a-z]+\/[a-z0-9-]+)\/?\)/g
 
+/** Symptom and affliction names (two characters or more), for spotting unlinked mentions. */
+const clinicalNames: Array<[string, string]> = []
+for (const type of ['afflictions', 'symptoms'] as const) {
+	for (const file of markdownFiles(join(ROOT, BASE_CONTENT_LOCALE, type))) {
+		const fm = parse(readFileSync(file, 'utf8').match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? '') as { nameZh?: string, nameEn?: string } | null
+		const id = `${type}/${relative(join(ROOT, BASE_CONTENT_LOCALE, type), file).replace(/\\/g, '/').replace(/\.md$/, '')}`
+		for (const name of [fm?.nameZh, fm?.nameEn]) if (name && name.length >= 2) clinicalNames.push([name, id])
+	}
+}
+
+/**
+ * Warnings don't fail the check. A "leads to" line that names a symptom or
+ * affliction without linking it is invisible to triage, so it's worth fixing.
+ */
+const warnings: string[] = []
+
 let checked = 0
 for (const locale of CONTENT_LOCALES) {
 	for (const type of ENTRY_TYPES) {
@@ -87,8 +103,26 @@ for (const locale of CONTENT_LOCALES) {
 				const [targetType] = target.split('/')
 				if (!isEntryType(targetType) || !baseEntries.has(target)) problems.push(`${name}: link to missing entry /${target}`)
 			}
+
+			const self = `${type}/${slug}`
+			for (const item of (sections?.causes as Array<{ text: string, refs?: string[] }> | undefined) ?? []) {
+				// Only plain text counts: names inside existing links are already linked.
+				const plain = item.text.replace(/\[[^\]]*\]\([^)]*\)/g, ' ')
+				const hits = clinicalNames.filter(([entryName, id]) => id !== self && plain.includes(entryName) && !(item.refs ?? []).includes(id))
+				// "出血" inside "动脉出血" is the longer name, not a second mention.
+				const mentioned = hits
+					.filter(([entryName]) => !hits.some(([other]) => other !== entryName && other.includes(entryName)))
+					.map(([, id]) => id)
+				if (mentioned.length) warnings.push(`${name}: "leads to" line names ${[...new Set(mentioned)].join(', ')} without linking it: ${item.text}`)
+			}
 		}
 	}
+}
+
+if (warnings.length) {
+	console.warn(`${warnings.length} warning(s) (not failures):`)
+	for (const warning of warnings) console.warn(`- ${warning}`)
+	console.warn('')
 }
 
 if (problems.length) {

@@ -73,7 +73,7 @@ export default defineNuxtConfig({
 
 	nitro: {
 		prerender: {
-			routes: ['/', '/search-index.json', ...ENTRY_TYPES.map(type => `/${type}`), ...contentRoutes()],
+			routes: ['/', '/triage', '/search-index.json', '/triage-index.json',...ENTRY_TYPES.map(type => `/${type}`), ...contentRoutes()],
 		},
 	},
 

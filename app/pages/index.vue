@@ -15,7 +15,19 @@ const TYPE_ICONS: Record<EntryType, string> = {
 	<UContainer class="pb-16">
 		<UPageHeader :title="$rc.public.siteName as string" :description="t('site.intro')" />
 
-		<UPageGrid class="mt-8">
+		<UPageCard
+			to="/triage"
+			icon="i-lucide-heart-pulse"
+			:title="t('triage.title')"
+			:description="t('triage.homeDescription')"
+			orientation="horizontal"
+			highlight
+			highlight-color="primary"
+			spotlight
+			class="mt-8"
+		/>
+
+		<UPageGrid class="mt-4">
 			<UPageCard
 				v-for="type in ENTRY_TYPES"
 				:key="type"

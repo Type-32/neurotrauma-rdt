@@ -11,7 +11,8 @@
     "typecheck": "nuxt typecheck",
     "import:trello": "bun scripts/import-trello.ts",
     "check:content": "bun scripts/check-content.ts",
-    "test:search": "bun scripts/test-search.ts"
+    "test:search": "bun scripts/test-search.ts",
+    "test:triage": "bun scripts/test-triage.ts"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.157",

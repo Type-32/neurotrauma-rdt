@@ -10,9 +10,10 @@ async function toggleLocale() {
 	await setLocale(locale.value === 'en' ? 'zh' : 'en');
 }
 
-const navigationItems = computed<NavigationMenuItem[]>(() =>
-	ENTRY_TYPES.map(type => ({ label: t(`types.${type}`), to: `/${type}` })),
-);
+const navigationItems = computed<NavigationMenuItem[]>(() => [
+	{ label: t('triage.title'), to: '/triage', icon: 'i-lucide-heart-pulse' },
+	...ENTRY_TYPES.map(type => ({ label: t(`types.${type}`), to: `/${type}` })),
+]);
 </script>
 
 <template>
