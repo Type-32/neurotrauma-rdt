@@ -94,7 +94,10 @@
 		"results": "结果",
 		"noResults": "没有匹配的条目。",
 		"loading": "正在加载搜索…",
-		"failed": "搜索加载失败，请检查网络后重新打开。"
+		"failed": "搜索加载失败，请检查网络后重新打开。",
+		"open": "打开",
+		"navigate": "移动",
+		"close": "关闭"
 	},
 	"page": {
 		"notFound": "页面不存在",
@@ -205,5 +208,17 @@
 		"offline": "离线 / 缓存",
 		"lang": "语言",
 		"mode": "模式"
+	},
+	"home": {
+		"start": "开始分诊",
+		"database": "数据库",
+		"entries": "条目",
+		"lethal": "致命",
+		"lang": "语言",
+		"search": "按名称、English 或拼音搜索",
+		"shortcut": "任意页面按 /"
+	},
+	"index": {
+		"categories": "分类"
 	}
 }

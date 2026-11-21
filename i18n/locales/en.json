@@ -94,7 +94,10 @@
 		"results": "Results",
 		"noResults": "No matching entries.",
 		"loading": "Loading search…",
-		"failed": "Couldn't load search. Check your connection and reopen."
+		"failed": "Couldn't load search. Check your connection and reopen.",
+		"open": "Open",
+		"navigate": "Move",
+		"close": "Close"
 	},
 	"page": {
 		"notFound": "Page not found",
@@ -205,5 +208,17 @@
 		"offline": "Offline / cached",
 		"lang": "Lang",
 		"mode": "Mode"
+	},
+	"home": {
+		"start": "Start triage",
+		"database": "Database",
+		"entries": "Entries",
+		"lethal": "Lethal",
+		"lang": "Lang",
+		"search": "Search by name, 中文 or pinyin",
+		"shortcut": "Press / anywhere"
+	},
+	"index": {
+		"categories": "Categories"
 	}
 }

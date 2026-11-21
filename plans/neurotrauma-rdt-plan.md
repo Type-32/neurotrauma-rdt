@@ -225,7 +225,7 @@ Original plan:
 
 ## Art direction: medic terminal
 
-**Status:** entry pages, triage, header and status bar are done (commit `905eb85`). Phases 9 and 10 finish it.
+**Status:** every page is in the new look (Phase 9). Phase 10 adds the body schematic.
 
 - **Palettes:** dark is "graphite HUD", light is "orbital ops" (sage paper). Both are defined as `--ui-*` variables in `app/assets/css/main.css`.
 - **Colour carries meaning:** signal orange is first aid and actions, red is lethal, amber is possibly lethal, mint is treated or done. Everything else is ink on paper.
@@ -234,7 +234,7 @@ Original plan:
 
 ## Phase 9: Finish the reskin
 
-**Status:** not started. Four surfaces still use stock Nuxt UI cards and headers: home, the type indexes, the quick reference and the search palette. No behaviour changes in this phase.
+**Status:** done. Home, the type indexes, the quick reference and the search palette now use the terminal look; triage uses the shared page header too. No behaviour changes. Built pieces: `Micro/PageHead.vue`, `Entry/Row.vue`, `TYPE_ICONS` in `app/utils/entries.ts`, and `TYPE_CODES`, `categoryCode` and `entryShortCode` in `shared/utils/content.ts`. The search index now carries `category` and `order`.
 
 **9.0 Shared pieces (do first)**
 

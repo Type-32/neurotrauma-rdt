@@ -112,19 +112,10 @@ function scrollToResults() {
 
 <template>
 	<UContainer class="pb-24 pt-6 lg:pb-16">
-		<!-- Title band -->
-		<div class="flex flex-wrap items-end justify-between gap-4">
-			<div>
-				<p class="micro text-muted"><MicroScramble text="SYS // TRIAGE" /></p>
-				<h1 class="mt-2 font-brand text-4xl font-semibold leading-none tracking-tight text-highlighted sm:text-5xl">{{ t('triage.title') }}</h1>
-				<p class="mt-2 max-w-xl text-sm text-muted">{{ t('triage.description') }}</p>
-			</div>
-			<div class="flex gap-2">
-				<UButton :label="t('triage.share')" icon="i-lucide-link" color="neutral" variant="outline" class="micro" :disabled="!selected.length" @click="share" />
-				<UButton :label="t('triage.clear')" icon="i-lucide-eraser" color="neutral" variant="outline" class="micro" :disabled="!selected.length" @click="setSelected([])" />
-			</div>
-		</div>
-		<MicroRule class="mt-4" />
+		<MicroPageHead code="SYS // TRIAGE" :title="t('triage.title')" :description="t('triage.description')">
+			<UButton :label="t('triage.share')" icon="i-lucide-link" color="neutral" variant="outline" class="micro" :disabled="!selected.length" @click="share" />
+			<UButton :label="t('triage.clear')" icon="i-lucide-eraser" color="neutral" variant="outline" class="micro" :disabled="!selected.length" @click="setSelected([])" />
+		</MicroPageHead>
 
 		<ClientOnly>
 			<template #fallback>

@@ -25,6 +25,9 @@ export default defineEventHandler(async (event): Promise<SearchRecord[]> => {
 		return {
 			path: row.path,
 			type,
+			category: row.category,
+			// The content store can return `order` as a string.
+			order: Number(row.order),
 			nameZh: row.nameZh,
 			...(row.nameEn ? { nameEn: row.nameEn } : {}),
 			aliases: row.aliases ?? [],
@@ -40,6 +43,8 @@ interface IndexedEntry {
 	path: string
 	nameZh: string
 	nameEn?: string
+	category: string
+	order: number
 	aliases?: string[]
 	pinyin?: string
 	pinyinInitials?: string

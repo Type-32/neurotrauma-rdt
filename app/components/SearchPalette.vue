@@ -3,23 +3,24 @@
  * Site search: a command palette in a modal, opened with "/" or Ctrl/⌘+K or
  * the header button. Results come pre-ranked from shared/utils/search.ts
  * (names, then aliases and pinyin, then related names), best first, so Enter
- * opens the top hit.
+ * opens the top hit. Styled as a terminal prompt: each result shows its code
+ * stamp, and a bar on the left marks lethal entries.
  */
 import type { CommandPaletteGroup, CommandPaletteItem } from '@nuxt/ui'
+
+interface PaletteItem extends CommandPaletteItem {
+	/** Second-language name, under the label. */
+	secondary?: string
+	/** Code stamp, e.g. "AFF // LNG-04"; absent for the browse links. */
+	code?: string
+	lethal?: 'lethal' | 'possibly-lethal'
+}
 
 const { open, ready, failed, load, search } = useSearch()
 const { t, locale } = useI18n()
 const route = useRoute()
 
 const searchTerm = ref('')
-
-const TYPE_ICONS: Record<EntryType, string> = {
-	afflictions: 'i-lucide-activity',
-	symptoms: 'i-lucide-stethoscope',
-	items: 'i-lucide-pill',
-	procedures: 'i-lucide-list-ordered',
-	info: 'i-lucide-info',
-}
 
 defineShortcuts({
 	// preventDefault stops the "/" itself from being typed into the search box once it's focused.
@@ -41,7 +42,7 @@ watch(open, (isOpen) => {
 // Following a result navigates; close the palette when the page changes.
 watch(() => route.fullPath, () => { open.value = false })
 
-const groups = computed<CommandPaletteGroup<CommandPaletteItem>[]>(() => {
+const groups = computed<CommandPaletteGroup<PaletteItem>[]>(() => {
 	const term = searchTerm.value.trim()
 	if (!term) {
 		return [{
@@ -54,6 +55,7 @@ const groups = computed<CommandPaletteGroup<CommandPaletteItem>[]>(() => {
 					label: t(`types.${type}`),
 					icon: TYPE_ICONS[type],
 					to: `/${type}`,
+					code: TYPE_CODES[type],
 				})),
 			],
 		}]
@@ -69,12 +71,11 @@ const groups = computed<CommandPaletteGroup<CommandPaletteItem>[]>(() => {
 			const names = entryNames({ title: record.nameZh, nameZh: record.nameZh, nameEn: record.nameEn }, locale.value)
 			return {
 				label: names.primary,
-				suffix: [names.secondary, t(`types.${record.type}`)].filter(Boolean).join(' · '),
-				icon: record.lethal ? 'i-lucide-skull' : TYPE_ICONS[record.type],
+				secondary: names.secondary,
+				icon: TYPE_ICONS[record.type],
 				to: record.path,
-				ui: record.lethal
-					? { itemLeadingIcon: record.lethal === 'lethal' ? 'text-error' : 'text-warning' }
-					: undefined,
+				code: entryCode(record.type, record.category, record.order),
+				lethal: record.lethal,
 			}
 		}),
 	}]
@@ -83,6 +84,8 @@ const groups = computed<CommandPaletteGroup<CommandPaletteItem>[]>(() => {
 const emptyText = computed(() => failed.value
 	? t('search.failed')
 	: ready.value ? t('search.noResults') : t('search.loading'))
+
+const pad = (n: number) => String(n).padStart(2, '0')
 </script>
 
 <template>
@@ -93,12 +96,50 @@ const emptyText = computed(() => failed.value
 				:groups="groups"
 				:placeholder="t('search.placeholder')"
 				:loading="open && !ready && !failed"
+				icon="i-lucide-chevron-right"
 				close
 				class="h-[min(32rem,80dvh)]"
+				:ui="{
+					input: 'font-mono [&_svg]:text-primary',
+					label: 'micro font-normal text-dimmed',
+					item: 'items-center py-2',
+					empty: 'micro',
+				}"
 				@update:open="open = $event"
 			>
+				<template #group-label="{ group, label }">
+					{{ label }} <span class="text-dimmed">[{{ pad(group.items?.length ?? 0) }}]</span>
+				</template>
+
+				<template #item-leading="{ item }">
+					<span
+						class="h-7 w-0.5 shrink-0"
+						:class="item.lethal === 'lethal' ? 'bg-error' : item.lethal === 'possibly-lethal' ? 'bg-warning' : 'bg-transparent'"
+						aria-hidden="true"
+					/>
+					<UIcon :name="item.icon!" class="size-4 shrink-0 text-dimmed" />
+				</template>
+
+				<template #item-label="{ item }">
+					<span class="block truncate text-highlighted">{{ item.label }}</span>
+					<span v-if="item.secondary" class="block truncate text-xs text-muted">{{ item.secondary }}</span>
+					<span v-if="item.lethal" class="sr-only">{{ t(item.lethal === 'lethal' ? 'entry.lethal' : 'entry.possiblyLethal') }}</span>
+				</template>
+
+				<template #item-trailing="{ item }">
+					<span v-if="item.code" class="micro shrink-0 text-dimmed">{{ item.code }}</span>
+				</template>
+
 				<template #empty>
 					{{ emptyText }}
+				</template>
+
+				<template #footer>
+					<div class="micro flex items-center gap-4 text-dimmed">
+						<span class="flex items-center gap-1"><UKbd value="arrowup" size="sm" /><UKbd value="arrowdown" size="sm" /> {{ t('search.navigate') }}</span>
+						<span class="flex items-center gap-1"><UKbd value="enter" size="sm" /> {{ t('search.open') }}</span>
+						<span class="flex items-center gap-1"><UKbd value="escape" size="sm" /> {{ t('search.close') }}</span>
+					</div>
 				</template>
 			</UCommandPalette>
 		</template>

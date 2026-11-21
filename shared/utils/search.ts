@@ -7,6 +7,9 @@ import Fuse, { type IFuseOptions } from 'fuse.js'
 export interface SearchRecord {
 	path: string
 	type: EntryType
+	category: string
+	/** Board order within the category, for the code stamp ("LNG-04"). */
+	order: number
 	nameZh: string
 	nameEn?: string
 	aliases: string[]

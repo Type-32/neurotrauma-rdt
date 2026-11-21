@@ -75,3 +75,12 @@ export function lethality(entry: Pick<Entry, 'tags'>): 'lethal' | 'possibly-leth
 	if (entry.tags.includes('possibly-lethal')) return 'possibly-lethal'
 	return null
 }
+
+/** One icon per entry type, for navigation and search. */
+export const TYPE_ICONS: Record<EntryType, string> = {
+	afflictions: 'i-lucide-activity',
+	symptoms: 'i-lucide-stethoscope',
+	items: 'i-lucide-pill',
+	procedures: 'i-lucide-list-ordered',
+	info: 'i-lucide-info',
+}

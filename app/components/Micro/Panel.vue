@@ -31,10 +31,10 @@ const tone = computed(() => TONES[props.tone])
 		:style="{ '--frame-color': tone.frame, '--frame-size': tone.frame === TONES.default.frame ? '9px' : '12px' }"
 	>
 		<header class="flex items-center justify-between gap-3 pb-2">
-			<h2 class="micro" :class="tone.label">
+			<h2 class="micro shrink-0" :class="tone.label">
 				<span v-if="index !== undefined" class="text-dimmed">{{ String(index).padStart(2, '0') }} //</span> {{ label }}
 			</h2>
-			<span v-if="meta || $slots.meta" class="micro text-dimmed"><slot name="meta">{{ meta }}</slot></span>
+			<span v-if="meta || $slots.meta" class="micro min-w-0 truncate text-dimmed"><slot name="meta">{{ meta }}</slot></span>
 		</header>
 		<MicroRule :delay="0.1 + (index ?? 0) * 0.05" />
 		<p v-if="description" class="mt-2 text-xs text-muted">{{ description }}</p>
