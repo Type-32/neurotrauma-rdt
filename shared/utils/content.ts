@@ -37,6 +37,45 @@ export const REFERENCE_SECTIONS = [
 	{ id: 'medkit', path: '/info/yiliaoxiangjianyi', icon: 'i-lucide-briefcase-medical' },
 ] as const
 
+const TYPE_CODES: Record<EntryType, string> = {
+	afflictions: 'AFF',
+	symptoms: 'SYM',
+	items: 'ITM',
+	procedures: 'PRC',
+	info: 'INF',
+}
+
+/** Three-letter category codes; empty where the category is the type itself. */
+const CATEGORY_CODES: Record<string, string> = {
+	'head': 'HED',
+	'lungs': 'LNG',
+	'heart': 'HRT',
+	'torso': 'TRS',
+	'extremities': 'EXT',
+	'bones': 'BON',
+	'any': 'ANY',
+	'blood': 'BLD',
+	'surgery': 'SRG',
+	'cybernetics': 'CYB',
+	'surgery-plus': 'SRP',
+	'eyes': 'EYE',
+	'general': 'GEN',
+	'expansions': 'EXP',
+	'expansion-guides': 'GDE',
+}
+
+/**
+ * An entry's code stamp, e.g. "AFF // LNG-04" for the fourth lung affliction,
+ * or "SYM // 07" where the category is the type. Stable as long as the
+ * board order is, and it reads like a part number on a spec sheet.
+ */
+export function entryCode(type: EntryType, category: string, order: number): string {
+	// Number(): the content store can return `order` as a string, and "2" + 1 is "21".
+	const number = String(Number(order) + 1).padStart(2, '0')
+	const categoryCode = CATEGORY_CODES[category]
+	return categoryCode ? `${TYPE_CODES[type]} // ${categoryCode}-${number}` : `${TYPE_CODES[type]} // ${number}`
+}
+
 /** Every category across types (afflictions also list categories as `alsoIn`). */
 export const ALL_CATEGORIES = [...new Set(Object.values(CATEGORIES).flat())] as const
 

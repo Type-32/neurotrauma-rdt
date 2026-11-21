@@ -9,6 +9,8 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "typecheck": "nuxt typecheck",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "import:trello": "bun scripts/import-trello.ts",
     "check:content": "bun scripts/check-content.ts",
     "test:search": "bun scripts/test-search.ts",
@@ -40,6 +42,7 @@
     "@vite-pwa/assets-generator": "^2.0.0",
     "@vite-pwa/nuxt": "^2.0.3",
     "pinyin-pro": "^3.29.5",
+    "svgo": "^4.1.0",
     "typescript": "6.0.3",
     "vue-tsc": "^3.3.14",
     "yaml": "^2.9.1"

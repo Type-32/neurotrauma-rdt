@@ -1,8 +1,7 @@
 import { readdirSync } from 'node:fs'
 import { join } from 'node:path'
-import { ENTRY_TYPES } from './shared/utils/content'
+import { type ContentLocale, ENTRY_TYPES } from './shared/utils/content'
 
-const LOCALES = ['en', 'zh'] as const
 const DEFAULT_LOCALE = 'en'
 
 /**
@@ -48,8 +47,8 @@ export default defineNuxtConfig({
 			short_name: 'NT RDT',
 			description: 'Rapid diagnosis and treatment reference for the Barotrauma Neurotrauma mod.',
 			lang: 'en',
-			theme_color: '#16a34a',
-			background_color: '#ffffff',
+			theme_color: '#0f1011',
+			background_color: '#0f1011',
 			display: 'standalone',
 			start_url: '/',
 			icons: [
@@ -145,16 +144,33 @@ export default defineNuxtConfig({
 		locales: [
 			{ code: 'en', language: 'en-US', name: 'English', file: 'en.json' },
 			{ code: 'zh', language: 'zh-CN', name: '中文', file: 'zh.json' },
-		] satisfies Array<{ code: typeof LOCALES[number], language: string, name: string, file: string }>,
+		] satisfies Array<{ code: ContentLocale, language: string, name: string, file: string }>,
 		detectBrowserLanguage: {
 			useCookie: true,
 			cookieKey: 'i18n_locale',
+		},
+		experimental: {
+			// Always write /_i18n/<hash>/<locale>/messages.json at build time, whatever the deploy
+			// preset. The module only does this on its own when Nitro reports a static build, and
+			// switching language (online or offline) fetches these files.
+			prerenderMessages: true,
 		},
 	},
 
 	nitro: {
 		prerender: {
-			routes: ['/', '/triage', '/reference','/search-index.json', '/triage-index.json',...ENTRY_TYPES.map(type => `/${type}`), ...contentRoutes()],
+			routes: [
+				'/',
+				// The SPA shell the service worker falls back to offline. `nuxt generate` writes it on
+				// its own, but `nuxt build` (what Vercel runs by default) only does when it's listed here.
+				'/200.html',
+				'/triage',
+				'/reference',
+				'/search-index.json',
+				'/triage-index.json',
+				...ENTRY_TYPES.map(type => `/${type}`),
+				...contentRoutes(),
+			],
 		},
 	},
 

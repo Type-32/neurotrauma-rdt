@@ -52,7 +52,8 @@ export default defineEventHandler(async (event): Promise<TriageIndex> => {
 			nameZh: row.nameZh,
 			...(row.nameEn ? { nameEn: row.nameEn } : {}),
 			category: row.category,
-			order: row.order,
+			// The content store can return `order` as a string; triage sorts by it.
+			order: Number(row.order),
 			...(lethal ? { lethal } : {}),
 			visibleIn,
 			causes: [...causes.get(id)!],

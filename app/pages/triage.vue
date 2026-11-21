@@ -111,32 +111,49 @@ function scrollToResults() {
 </script>
 
 <template>
-	<UContainer class="pb-24 lg:pb-16">
-		<UPageHeader :title="t('triage.title')" :description="t('triage.description')">
-			<template #links>
-				<UButton :label="t('triage.share')" icon="i-lucide-link" color="neutral" variant="outline" :disabled="!selected.length" @click="share" />
-				<UButton :label="t('triage.clear')" icon="i-lucide-eraser" color="neutral" variant="outline" :disabled="!selected.length" @click="setSelected([])" />
-			</template>
-		</UPageHeader>
+	<UContainer class="pb-24 pt-6 lg:pb-16">
+		<!-- Title band -->
+		<div class="flex flex-wrap items-end justify-between gap-4">
+			<div>
+				<p class="micro text-muted"><MicroScramble text="SYS // TRIAGE" /></p>
+				<h1 class="mt-2 font-brand text-4xl font-semibold leading-none tracking-tight text-highlighted sm:text-5xl">{{ t('triage.title') }}</h1>
+				<p class="mt-2 max-w-xl text-sm text-muted">{{ t('triage.description') }}</p>
+			</div>
+			<div class="flex gap-2">
+				<UButton :label="t('triage.share')" icon="i-lucide-link" color="neutral" variant="outline" class="micro" :disabled="!selected.length" @click="share" />
+				<UButton :label="t('triage.clear')" icon="i-lucide-eraser" color="neutral" variant="outline" class="micro" :disabled="!selected.length" @click="setSelected([])" />
+			</div>
+		</div>
+		<MicroRule class="mt-4" />
 
 		<ClientOnly>
 			<template #fallback>
-				<p class="mt-8 text-muted">{{ t('triage.loading') }}</p>
+				<div class="mt-10 flex items-center gap-3 text-muted">
+					<MicroGraphic name="dot-ring" spin class="size-6" />
+					<span class="micro">{{ t('triage.loading') }}</span>
+				</div>
 			</template>
 
-			<p v-if="failed" class="mt-8 text-error">{{ t('triage.failed') }}</p>
-			<p v-else-if="!index" class="mt-8 text-muted">{{ t('triage.loading') }}</p>
+			<p v-if="failed" class="micro mt-10 text-error">{{ t('triage.failed') }}</p>
+			<div v-else-if="!index" class="mt-10 flex items-center gap-3 text-muted">
+				<MicroGraphic name="dot-ring" spin class="size-6" />
+				<span class="micro">{{ t('triage.loading') }}</span>
+			</div>
 
 			<div v-else class="mt-8 grid gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
 				<!-- What you see -->
 				<section>
 					<div class="flex items-center justify-between gap-4">
-						<h2 class="text-lg font-semibold text-highlighted">{{ t('triage.findings') }}</h2>
-						<UInput v-model="filter" icon="i-lucide-filter" :placeholder="t('triage.filter')" class="w-40" />
+						<h2 class="micro text-highlighted"><span class="text-dimmed">IN //</span> {{ t('triage.findings') }}</h2>
+						<UInput v-model="filter" icon="i-lucide-filter" :placeholder="t('triage.filter')" size="sm" class="w-40" :ui="{ base: 'font-mono text-xs' }" />
 					</div>
-					<div v-for="group in groups" :key="group.id" class="mt-5">
-						<h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">{{ t(`triage.groups.${group.id}`) }}</h3>
-						<div class="flex flex-wrap gap-2">
+					<div v-for="group in groups" :key="group.id" class="mt-6">
+						<h3 class="micro mb-2 flex items-center gap-2 text-muted">
+							<span>{{ t(`triage.groups.${group.id}`) }}</span>
+							<span class="h-px flex-1 bg-(--micro-line)" />
+							<span class="text-dimmed">[{{ String(group.entries.length).padStart(2, '0') }}]</span>
+						</h3>
+						<div class="flex flex-wrap gap-1.5">
 							<TriageChip
 								v-for="entry in group.entries"
 								:key="entry.id"
@@ -151,128 +168,143 @@ function scrollToResults() {
 				</section>
 
 				<!-- Results -->
-				<section id="triage-results" ref="results" class="scroll-mt-20 space-y-6 lg:sticky lg:top-[calc(var(--ui-header-height)+1rem)] lg:max-h-[calc(100dvh-var(--ui-header-height)-2rem)] lg:overflow-y-auto lg:pe-1">
+				<section id="triage-results" ref="results" class="scroll-mt-20 space-y-5 lg:sticky lg:top-[calc(var(--ui-header-height)+1rem)] lg:max-h-[calc(100dvh-var(--ui-header-height)-2rem)] lg:overflow-y-auto lg:pe-1">
 					<!-- Selected -->
 					<div>
-						<h2 class="text-lg font-semibold text-highlighted">{{ t('triage.selected') }}</h2>
-						<p v-if="!selected.length" class="mt-2 text-muted">{{ t('triage.nothingSelected') }}</p>
-						<div v-else class="mt-2 flex flex-wrap gap-2">
-							<UBadge
+						<h2 class="micro flex items-center justify-between text-highlighted">
+							<span><span class="text-dimmed">OUT //</span> {{ t('triage.selected') }}</span>
+							<span class="text-dimmed">[{{ String(selected.length).padStart(2, '0') }}]</span>
+						</h2>
+						<div v-if="!selected.length" class="micro-frame mt-3 flex items-center gap-5 bg-elevated/40 px-5 py-6">
+							<MicroGraphic name="orbit" spin class="size-20 text-muted" />
+							<div>
+								<p class="micro micro-cursor text-highlighted">{{ t('triage.awaiting') }}</p>
+								<p class="mt-1 text-sm text-muted">{{ t('triage.nothingSelected') }}</p>
+							</div>
+						</div>
+						<div v-else class="mt-3 flex flex-wrap gap-1.5">
+							<button
 								v-for="id in selected"
 								:key="id"
-								:label="names(id).primary"
-								color="primary"
-								variant="subtle"
-								size="lg"
-								trailing-icon="i-lucide-x"
-								class="cursor-pointer"
-								role="button"
+								type="button"
+								class="inline-flex items-center gap-2 border border-primary/50 bg-primary/10 px-2 py-1 font-mono text-xs text-highlighted transition-colors hover:bg-primary/20"
 								@click="toggle(id)"
-							/>
+							>
+								{{ names(id).primary }}
+								<UIcon name="i-lucide-x" class="size-3 text-primary" />
+							</button>
 						</div>
 					</div>
 
 					<template v-if="result && selected.length">
 						<!-- Treatment plan -->
-						<UPageCard :title="t('triage.plan')" :description="t('triage.planDescription')" variant="subtle" highlight highlight-color="primary">
-							<p v-if="!result.plan.length" class="text-muted">{{ t('triage.noPlan') }}</p>
+						<MicroPanel :label="t('triage.plan')" :index="1" :meta="t('triage.steps', result.plan.length)" :description="t('triage.planDescription')" tone="primary">
+							<p v-if="!result.plan.length" class="text-sm text-muted">{{ t('triage.noPlan') }}</p>
 							<template v-else>
 								<div v-if="result.plan.some(step => step.entry.firstAid.length)">
-									<h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-error">{{ t('triage.firstAid') }}</h3>
-									<ul class="space-y-2">
+									<h3 class="micro mb-2 text-primary">&gt; {{ t('triage.firstAid') }}</h3>
+									<ul class="space-y-2" style="--entry-link: var(--ui-primary)">
 										<template v-for="step in result.plan" :key="`fa-${step.entry.id}`">
-											<li v-for="(item, i) in step.entry.firstAid" :key="i" class="leading-relaxed">
-												<ULink :to="`/${step.entry.id}`" class="me-2 font-semibold text-highlighted hover:underline">{{ names(step.entry.id).primary }}</ULink>
-												<EntryText :text="item.text" />
+											<li v-for="(item, i) in step.entry.firstAid" :key="i" class="flex gap-2.5 leading-relaxed text-highlighted">
+												<span class="mt-px font-mono text-xs text-primary" aria-hidden="true">!</span>
+												<span>
+													<ULink :to="`/${step.entry.id}`" class="me-2 font-mono text-xs uppercase tracking-wide text-muted hover:text-highlighted">{{ names(step.entry.id).primary }}</ULink>
+													<EntryText :text="item.text" />
+												</span>
 											</li>
 										</template>
 									</ul>
 								</div>
 								<div class="mt-5">
-									<h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">{{ t('triage.treatment') }}</h3>
-									<ol class="space-y-3">
-										<li v-for="(step, n) in result.plan" :key="step.entry.id" class="flex gap-3">
-											<span class="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-elevated text-xs font-semibold">{{ n + 1 }}</span>
+									<h3 class="micro mb-2 text-muted">&gt; {{ t('triage.treatment') }}</h3>
+									<ol>
+										<li v-for="(step, n) in result.plan" :key="step.entry.id" class="flex gap-3 border-t border-dashed border-(--micro-line) py-3 first:border-t-0 first:pt-1">
+											<span class="w-6 shrink-0 pt-0.5 font-mono text-xs text-dimmed">{{ String(n + 1).padStart(2, '0') }}</span>
 											<div class="min-w-0">
-												<ULink :to="`/${step.entry.id}`" class="font-semibold text-highlighted hover:underline">{{ names(step.entry.id).primary }}</ULink>
-												<UIcon v-if="step.entry.lethal" name="i-lucide-skull" class="ms-1 size-4 align-[-2px]" :class="step.entry.lethal === 'lethal' ? 'text-error' : 'text-warning'" />
-												<ul class="mt-1 space-y-1">
+												<ULink :to="`/${step.entry.id}`" class="inline-flex items-center gap-1.5 font-medium text-highlighted hover:underline">
+													<UIcon v-if="step.entry.lethal" name="i-lucide-skull" class="size-3.5" :class="step.entry.lethal === 'lethal' ? 'text-error' : 'text-warning'" />
+													{{ names(step.entry.id).primary }}
+												</ULink>
+												<ul class="mt-1 space-y-1 text-sm">
 													<li v-for="(item, i) in step.entry.treatment" :key="i" class="leading-relaxed"><EntryText :text="item.text" /></li>
 												</ul>
 											</div>
 										</li>
 									</ol>
 								</div>
-								<div v-if="result.items.length" class="mt-5">
-									<h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">{{ t('triage.items') }}</h3>
-									<div class="flex flex-wrap gap-2">
-										<UButton
+								<div v-if="result.items.length" class="mt-4 border-t border-dashed border-(--micro-line) pt-3">
+									<h3 class="micro mb-2 text-muted">&gt; {{ t('triage.items') }}</h3>
+									<div class="flex flex-wrap gap-1.5">
+										<ULink
 											v-for="item in result.items"
 											:key="item"
 											:to="`/${item}`"
-											:label="names(item).primary"
-											icon="i-lucide-pill"
-											color="neutral"
-											variant="subtle"
-											size="sm"
-										/>
+											class="border border-accented px-2 py-1 font-mono text-xs text-toned transition-colors hover:border-primary hover:text-highlighted"
+										>{{ names(item).primary }}</ULink>
 									</div>
 								</div>
 							</template>
-						</UPageCard>
+						</MicroPanel>
 
 						<!-- Check next -->
-						<UPageCard v-if="result.suggestions.length" :title="t('triage.checkNext')" :description="t('triage.checkNextDescription')" variant="subtle" highlight highlight-color="info">
-							<div class="flex flex-wrap gap-2">
-								<UButton
+						<MicroPanel v-if="result.suggestions.length" :label="t('triage.checkNext')" :index="2" :description="t('triage.checkNextDescription')" tone="info">
+							<div class="flex flex-wrap gap-1.5">
+								<button
 									v-for="suggestion in result.suggestions"
 									:key="suggestion.id"
-									icon="i-lucide-plus"
-									color="info"
-									variant="outline"
-									class="min-h-11"
+									type="button"
+									class="flex min-h-11 items-center gap-2 border border-info/50 px-3 py-1.5 text-start transition-colors hover:bg-info/10"
 									@click="add(suggestion.id)"
 								>
-									<span class="flex flex-col items-start text-start leading-tight">
-										<span>{{ names(suggestion.id).primary }}</span>
-										<span class="text-xs opacity-70">{{ t('triage.splits', { splits: suggestion.splits, of: suggestion.of }) }}</span>
+									<UIcon name="i-lucide-plus" class="size-3.5 text-info" />
+									<span class="leading-tight">
+										<span class="block text-sm text-highlighted">{{ names(suggestion.id).primary }}</span>
+										<span class="block font-mono text-[0.6875rem] text-muted">{{ t('triage.splits', { splits: suggestion.splits, of: suggestion.of }) }}</span>
 									</span>
-								</UButton>
+								</button>
 							</div>
-						</UPageCard>
+						</MicroPanel>
 
 						<!-- Likely causes -->
-						<UPageCard :title="t('triage.causes')" :description="t('triage.causesDescription')" variant="subtle">
-							<p v-if="!result.unexplained.length" class="text-muted">{{ t('triage.allExplained') }}</p>
-							<p v-else-if="!result.candidates.length" class="text-muted">{{ t('triage.noCauses') }}</p>
-							<ul v-else class="divide-y divide-default">
-								<li v-for="candidate in result.candidates.slice(0, 8)" :key="candidate.entry.id" class="py-3 first:pt-0 last:pb-0">
+						<MicroPanel :label="t('triage.causes')" :index="result.suggestions.length ? 3 : 2" :description="t('triage.causesDescription')">
+							<template #meta>
+								<MicroGraphic name="target" class="size-4 text-muted" />
+							</template>
+							<p v-if="!result.unexplained.length" class="text-sm text-muted">{{ t('triage.allExplained') }}</p>
+							<div v-else-if="!result.candidates.length" class="flex items-center gap-3 text-sm text-muted">
+								<MicroGraphic name="forbidden" class="size-5" />{{ t('triage.noCauses') }}
+							</div>
+							<ul v-else>
+								<li v-for="candidate in result.candidates.slice(0, 8)" :key="candidate.entry.id" class="border-t border-dashed border-(--micro-line) py-3 first:border-t-0 first:pt-0 last:pb-0">
 									<div class="flex items-start justify-between gap-3">
 										<div class="min-w-0">
-											<ULink :to="`/${candidate.entry.id}`" class="font-semibold text-highlighted hover:underline">
-												<UIcon v-if="candidate.entry.lethal" name="i-lucide-skull" class="me-1 size-4 align-[-2px]" :class="candidate.entry.lethal === 'lethal' ? 'text-error' : 'text-warning'" />{{ names(candidate.entry.id).primary }}
-											</ULink>
-											<span v-if="names(candidate.entry.id).secondary" class="ms-2 text-sm text-muted">{{ names(candidate.entry.id).secondary }}</span>
-											<p class="mt-1 text-sm">
-												<span class="font-medium text-primary">{{ candidate.explains.length }}/{{ result.unexplained.length }}</span>
-												· {{ t('triage.explains', { list: nameList(candidate.explains) }) }}
+											<div class="flex flex-wrap items-baseline gap-x-2">
+												<ULink :to="`/${candidate.entry.id}`" class="inline-flex items-center gap-1.5 font-medium text-highlighted hover:underline">
+													<UIcon v-if="candidate.entry.lethal" name="i-lucide-skull" class="size-3.5" :class="candidate.entry.lethal === 'lethal' ? 'text-error' : 'text-warning'" />{{ names(candidate.entry.id).primary }}
+												</ULink>
+												<span v-if="names(candidate.entry.id).secondary" class="font-mono text-xs text-muted">{{ names(candidate.entry.id).secondary }}</span>
+											</div>
+											<p class="mt-1.5 flex items-center gap-2 text-sm">
+												<MicroBar :value="candidate.explains.length / result.unexplained.length * 100" />
+												<span class="font-mono text-xs text-primary">{{ candidate.explains.length }}/{{ result.unexplained.length }}</span>
+												<span class="text-toned">{{ t('triage.explains', { list: nameList(candidate.explains) }) }}</span>
 											</p>
-											<p v-if="candidate.alsoLookFor.length" class="mt-1 text-sm text-muted">
-												{{ t('triage.alsoLookFor') }}: {{ nameList(candidate.alsoLookFor) }}
+											<p v-if="candidate.alsoLookFor.length" class="mt-1 text-xs text-muted">
+												<span class="micro text-dimmed">{{ t('triage.alsoLookFor') }}:</span> {{ nameList(candidate.alsoLookFor) }}
 											</p>
 										</div>
-										<UButton :label="t('triage.markPresent')" icon="i-lucide-plus" size="sm" color="primary" variant="soft" @click="add(candidate.entry.id)" />
+										<UButton :label="t('triage.markPresent')" icon="i-lucide-plus" size="xs" color="primary" variant="outline" class="micro shrink-0" @click="add(candidate.entry.id)" />
 									</div>
 								</li>
 							</ul>
-						</UPageCard>
+						</MicroPanel>
 					</template>
 				</section>
 			</div>
 
 			<!-- On phones the results are below the chips: a shortcut to them. -->
 			<div v-if="selected.length && !resultsVisible" class="fixed inset-x-4 bottom-4 z-10 lg:hidden">
-				<UButton :label="t('triage.jumpToResults', { count: selected.length })" icon="i-lucide-arrow-down" block size="lg" @click="scrollToResults" />
+				<UButton :label="t('triage.jumpToResults', { count: selected.length })" icon="i-lucide-arrow-down" block size="lg" class="micro" @click="scrollToResults" />
 			</div>
 		</ClientOnly>
 	</UContainer>

@@ -25,22 +25,35 @@ export interface Entry {
 const LIST_FIELDS = ['path', 'title', 'nameZh', 'nameEn', 'category', 'order', 'tags', 'source'] as const
 export type EntrySummary = Pick<Entry, typeof LIST_FIELDS[number]>
 
+/**
+ * Nuxt Content's SQLite store can hand `order` back as a string ("2"), which
+ * breaks arithmetic ("2" + 1 = "21") and sorts as text ("10" before "2").
+ * Every read goes through this so `order` is always a number.
+ */
+function withNumericOrder<T extends { order: unknown }>(entry: T): T & { order: number } {
+	return { ...entry, order: Number(entry.order) }
+}
+
 /** One entry by path, from the locale's collection or the base locale's. */
 export async function queryEntry(type: EntryType, path: string, locale: ContentLocale): Promise<Entry | null> {
-	const localized = await queryCollection(entryCollection(type, locale)).path(path).first()
-	if (localized || locale === BASE_CONTENT_LOCALE) return localized as Entry | null
-	return await queryCollection(entryCollection(type, BASE_CONTENT_LOCALE)).path(path).first() as Entry | null
+	const localized = await queryCollection(entryCollection(type, locale)).path(path).first() as Entry | null
+	const entry = localized || locale === BASE_CONTENT_LOCALE
+		? localized
+		: await queryCollection(entryCollection(type, BASE_CONTENT_LOCALE)).path(path).first() as Entry | null
+	return entry ? withNumericOrder(entry) : null
 }
 
 /** Every entry of a type in board order: the base set, with the locale's overrides swapped in. */
 export async function queryEntries(type: EntryType, locale: ContentLocale): Promise<EntrySummary[]> {
-	const base = await queryCollection(entryCollection(type, BASE_CONTENT_LOCALE))
+	// Sorted here rather than in SQL, where a text-typed `order` would sort "10" before "2".
+	const base = (await queryCollection(entryCollection(type, BASE_CONTENT_LOCALE))
 		.select(...LIST_FIELDS)
-		.order('order', 'ASC')
-		.all() as EntrySummary[]
+		.all() as EntrySummary[])
+		.map(withNumericOrder)
+		.sort((a, b) => a.order - b.order)
 	if (locale === BASE_CONTENT_LOCALE) return base
 
-	const overrides = await queryCollection(entryCollection(type, locale)).select(...LIST_FIELDS).all() as EntrySummary[]
+	const overrides = (await queryCollection(entryCollection(type, locale)).select(...LIST_FIELDS).all() as EntrySummary[]).map(withNumericOrder)
 	const byPath = new Map(overrides.map(entry => [entry.path, entry]))
 	return base.map(entry => byPath.get(entry.path) ?? entry)
 }

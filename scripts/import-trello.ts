@@ -152,7 +152,7 @@ const SECTION_LINK_PREFERENCE: Record<SectionKey | 'body', EntryType[]> = {
 // ---------------------------------------------------------------------------
 // Text helpers
 
-const CJK_CHAR = /[　-〿㐀-鿿豈-﫿＀-￯]/
+const CJK_CHAR = /[\u3000-\u303F\u3400-\u9FFF\uF900-\uFAFF\uFF00-\uFFEF]/
 const HAN_CHARS = /\p{Script=Han}/gu
 
 /**
@@ -673,11 +673,10 @@ function renderEntry(entry: Entry, index: LinkIndex): string {
 		...sections,
 		trello: { shortLink: entry.card.shortLink, url: entry.card.url },
 	}
-	for (const key of Object.keys(frontmatter)) {
-		if (frontmatter[key] === undefined) delete frontmatter[key]
-	}
+	// Leave out fields with no value rather than writing them as empty.
+	const defined = Object.fromEntries(Object.entries(frontmatter).filter(([, value]) => value !== undefined))
 
-	return `---\n${stringify(frontmatter, { lineWidth: 0 })}---\n\n${body}\n`
+	return `---\n${stringify(defined, { lineWidth: 0 })}---\n\n${body}\n`
 }
 
 function renderReport(board: TrelloBoard, entries: Entry[]): string {

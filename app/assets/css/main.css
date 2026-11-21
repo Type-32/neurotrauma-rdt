@@ -1,8 +1,204 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
+/*
+ * Medic terminal theme.
+ * Dark  = "graphite HUD": near-black graphite, warm off-white ink, signal orange, mint.
+ * Light = "orbital ops": sage paper, near-black ink, signal orange, dark graphite panels.
+ *
+ * Colour carries meaning, not decoration:
+ *   primary (signal orange) = first aid, actions, the one hot accent
+ *   error   (red)           = lethal
+ *   warning (amber)         = possibly lethal
+ *   success (mint)          = treated, confirmed, done
+ * Everything else is ink on paper.
+ */
+
 @theme static {
-	--font-sans: "Geist", "Inter", sans-serif;
-	--font-mono: "Geist Mono", "JetBrains Mono", "Consolas", monospace, sans-serif;
-	--font-brand: "Space Grotesk", "Geist";
+	--font-sans: "Geist", "Inter", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+	--font-mono: "JetBrains Mono", "Geist Mono", "Consolas", "PingFang SC", "Microsoft YaHei", monospace;
+	--font-brand: "Space Grotesk", "Geist", "PingFang SC", "Microsoft YaHei", sans-serif;
+
+	/* Signal orange: the one hot accent. */
+	--color-signal-50: #fff3ef;
+	--color-signal-100: #ffe3da;
+	--color-signal-200: #ffc4b3;
+	--color-signal-300: #ff9e85;
+	--color-signal-400: #ff7a5a;
+	--color-signal-500: #ff5a36;
+	--color-signal-600: #e8431f;
+	--color-signal-700: #c13416;
+	--color-signal-800: #9a2a14;
+	--color-signal-900: #7a2513;
+	--color-signal-950: #421008;
+
+	/* Mint: treated / confirmed. */
+	--color-mint-50: #effbf6;
+	--color-mint-100: #d6f5e8;
+	--color-mint-200: #b4ecd6;
+	--color-mint-300: #8fe0c0;
+	--color-mint-400: #62cba2;
+	--color-mint-500: #3bb085;
+	--color-mint-600: #2a8e6a;
+	--color-mint-700: #237157;
+	--color-mint-800: #1f5a47;
+	--color-mint-900: #1b4a3c;
+	--color-mint-950: #0c2a21;
+
+	/* Graphite: warm neutral ink and paper. */
+	--color-graphite-50: #f4f3ef;
+	--color-graphite-100: #e6e4dc;
+	--color-graphite-200: #cfcdc5;
+	--color-graphite-300: #b4b2aa;
+	--color-graphite-400: #8a8a84;
+	--color-graphite-500: #6b6b66;
+	--color-graphite-600: #4d4e4b;
+	--color-graphite-700: #3a3b3c;
+	--color-graphite-800: #242527;
+	--color-graphite-900: #1a1b1c;
+	--color-graphite-950: #0f1011;
+}
+
+/* Unlayered, so these win over Nuxt UI's layered defaults. */
+
+/* Light: orbital ops (sage paper). Text colours are darkened for contrast on sage. */
+:root {
+	--ui-radius: 0.125rem;
+
+	--ui-primary: #b8401a;
+	--ui-secondary: #2b2b2b;
+	--ui-success: #1f6b4a;
+	--ui-info: #2f5d73;
+	--ui-warning: #8a5a00;
+	--ui-error: #b3261e;
+
+	--ui-bg: #c6dac9;
+	--ui-bg-muted: #bdd3c0;
+	--ui-bg-elevated: #d3e3d5;
+	--ui-bg-accented: #b0c8b4;
+	--ui-bg-inverted: #232423;
+
+	--ui-text-dimmed: #6f8273;
+	--ui-text-muted: #4f5d52;
+	--ui-text-toned: #3a443c;
+	--ui-text: #2a2d2a;
+	--ui-text-highlighted: #161716;
+	--ui-text-inverted: #e9efe7;
+
+	--ui-border: #9fb8a4;
+	--ui-border-muted: #b0c8b4;
+	--ui-border-accented: #8fa594;
+	--ui-border-inverted: #232423;
+
+	/* Micrographics: hairlines and the background grid. */
+	--micro-line: rgb(35 36 35 / 0.22);
+	--micro-grid: rgb(35 36 35 / 0.04);
+	--micro-mark: rgb(35 36 35 / 0.35);
+}
+
+/* Dark: graphite HUD. */
+.dark {
+	--ui-primary: #ff5a36;
+	--ui-secondary: #e6e4dc;
+	--ui-success: #8fe0c0;
+	--ui-info: #7cc4e8;
+	--ui-warning: #f2b341;
+	--ui-error: #ff5c5c;
+
+	--ui-bg: #0f1011;
+	--ui-bg-muted: #151617;
+	--ui-bg-elevated: #1a1b1c;
+	--ui-bg-accented: #242527;
+	--ui-bg-inverted: #e6e4dc;
+
+	--ui-text-dimmed: #5c5c58;
+	--ui-text-muted: #8a8a84;
+	--ui-text-toned: #b4b2aa;
+	--ui-text: #d6d4cc;
+	--ui-text-highlighted: #f1efe7;
+	--ui-text-inverted: #0f1011;
+
+	--ui-border: #2a2c2e;
+	--ui-border-muted: #1f2022;
+	--ui-border-accented: #3a3b3c;
+	--ui-border-inverted: #e6e4dc;
+
+	--micro-line: rgb(230 228 220 / 0.16);
+	--micro-grid: rgb(230 228 220 / 0.045);
+	--micro-mark: rgb(230 228 220 / 0.3);
+}
+
+html {
+	background: var(--ui-bg);
+	color-scheme: light dark;
+}
+
+::selection {
+	background: var(--ui-primary);
+	color: var(--ui-text-inverted);
+}
+
+/* Micro-label: mono, small, tracked caps. Codes, indices, section labels.
+   A utility (not a component class) so it sits in the same layer as Nuxt UI's text sizes. */
+@utility micro {
+	font-family: var(--font-mono);
+	font-size: 0.6875rem;
+	line-height: 1.4;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+@layer components {
+	/* Page grid: faint 24px hairline squares. */
+	.micro-grid {
+		background-image:
+			linear-gradient(var(--micro-grid) 1px, transparent 1px),
+			linear-gradient(90deg, var(--micro-grid) 1px, transparent 1px);
+		background-size: 24px 24px;
+		background-position: -1px -1px;
+	}
+
+	/* Corner brackets around a panel, drawn on a pseudo-element so the panel keeps its own background. */
+	.micro-frame {
+		position: relative;
+		--frame-size: 9px;
+		--frame-color: var(--micro-mark);
+	}
+	.micro-frame::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background:
+			linear-gradient(var(--frame-color), var(--frame-color)) top left / var(--frame-size) 1px,
+			linear-gradient(var(--frame-color), var(--frame-color)) top left / 1px var(--frame-size),
+			linear-gradient(var(--frame-color), var(--frame-color)) top right / var(--frame-size) 1px,
+			linear-gradient(var(--frame-color), var(--frame-color)) top right / 1px var(--frame-size),
+			linear-gradient(var(--frame-color), var(--frame-color)) bottom left / var(--frame-size) 1px,
+			linear-gradient(var(--frame-color), var(--frame-color)) bottom left / 1px var(--frame-size),
+			linear-gradient(var(--frame-color), var(--frame-color)) bottom right / var(--frame-size) 1px,
+			linear-gradient(var(--frame-color), var(--frame-color)) bottom right / 1px var(--frame-size);
+		background-repeat: no-repeat;
+	}
+
+	/* Dashed hairline rule. */
+	.micro-rule {
+		height: 0;
+		border-top: 1px dashed var(--micro-line);
+	}
+
+	/* Blinking block cursor after terminal-style text. */
+	.micro-cursor::after {
+		content: "_";
+		color: var(--ui-primary);
+		animation: micro-blink 1.1s steps(1) infinite;
+	}
+}
+
+@keyframes micro-blink {
+	50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.micro-cursor::after { animation: none; }
 }

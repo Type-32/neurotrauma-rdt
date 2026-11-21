@@ -39,10 +39,26 @@ const tokens = computed<Token[]>(() => {
 				v-if="token.kind === 'link'"
 				:to="token.href"
 				:target="token.external ? '_blank' : undefined"
-				class="font-medium text-primary hover:underline"
+				class="entry-link font-medium underline decoration-dotted decoration-1 underline-offset-4 transition-colors"
 			>{{ token.label }}</ULink>
 			<strong v-else-if="token.kind === 'bold'" class="font-semibold text-highlighted">{{ token.value }}</strong>
 			<template v-else>{{ token.value }}</template>
 		</template>
 	</span>
 </template>
+
+<style scoped>
+/*
+ * Links are ink with a dotted underline, so the signal colour stays rare.
+ * A parent can make them urgent with `--entry-link: var(--ui-primary)`
+ * (first aid does).
+ */
+.entry-link {
+	color: var(--entry-link, var(--ui-text-highlighted));
+	text-decoration-color: var(--entry-link-underline, var(--micro-mark));
+}
+.entry-link:hover {
+	color: var(--ui-primary);
+	text-decoration-color: currentColor;
+}
+</style>

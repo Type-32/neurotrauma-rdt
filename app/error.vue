@@ -1,15 +1,11 @@
 <script setup lang="ts">
 import type { NuxtError } from '#app'
 
-const props = defineProps({
-	error: Object as () => NuxtError,
-})
-
-const handleError = () => clearError({ redirect: '/' })
+defineProps<{ error: NuxtError }>()
 </script>
 
 <template>
-<!--	<LayoutHeader />-->
+	<!-- UError has its own "back to home" button, which clears the error. -->
 	<UError
 		:error="error"
 		:ui="{
@@ -18,7 +14,3 @@ const handleError = () => clearError({ redirect: '/' })
 		}"
 	/>
 </template>
-
-<style scoped>
-
-</style>

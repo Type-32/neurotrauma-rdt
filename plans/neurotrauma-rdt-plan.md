@@ -215,6 +215,14 @@ Original plan:
   - The i18n message files (`_i18n/…/messages.json`) load lazily and must be precached, or labels show as raw keys offline.
 - **Building on Windows:** stop the preview server before `bun run generate`; it locks `.output/public`.
 
+## Deployment (Vercel)
+
+`vercel.json` makes Vercel deploy the static site: it runs `NITRO_PRESET=static bun run generate` and serves `.output/public`, with no framework preset and no serverless functions. This is the exact output tested offline in Phase 7.
+
+- **Why not Vercel's defaults:** Vercel's default `nuxt build` deploys a serverless function, so in-browser content queries would hit it instead of the static database dumps. Nitro's `vercel-static` preset doesn't write the per-page `_payload.json` files its own pages request, or the i18n message files. Both failed the service-worker build.
+- `/200.html` is prerendered explicitly and `i18n.experimental.prerenderMessages` is on, so `bun run build` also succeeds (it was the original Vercel failure: "glob pattern doesn't match 200.html").
+- CI runs lint, typecheck, `check:content`, the build, and both search and triage tests.
+
 ## Phase 8 (optional): Server features
 
 Add these only if wanted. Content pages stay prerendered and search stays in the browser. None of them needs user accounts.

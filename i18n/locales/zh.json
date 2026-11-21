@@ -44,7 +44,9 @@
 		"splits": "{of} 个可能病因中有 {splits} 个会导致",
 		"loading": "正在加载分诊数据…",
 		"failed": "分诊数据加载失败，请检查网络后刷新。",
-		"jumpToResults": "结果（{count}）"
+		"jumpToResults": "结果（{count}）",
+		"awaiting": "等待输入",
+		"steps": "无步骤 | {count} 个步骤 | {count} 个步骤"
 	},
 	"reference": {
 		"title": "速查",
@@ -187,5 +189,21 @@
 		"info": "信息",
 		"symptom": "症状",
 		"unfinished": "疑问/未完成"
+	},
+	"status": {
+		"title": "状态",
+		"lethality": "致命性",
+		"visibility": "可见于",
+		"skill": "技能需求",
+		"source": "来源",
+		"alsoIn": "另见",
+		"flags": "标记"
+	},
+	"statusBar": {
+		"tagline": "医疗终端",
+		"online": "在线",
+		"offline": "离线 / 缓存",
+		"lang": "语言",
+		"mode": "模式"
 	}
 }

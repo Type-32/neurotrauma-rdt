@@ -8,7 +8,9 @@ const title = $rc.public.siteName as string || 'Neurotrauma RDT'
 useHead(() => ({
 	meta: [
 		{ name: 'viewport', content: 'width=device-width, initial-scale=1' },
-		{ name: 'theme-color', content: '#16a34a' },
+		// Browser chrome matches each mode's page colour (graphite HUD / orbital ops).
+		{ name: 'theme-color', content: '#0f1011', media: '(prefers-color-scheme: dark)' },
+		{ name: 'theme-color', content: '#c6dac9', media: '(prefers-color-scheme: light)' },
 	],
 	link: [
 		{ rel: 'icon', href: '/favicon.ico' },
@@ -34,10 +36,13 @@ useSeoMeta({
 <template>
 	<UApp>
 		<NuxtPwaManifest />
-		<NuxtLoadingIndicator color="var(--ui-primary)" />
+		<NuxtLoadingIndicator color="var(--ui-primary)" :height="2" />
 
-		<NuxtLayout>
-			<NuxtPage />
-		</NuxtLayout>
+		<!-- reducedMotion="user": every motion-v animation respects the reader's reduced-motion setting. -->
+		<MotionConfig reduced-motion="user">
+			<NuxtLayout>
+				<NuxtPage />
+			</NuxtLayout>
+		</MotionConfig>
 	</UApp>
 </template>

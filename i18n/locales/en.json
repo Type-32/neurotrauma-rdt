@@ -44,7 +44,9 @@
 		"splits": "{splits} of {of} likely causes",
 		"loading": "Loading triage…",
 		"failed": "Couldn't load triage data. Check your connection and reload.",
-		"jumpToResults": "Results ({count})"
+		"jumpToResults": "Results ({count})",
+		"awaiting": "Awaiting input",
+		"steps": "No steps | 1 step | {count} steps"
 	},
 	"reference": {
 		"title": "Quick reference",
@@ -187,5 +189,21 @@
 		"info": "Information",
 		"symptom": "Symptom",
 		"unfinished": "Unfinished"
+	},
+	"status": {
+		"title": "Status",
+		"lethality": "Lethality",
+		"visibility": "Shown on",
+		"skill": "Skill check",
+		"source": "Source",
+		"alsoIn": "Also under",
+		"flags": "Flags"
+	},
+	"statusBar": {
+		"tagline": "Medic terminal",
+		"online": "Online",
+		"offline": "Offline / cached",
+		"lang": "Lang",
+		"mode": "Mode"
 	}
 }
