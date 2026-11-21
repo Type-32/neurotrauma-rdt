@@ -202,7 +202,18 @@ Original plan:
 
 ## Phase 7: Offline use
 
-- Make the site a PWA so it can be installed and used offline on a second monitor or a phone.
+**Status:** done, with `@vite-pwa/nuxt` 2 (config in `nuxt.config.ts` under `pwa`).
+
+- **What's precached on first visit (about 5 MB, 416 files):** the app code and fonts, the content database dumps (`__nuxt_content/*/sql_dump.txt`) and the SQLite WASM engine, the search and triage indexes, the i18n message files, per-page payloads, the SPA shell (`200.html`) and the main pages (home, triage, reference, type indexes). The 20 MB of prerendered entry HTML is not precached.
+- **Entry pages:** network first, so online readers get the prerendered HTML, cached as they go. Offline, the cached copy is used; if there is none, the SPA shell, which renders the entry from the cached content database. Tested offline with never-visited entries in both languages.
+- **Updates:** `registerType: 'autoUpdate'`: a new build's service worker takes over and the page reloads.
+- **Install:** web manifest with generated icons (`public/icon.svg` → PNGs via `pwa-assets-generator --preset minimal-2023`). An Install button appears in the header when the browser offers installation, and a one-time "Ready to work offline" notice shows when caching finishes.
+- **Gotchas found while building it, now handled in the config:**
+  - The module's default `navigateFallback` answered every navigation with the shell, even online. It's set to `null`; the page rule falls back only when the network fails.
+  - The module stores `200.html` under its clean URL `/200`, so the fallback looks up both names.
+  - A broad `_nuxt/**/*.json` pattern duplicated the module's own build-manifest entries with different revisions, which stops the service worker installing.
+  - The i18n message files (`_i18n/…/messages.json`) load lazily and must be precached, or labels show as raw keys offline.
+- **Building on Windows:** stop the preview server before `bun run generate`; it locks `.output/public`.
 
 ## Phase 8 (optional): Server features
 

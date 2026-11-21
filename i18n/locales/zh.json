@@ -67,6 +67,12 @@
 		"openCloseDescription": "开始：镇痛、手术刀、止血钳、牵开器；结束：缝合线。下方步骤中与之重复的即为这些步骤。",
 		"openCloseLink": "开始&结束手术"
 	},
+	"pwa": {
+		"offlineReady": "已可离线使用",
+		"offlineReadyDescription": "整本指南、搜索与分诊现在无需网络即可使用。",
+		"install": "安装",
+		"installLabel": "安装为应用"
+	},
 	"feedback": {
 		"prompt": "内容有误或缺失？",
 		"report": "报告问题",

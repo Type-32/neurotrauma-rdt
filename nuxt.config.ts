@@ -29,8 +29,88 @@ export default defineNuxtConfig({
 		'@nuxtjs/i18n',
 		'@type32/nuxt-cs-utils',
 		'@vueuse/nuxt',
-		'motion-v/nuxt'
+		'motion-v/nuxt',
+		'@vite-pwa/nuxt',
 	],
+
+	/**
+	 * Installable and offline. The service worker precaches what every page
+	 * needs (app code, fonts, the content database dumps, the search and triage
+	 * indexes, and the SPA shell), about 5 MB, not all 20 MB of prerendered HTML.
+	 * Offline, a page that isn't cached loads the shell (200.html), which renders
+	 * it from the cached content database. Pages visited online are cached too.
+	 */
+	pwa: {
+		registerType: 'autoUpdate',
+		manifest: {
+			name: 'Neurotrauma RDT',
+			short_name: 'NT RDT',
+			description: 'Rapid diagnosis and treatment reference for the Barotrauma Neurotrauma mod.',
+			lang: 'en',
+			theme_color: '#16a34a',
+			background_color: '#ffffff',
+			display: 'standalone',
+			start_url: '/',
+			icons: [
+				{ src: 'pwa-64x64.png', sizes: '64x64', type: 'image/png' },
+				{ src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
+				{ src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' },
+				{ src: 'maskable-icon-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+			],
+		},
+		maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
+		generateSW: {
+			globPatterns: [
+				// Not *.json: the module adds _nuxt/builds/**/*.json itself, and a second entry with
+				// a different revision would stop the service worker from installing.
+				'_nuxt/**/*.{js,css,wasm,woff2}',
+				// Interface translations, loaded lazily by @nuxtjs/i18n; without them labels show as keys offline.
+				'_i18n/**/messages.json',
+				'*.{png,svg,ico}',
+				'__nuxt_content/**/sql_dump.txt',
+				'search-index.json',
+				'triage-index.json',
+				'200.html',
+				'index.html',
+				'triage/index.html',
+				'reference/index.html',
+				'{afflictions,symptoms,items,procedures,info}/index.html',
+			],
+			// Build ids (?_b=), content versions (?v=) and triage selections (?f=) don't change the file.
+			ignoreURLParametersMatching: [/.*/],
+			// No blanket fallback: it would answer every navigation with the shell, even online.
+			// The page rule below falls back to the shell only when the network fails.
+			navigateFallback: null,
+			runtimeCaching: [
+				{
+					// Entry pages: prerendered HTML when online (cached as you go); offline, the
+					// cached copy, or the SPA shell, which renders the entry from the cached content database.
+					urlPattern: ({ request }) => request.mode === 'navigate',
+					handler: 'NetworkFirst',
+					options: {
+						cacheName: 'pages',
+						networkTimeoutSeconds: 3,
+						expiration: { maxEntries: 300 },
+						plugins: [{
+							// The module precaches 200.html under its clean URL, /200; try both names.
+							handlerDidError: async () =>
+								(await caches.match('/200', { ignoreSearch: true }))
+								?? (await caches.match('/200.html', { ignoreSearch: true }))
+								?? Response.error(),
+						}],
+					},
+				},
+				{
+					urlPattern: /\/_payload\.json/,
+					handler: 'StaleWhileRevalidate',
+					options: { cacheName: 'payloads', expiration: { maxEntries: 300 } },
+				},
+			],
+		},
+		client: {
+			installPrompt: true,
+		},
+	},
 
 	devtools: {
 		enabled: true

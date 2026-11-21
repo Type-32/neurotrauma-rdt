@@ -35,6 +35,8 @@
   },
   "devDependencies": {
     "@types/node": "^24",
+    "@vite-pwa/assets-generator": "^2.0.0",
+    "@vite-pwa/nuxt": "^2.0.3",
     "pinyin-pro": "^3.29.5",
     "typescript": "6.0.3",
     "vue-tsc": "^3.3.14",

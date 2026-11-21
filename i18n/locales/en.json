@@ -67,6 +67,12 @@
 		"openCloseDescription": "Open with analgesia, scalpel, hemostat and retractors; close with sutures. Steps below that repeat these are the same ones.",
 		"openCloseLink": "Open & Close Surgery"
 	},
+	"pwa": {
+		"offlineReady": "Ready to work offline",
+		"offlineReadyDescription": "The whole guide, search and triage now work without a connection.",
+		"install": "Install",
+		"installLabel": "Install as an app"
+	},
 	"feedback": {
 		"prompt": "Something wrong or missing?",
 		"report": "Report a problem",

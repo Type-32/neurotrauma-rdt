@@ -32,6 +32,9 @@ const navigationItems = computed<NavigationMenuItem[]>(() => [
 			orientation="horizontal"
 		/>
 		<template #right>
+			<ClientOnly>
+				<PwaInstall />
+			</ClientOnly>
 			<UButton
 				icon="i-lucide-search"
 				color="neutral"
