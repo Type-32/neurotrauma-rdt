@@ -31,6 +31,7 @@ export default defineNuxtConfig({
 		'@vueuse/nuxt',
 		'motion-v/nuxt',
 		'@vite-pwa/nuxt',
+		'@nuxt/eslint',
 	],
 
 	/**
