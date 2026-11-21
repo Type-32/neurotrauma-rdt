@@ -1,16 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
 	modules: [
+		'@nuxt/content',
 		'@nuxt/ui',
 		'@type32/nuxt-ui-extras',
 		'@nuxt/image',
 		'@nuxtjs/i18n',
-		'nuxt-auth-utils',
-		'nuxt-authorization',
 		'@type32/nuxt-cs-utils',
-		'@nuxthub/core',
 		'@vueuse/nuxt',
-		'nuxt-security',
 		'motion-v/nuxt'
 	],
 
@@ -27,47 +24,27 @@ export default defineNuxtConfig({
 		},
 	},
 
-	hub: {
-		db: {
-			dialect: 'postgresql',
-			applyMigrationsDuringBuild: false,
-			applyMigrationsDuringDev: false,
-		},
-		blob: true,
-	},
-
 	css: ['~/assets/css/main.css'],
+
+	content: {
+		experimental: {
+			// Use Node's built-in node:sqlite instead of compiling better-sqlite3.
+			sqliteConnector: 'native',
+		},
+	},
 
 	routeRules: {
 		'/': {prerender: true}
 	},
 
-	security: {
-		headers: {
-			contentSecurityPolicy: {
-				'img-src': ["'self'", 'data:', 'https:', 'blob:'],
-			},
-			crossOriginEmbedderPolicy: false, // TODO: Find a better solution than disabling this security measure.
-		},
-		rateLimiter: {
-			interval: 100000,
-		}
-	},
-
 	image: {
 		domains: [],
-		provider: 'none', // or configure ipx with a custom fetchAdapter
+		provider: 'none',
 	},
 
 	runtimeConfig: {
-		oauth: {
-			github: {
-				clientId: '',
-				clientSecret: ''
-			}
-		},
 		public: {
-			siteName: '',
+			siteName: 'Neurotrauma RDT',
 			siteUrl: '',
 		},
 	},
