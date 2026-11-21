@@ -1,10 +1,10 @@
 <template>
-	<div class="micro-grid flex min-h-dvh flex-col">
-		<LayoutHeader />
-		<UMain class="flex-1">
+	<div class="relative flex min-h-dvh flex-col">
+		<AppCorner />
+		<!-- Bottom padding keeps content clear of the floating dock. -->
+		<main class="flex-1 pb-36">
 			<slot />
-		</UMain>
-		<LayoutStatusBar />
-		<SearchPalette />
+		</main>
+		<AppDock />
 	</div>
 </template>

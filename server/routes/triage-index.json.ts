@@ -51,6 +51,8 @@ export default defineEventHandler(async (event): Promise<TriageIndex> => {
 			type,
 			nameZh: row.nameZh,
 			...(row.nameEn ? { nameEn: row.nameEn } : {}),
+			...(row.pinyin ? { pinyin: row.pinyin } : {}),
+			...(row.pinyinInitials ? { pinyinInitials: row.pinyinInitials } : {}),
 			category: row.category,
 			// The content store can return `order` as a string; triage sorts by it.
 			order: Number(row.order),
@@ -69,6 +71,8 @@ interface Row {
 	path: string
 	nameZh: string
 	nameEn?: string
+	pinyin?: string
+	pinyinInitials?: string
 	category: string
 	order: number
 	tags?: string[]

@@ -1,7 +1,9 @@
 /**
  * Triage: from what the medic sees on the patient (symptoms and visible
  * afflictions), rank the conditions that would explain it, suggest what to
- * check next, and build one treatment plan for everything present.
+ * check next, and build one treatment plan for everything present. Findings
+ * the medic checked and didn't see ("ruled out") count against the conditions
+ * that would cause them.
  *
  * The data is the prerendered /triage-index.json (server/routes/triage-index.json.ts).
  * Everything here is pure, so scripts/test-triage.ts tests the same code the page runs.
@@ -15,6 +17,9 @@ export interface TriageEntry {
 	type: 'afflictions' | 'symptoms'
 	nameZh: string
 	nameEn?: string
+	/** For the finding filter: full pinyin ("qixiong") and initials ("qx"). */
+	pinyin?: string
+	pinyinInitials?: string
 	category: string
 	order: number
 	lethal?: 'lethal' | 'possibly-lethal'
@@ -89,9 +94,13 @@ export interface Candidate {
 	entry: TriageEntry
 	/** Selected findings it explains. */
 	explains: string[]
-	/** Other findings it leads to that aren't selected: what to look for to confirm it. */
+	/** Other findings it leads to that aren't selected or ruled out: what to look for to confirm it. */
 	alsoLookFor: string[]
+	/** Ruled-out findings it leads to. Not proof against it (many findings only show above a threshold), but evidence. */
+	contradicts: string[]
 	score: number
+	/** Its share of the evidence among all candidates, 0–1, for the confidence bar. */
+	share: number
 }
 
 export interface Suggestion {
@@ -145,8 +154,9 @@ export function createTriage(index: TriageIndex) {
 		return !!entry && (entry.type === 'symptoms' || entry.visibleIn.length > 0)
 	}
 
-	function evaluate(selectedIds: Iterable<string>): TriageResult {
+	function evaluate(selectedIds: Iterable<string>, ruledOutIds: Iterable<string> = []): TriageResult {
 		const selected = new Set([...selectedIds].filter(id => byId.has(id)))
+		const ruledOut = new Set([...ruledOutIds].filter(id => byId.has(id) && !selected.has(id)))
 
 		const plan = [...selected]
 			.map(id => byId.get(id)!)
@@ -167,14 +177,23 @@ export function createTriage(index: TriageIndex) {
 			if (selected.has(id)) continue
 			const entry = byId.get(id)!
 			const explains = unexplained.filter(finding => entry.causes.includes(finding))
-			const alsoLookFor = entry.causes.filter(finding => !selected.has(finding) && isObservable(finding))
-			candidates.push({ entry, explains, alsoLookFor, score: explains.reduce((sum, finding) => sum + weight(finding), 0) })
+			const alsoLookFor = entry.causes.filter(finding => !selected.has(finding) && !ruledOut.has(finding) && isObservable(finding))
+			const contradicts = entry.causes.filter(finding => ruledOut.has(finding))
+			const score = explains.reduce((sum, finding) => sum + weight(finding), 0)
+				- CONTRADICTION_WEIGHT * contradicts.reduce((sum, finding) => sum + weight(finding), 0)
+			candidates.push({ entry, explains, alsoLookFor, contradicts, score, share: 0 })
 		}
 		candidates.sort((a, b) =>
 			b.explains.length - a.explains.length
+			|| a.contradicts.length - b.contradicts.length
 			|| lethalRank(a.entry) - lethalRank(b.entry)
 			|| b.score - a.score
 			|| a.entry.order - b.entry.order)
+
+		// Shares: positive evidence only, so a heavily contradicted candidate shows an almost empty bar.
+		const positive = candidates.map(candidate => Math.max(MIN_SHARE_SCORE, candidate.score))
+		const total = positive.reduce((sum, value) => sum + value, 0)
+		candidates.forEach((candidate, i) => { candidate.share = total ? positive[i]! / total : 0 })
 
 		return { plan, unexplained, candidates, suggestions: suggest(candidates), items: planItems(plan) }
 	}
@@ -187,8 +206,10 @@ export function createTriage(index: TriageIndex) {
 	 */
 	function suggest(candidates: Candidate[]): Suggestion[] {
 		if (!candidates.length) return []
-		const best = candidates[0]!.explains.length
-		const leading = candidates.filter(candidate => candidate.explains.length === best).slice(0, 6)
+		const best = candidates[0]!
+		const leading = candidates
+			.filter(candidate => candidate.explains.length === best.explains.length && candidate.contradicts.length === best.contradicts.length)
+			.slice(0, 6)
 		const counts = new Map<string, number>()
 		for (const candidate of leading) {
 			for (const finding of candidate.alsoLookFor) counts.set(finding, (counts.get(finding) ?? 0) + 1)
@@ -215,6 +236,11 @@ export function createTriage(index: TriageIndex) {
 
 	return { evaluate, entry: (id: string) => byId.get(id), isObservable, causesOf: (id: string) => [...causesOf.get(id) ?? []] }
 }
+
+/** How much a ruled-out finding counts against a candidate, relative to a present one counting for it. */
+const CONTRADICTION_WEIGHT = 0.6
+/** Floor for the share calculation, so every candidate keeps a sliver of bar. */
+const MIN_SHARE_SCORE = 0.05
 
 function lethalRank(entry: TriageEntry): number {
 	return entry.lethal === 'lethal' ? 0 : entry.lethal === 'possibly-lethal' ? 1 : 2

@@ -322,6 +322,88 @@ Original plan:
 
 **Suggested order:** Phase 9, then the "leads to" fixes from Phase 11, then Phase 10, then the rest of Phase 11.
 
+## Phase 12: Rebuild the interface
+
+**Status:** planned. Replaces the look built in the art-direction work and Phase 9, and removes Phase 7 (PWA). Phase 10 (body schematic) is on hold until this is done.
+
+**Why:** the current pages give everything the same weight. Every panel has brackets, a number, a label and a dashed rule; triage shows 100+ boxed two-line chips at once; the answer (what to do for the patient) is the smallest thing on screen. Nothing responds when touched beyond a colour change. The palettes and fonts stay. The layout, the density and the motion are rebuilt.
+
+### Rules for the rebuild
+
+1. **One focus per screen.** At any moment one thing is clearly the largest and brightest: the question being asked, or the action to take.
+2. **Read first.** Body text at 18 px or more, answers much larger. A medic reads the next action from arm's length.
+3. **Space, not lines.** Groups are separated by whitespace and type size. No boxes around list items, no dashed rules, no corner brackets on panels.
+4. **A micrographics budget.** Per screen: at most one graphic, one mono label style, one accent colour in use. A micrographic must show real state (a count, progress, a ranking) or it is cut.
+5. **Motion explains change.** Whatever the user touches moves, and whatever changes as a result visibly travels to its new place. Under 300 ms, never blocks input, off with reduced motion.
+6. **No stock chrome.** No top navigation bar, no footer status bar, no card grids.
+
+The old rule "content never starts hidden" is dropped. It was mine, not a limit of static generation, and it is the reason motion-v was barely used.
+
+### 12.1 Remove the PWA
+
+- Remove `@vite-pwa/nuxt`, the `pwa` config, `PwaInstall.vue`, `<NuxtPwaManifest>`, the offline notice and the precache-only prerender entries.
+- Ship a small kill-switch `public/sw.js` that unregisters itself and clears its caches. Without it, browsers that already installed the service worker keep serving old pages; this is what made stale builds appear during testing.
+- **Static generation stays** unless you say otherwise. It does not restrict motion-v: animations run in the browser after the page loads either way. The unstyled Vercel page was deployment protection, not the build. Switching to server rendering later is a one-line change in `vercel.json`.
+
+### 12.2 Shell: a dock instead of a header
+
+- Remove the header and the status bar. A small wordmark sits top-left; language and colour mode sit top-right as two quiet icons.
+- Navigation is one floating dock at the bottom centre: a search field ("What are you looking for?") with three destinations beside it: Triage, Reference, Database.
+- Focusing the dock grows it into the search results in place (a shared-element `layoutId` transition), not a separate modal. Search is the main way around the site.
+- Page changes cross-fade with a short slide; the dock stays put.
+
+### 12.3 Triage, rebuilt as a guided flow (build this first, then stop for review)
+
+The page becomes a conversation with one question on screen, not a wall of options.
+
+- **Start:** a large prompt, "What do you see?", with one input. Typing filters findings instantly (English, 中文, pinyin). Under it, plain-text suggestions, largest first by how often they matter, one source at a time (Symptoms / Health interface / Scanner / Analyzer) behind a segmented switch. No boxes, one name per finding in the reader's language; the other language appears on hover or long-press.
+- **Picking a finding:** the word lifts, shrinks and flies to a patient strip at the top (shared element). The strip is the only place selections live; tap one there to remove it and it flies back.
+- **The answer leads:** as soon as one finding is picked, the top half of the screen is the answer:
+  - the most likely cause in display type, with a bar that grows or shrinks as its share of the evidence changes;
+  - the first-aid action under it in the accent colour, the single hottest thing on the page;
+  - other candidates as a short ranked list that physically reorders (layout springs) as evidence arrives.
+- **Ask next, one at a time:** a single card, "Vomiting?", with Yes / No / Can't tell. The answer slides the card away and the ranking reacts. Keyboard: Y, N, space.
+  - This needs "No" to count. Today triage only knows what is present; `shared/utils/triage.ts` gains ruled-out findings that lower or remove candidates, and the share link gains them too. `test:triage` is extended.
+- **Treatment as a step-through:** when the medic commits to a cause, the plan takes over the screen: one step at a time in large type, with items to bring listed once at the start. Completing a step collapses it to a struck-through line and the next rises. A thin progress line is the only decoration.
+- **The one graphic:** the orbit. Each ring is a remaining candidate; rings drop away as questions are answered, and it settles to a single point when one cause is left. It is the confidence display, not ornament.
+- **Layout:** a single centred column that splits into question and answer only when there is an answer. On a phone the answer is a sheet that rises from the bottom.
+
+### 12.4 Entry pages
+
+- Name, then first aid and treatment in large type, with nothing beside them.
+- Lethality is one word next to the name. Skill checks, source and visibility become a single line of quiet metadata, not a framed side panel.
+- Leads to, caused by, effects and the full guide text sit below a fold, opened in place with a height animation. Thresholds keep the gauge; it is real data.
+- Procedure steps reuse the step-through from triage.
+
+### 12.5 Home, database, reference, search
+
+- **Home is triage.** The site opens on "What do you see?". The current home page is removed.
+- **Database:** one page with a type switch, a typographic list in columns (name only, a red dot for lethal), and a filter that narrows it as you type with items sliding into place.
+- **Reference:** one section on screen at a time, moved between with large tabs or arrow keys, not one long page of panels.
+- **Search:** lives in the dock (12.2). The modal palette is removed.
+
+### 12.6 Clean-up
+
+- Delete what the rules cut: `.micro-frame`, `.micro-rule`, `MicroPanel`, `MicroRule`, `MicroPageHead`, the numbered `01 //` labels, the page grid background, unused pack SVGs.
+- Keep: palettes, Saans, the `micro` label style (used sparingly), `MicroBar`, `MicroScramble` for codes only.
+- Shared motion pieces in one place: press feedback, reveal, shared-element groups, number roll, all honouring reduced motion.
+
+### Order and checkpoints
+
+1. 12.1 PWA removal and kill switch.
+2. 12.2 shell and the motion pieces.
+3. 12.3 triage. **Stop here and review it together before anything else is restyled.**
+4. 12.4 entry pages.
+5. 12.5 home, database, reference, search.
+6. 12.6 clean-up, then lint, typecheck, `check:content`, build, `test:search`, `test:triage`, and a browser pass in both themes, both languages, phone and desktop, with and without reduced motion.
+
+### Decisions taken in this plan (say if any is wrong)
+
+- Home becomes triage.
+- Triage asks yes/no questions and "No" rules causes out.
+- Static generation stays; only the PWA goes.
+- The body schematic waits.
+
 ## Phase 8 (optional): Server features
 
 Add these only if wanted. Content pages stay prerendered and search stays in the browser. None of them needs user accounts.

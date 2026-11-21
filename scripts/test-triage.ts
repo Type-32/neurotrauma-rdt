@@ -80,6 +80,27 @@ if (!planOk) {
 	failed = true
 }
 
+// Ruling out a finding must move the leading candidate that causes it below one
+// that doesn't. For every single symptom with two or more candidates, rule out
+// a finding only the leader leads to, and check the leader drops.
+let ruleOutTotal = 0
+let ruleOutOk = 0
+for (const entry of index.entries) {
+	if (entry.type !== 'symptoms') continue
+	const before = triage.evaluate([entry.id]).candidates
+	if (before.length < 2) continue
+	const leader = before[0]!
+	const telling = leader.alsoLookFor.find(finding => before.slice(1).some(other => !other.entry.causes.includes(finding)))
+	if (!telling) continue
+	ruleOutTotal++
+	const after = triage.evaluate([entry.id], [telling]).candidates
+	if (after[0]!.entry.id !== leader.entry.id) ruleOutOk++
+	else console.log(`  RULE-OUT MISS ${entry.id}: ruling out ${telling} kept ${leader.entry.id} first`)
+}
+const ruleOutPass = ruleOutTotal > 0 && ruleOutOk === ruleOutTotal
+console.log(`\nRuling out a finding demotes the leader: ${ruleOutOk}/${ruleOutTotal} ${ruleOutPass ? 'ok' : 'FAIL'}`)
+if (!ruleOutPass) failed = true
+
 // Pneumothorax's own findings: it should lead, and its first aid should name the needle.
 const pneumo = triage.evaluate(['symptoms/shortness-of-breath', 'symptoms/increased-heartrate', 'afflictions/hyperventilation'])
 const pneumoOk = pneumo.candidates[0]?.entry.id === 'afflictions/pneumothorax'

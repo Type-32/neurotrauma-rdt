@@ -35,13 +35,12 @@ useSeoMeta({
 
 <template>
 	<UApp>
-		<NuxtPwaManifest />
 		<NuxtLoadingIndicator color="var(--ui-primary)" :height="2" />
 
 		<!-- reducedMotion="user": every motion-v animation respects the reader's reduced-motion setting. -->
 		<MotionConfig reduced-motion="user">
 			<NuxtLayout>
-				<NuxtPage />
+				<NuxtPage :transition="{ name: 'page', mode: 'out-in' }" />
 			</NuxtLayout>
 		</MotionConfig>
 	</UApp>
