@@ -2,6 +2,89 @@
 @import "@nuxt/ui";
 
 /*
+ * Saans (Displaay), self-hosted from public/fonts. Only the weights the site uses
+ * are declared, so only those download (and are precached for offline use).
+ * Sans for text, Mono for codes and micro-labels, SemiMono for display titles.
+ */
+@font-face {
+	font-family: "Saans";
+	src: url("/fonts/Saans-TRIAL-Regular.woff2") format("woff2");
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: "Saans";
+	src: url("/fonts/Saans-TRIAL-Medium.woff2") format("woff2");
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: "Saans";
+	src: url("/fonts/Saans-TRIAL-SemiBold.woff2") format("woff2");
+	font-weight: 600;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: "Saans";
+	src: url("/fonts/Saans-TRIAL-Bold.woff2") format("woff2");
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: "Saans";
+	src: url("/fonts/Saans-TRIAL-RegularItalic.woff2") format("woff2");
+	font-weight: 400;
+	font-style: italic;
+	font-display: swap;
+}
+@font-face {
+	font-family: "Saans Mono";
+	src: url("/fonts/SaansMono-TRIAL-Regular.woff2") format("woff2");
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: "Saans Mono";
+	src: url("/fonts/SaansMono-TRIAL-Medium.woff2") format("woff2");
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: "Saans Mono";
+	src: url("/fonts/SaansMono-TRIAL-SemiBold.woff2") format("woff2");
+	font-weight: 600;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: "Saans SemiMono";
+	src: url("/fonts/SaansSemiMono-TRIAL-Medium.woff2") format("woff2");
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: "Saans SemiMono";
+	src: url("/fonts/SaansSemiMono-TRIAL-SemiBold.woff2") format("woff2");
+	font-weight: 600;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: "Saans SemiMono";
+	src: url("/fonts/SaansSemiMono-TRIAL-Bold.woff2") format("woff2");
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+}
+
+/*
  * Medic terminal theme.
  * Dark  = "graphite HUD": near-black graphite, warm off-white ink, signal orange, mint.
  * Light = "orbital ops": sage paper, near-black ink, signal orange, dark graphite panels.
@@ -15,9 +98,9 @@
  */
 
 @theme static {
-	--font-sans: "Geist", "Inter", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
-	--font-mono: "JetBrains Mono", "Geist Mono", "Consolas", "PingFang SC", "Microsoft YaHei", monospace;
-	--font-brand: "Space Grotesk", "Geist", "PingFang SC", "Microsoft YaHei", sans-serif;
+	--font-sans: "Saans", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+	--font-mono: "Saans Mono", "PingFang SC", "Microsoft YaHei", ui-monospace, monospace;
+	--font-brand: "Saans SemiMono", "Saans", "PingFang SC", "Microsoft YaHei", sans-serif;
 
 	/* Signal orange: the one hot accent. */
 	--color-signal-50: #fff3ef;

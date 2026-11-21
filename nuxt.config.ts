@@ -67,6 +67,10 @@ export default defineNuxtConfig({
 				// Interface translations, loaded lazily by @nuxtjs/i18n; without them labels show as keys offline.
 				'_i18n/**/messages.json',
 				'*.{png,svg,ico}',
+				// Saans, self-hosted: only the files main.css declares, not the whole family.
+				'fonts/Saans-TRIAL-{Regular,Medium,SemiBold,Bold,RegularItalic}.woff2',
+				'fonts/SaansMono-TRIAL-{Regular,Medium,SemiBold}.woff2',
+				'fonts/SaansSemiMono-TRIAL-{Medium,SemiBold,Bold}.woff2',
 				'__nuxt_content/**/sql_dump.txt',
 				'search-index.json',
 				'triage-index.json',
@@ -89,6 +93,8 @@ export default defineNuxtConfig({
 					handler: 'NetworkFirst',
 					options: {
 						cacheName: 'pages',
+						// Only real pages: never a redirect (e.g. Vercel's sign-in for protected deployments) or an error.
+						cacheableResponse: { statuses: [200] },
 						networkTimeoutSeconds: 3,
 						expiration: { maxEntries: 300 },
 						plugins: [{
@@ -103,7 +109,7 @@ export default defineNuxtConfig({
 				{
 					urlPattern: /\/_payload\.json/,
 					handler: 'StaleWhileRevalidate',
-					options: { cacheName: 'payloads', expiration: { maxEntries: 300 } },
+					options: { cacheName: 'payloads', cacheableResponse: { statuses: [200] }, expiration: { maxEntries: 300 } },
 				},
 			],
 		},
