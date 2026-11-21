@@ -12,7 +12,7 @@
  * card name in the URL slug, not by ID. Anything that cannot be resolved,
  * parsed or classified is listed in the report for fixing by hand.
  */
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { parseArgs } from 'node:util'
 import { pinyin } from 'pinyin-pro'
@@ -73,21 +73,34 @@ const LIST_RULES: ListRule[] = [
 	{ match: 'Expansions', type: 'info', category: 'expansions', source: 'expansions' },
 ]
 
-/** Label name substring → tag. */
-const LABEL_TAGS: Array<[string, string]> = [
-	['非致命', 'non-lethal'], // before 致命, which it contains
-	['致命', 'lethal'],
-	['健康扫描仪可见', 'scanner-visible'],
-	['健康界面可见', 'interface-visible'],
-	['血液分析仪可见', 'analyzer-visible'],
-	['苦痛', 'affliction'],
+/** Exact label name → tag. The board has Chinese and English versions of most labels. */
+const LABEL_TAGS = new Map<string, string>([
+	['苦痛 Affliction', 'affliction'], ['Affliction', 'affliction'],
+	['物品', 'item'], ['Item', 'item'],
+	['信息', 'info'], ['Information', 'info'],
+	['程序', 'procedure'], ['流程', 'procedure'], ['Procedure', 'procedure'],
 	['症状', 'symptom'],
-	['物品', 'item'],
-	['流程', 'procedure'],
-	['信息', 'info'],
-	['小众', 'niche'],
-	['机制', 'mechanic'],
-]
+	['精神症状 Mental Symptom', 'mental-symptom'],
+	['致命', 'lethal'], ['Lethal', 'lethal'],
+	['非致命', 'non-lethal'], ['Non-Lethal', 'non-lethal'],
+	['可能致命', 'possibly-lethal'], ['Lethality Depends', 'possibly-lethal'],
+	['健康扫描仪可见', 'scanner-visible'], ['Visible on Scanner', 'scanner-visible'],
+	['健康界面可见', 'interface-visible'], ['Visible on Health Interface', 'interface-visible'],
+	['血液分析仪可见', 'analyzer-visible'], ['Visible on Hematology Analyzer', 'analyzer-visible'],
+	['游戏内不可见', 'not-visible'], ['Not Visible Ingame', 'not-visible'],
+	['小众', 'niche'], ['Niche', 'niche'],
+	['机制', 'mechanic'], ['Mechanic', 'mechanic'],
+	['必需', 'essential'], ['Essential', 'essential'],
+	['重要', 'important'], ['Important', 'important'],
+	['非常重要', 'very-important'],
+	['急救', 'first-aid'], ['First Aid', 'first-aid'],
+	['外科手术', 'surgery'], ['Surgery', 'surgery'],
+	['赛博肢体拓展', 'cybernetics'], ['Cybernetics Expansion', 'cybernetics'],
+	['外科Plus拓展', 'surgery-plus'], ['Surgery Plus Expansion', 'surgery-plus'],
+	['译者添加', 'translator-note'], ['译者补充', 'translator-note'],
+	['已知问题', 'known-issue'],
+	['疑问/未完成', 'unfinished'],
+])
 
 /** Tag → entry type, for lists that mix types. */
 const TAG_TYPES: Array<[string, EntryType]> = [
@@ -98,23 +111,42 @@ const TAG_TYPES: Array<[string, EntryType]> = [
 	['info', 'info'],
 ]
 
-type SectionKey = 'firstAid' | 'treatment' | 'causedBy' | 'causes'
+type SectionKey = 'firstAid' | 'treats' | 'treatment' | 'onFailure' | 'onSuccess' | 'causedBy' | 'causes' | 'effects' | 'steps'
 
-/** Heading text → structured field. firstAid is tested before treatment. */
+/** Heading text → structured field. Tested in order, so the narrower patterns come first. */
 const SECTION_RULES: Array<[RegExp, SectionKey]> = [
 	[/急救|first aid/i, 'firstAid'],
+	[/用于治疗|^treats\b/i, 'treats'],
 	[/治疗|treatment/i, 'treatment'],
-	[/由.*造成|原因|caused by/i, 'causedBy'],
+	[/失败|failure/i, 'onFailure'],
+	[/成功|success|^应用时$/i, 'onSuccess'],
+	[/由.*(造成|导致|引起)|原因|病因|caused by/i, 'causedBy'],
 	[/^导致|^causes|leads to/i, 'causes'],
+	[/^效果|^effects/i, 'effects'],
+	[/^步骤|^steps/i, 'steps'],
 ]
+
+/** Skill requirements written as headings, e.g. "医疗水平需求：30" or "Mechanical skill requirement: 60". */
+const SKILL_HEADINGS: Array<[RegExp, 'medical' | 'mechanical']> = [
+	[/医疗水平(?:需求|要求)\s*[:：]?\s*(\d+|无)|medical skill (?:check|requirement)\s*[:：]?\s*(\d+|none)/i, 'medical'],
+	[/机械水平(?:需求|要求)\s*[:：]?\s*(\d+|无)|mechanical skill (?:check|requirement)\s*[:：]?\s*(\d+|none)/i, 'mechanical'],
+]
+
+const ITEM_FIRST: EntryType[] = ['items', 'procedures', 'afflictions', 'symptoms', 'info']
+const AFFLICTION_FIRST: EntryType[] = ['afflictions', 'symptoms', 'items', 'procedures', 'info']
 
 /** In a section, which entry type a link most likely means when a name exists in several types. */
 const SECTION_LINK_PREFERENCE: Record<SectionKey | 'body', EntryType[]> = {
 	causes: ['symptoms', 'afflictions', 'items', 'procedures', 'info'],
-	causedBy: ['afflictions', 'symptoms', 'items', 'procedures', 'info'],
-	treatment: ['items', 'procedures', 'afflictions', 'symptoms', 'info'],
-	firstAid: ['items', 'procedures', 'afflictions', 'symptoms', 'info'],
-	body: ['afflictions', 'items', 'procedures', 'symptoms', 'info'],
+	causedBy: AFFLICTION_FIRST,
+	treatment: ITEM_FIRST,
+	firstAid: ITEM_FIRST,
+	steps: ITEM_FIRST,
+	treats: AFFLICTION_FIRST,
+	onSuccess: AFFLICTION_FIRST,
+	onFailure: AFFLICTION_FIRST,
+	effects: AFFLICTION_FIRST,
+	body: AFFLICTION_FIRST,
 }
 
 // ---------------------------------------------------------------------------
@@ -123,14 +155,36 @@ const SECTION_LINK_PREFERENCE: Record<SectionKey | 'body', EntryType[]> = {
 const CJK_CHAR = /[　-〿㐀-鿿豈-﫿＀-￯]/
 const HAN_CHARS = /\p{Script=Han}/gu
 
-/** "气胸 Pneumothorax" → { zh: "气胸", en: "Pneumothorax" }. Splits after the last CJK character. */
+/**
+ * English names for cards whose title is Chinese only, confirmed by the slugs
+ * of links pointing at them from the original board.
+ */
+const ENGLISH_NAMES: Record<string, string> = {
+	原版器官损伤: 'Vanilla Organ Damage',
+	氰化物中毒: 'Cyanide Poisoning',
+}
+
+/**
+ * "气胸 Pneumothorax" → { zh: "气胸", en: "Pneumothorax" }. Normally splits after
+ * the last CJK character; "Multipurpose Scalpel 多功能手术刀" (English first,
+ * Chinese last) splits before the first one instead.
+ */
 function splitName(name: string): { zh: string, en: string } {
+	const trimmed = name.trim()
+	let first = -1
 	let last = -1
-	for (let i = 0; i < name.length; i++) {
-		if (CJK_CHAR.test(name[i]!)) last = i
+	for (let i = 0; i < trimmed.length; i++) {
+		if (CJK_CHAR.test(trimmed[i]!)) {
+			if (first === -1) first = i
+			last = i
+		}
 	}
-	if (last === -1) return { zh: '', en: name.trim() }
-	return { zh: name.slice(0, last + 1).trim(), en: name.slice(last + 1).trim() }
+	if (last === -1) return { zh: '', en: trimmed }
+	if (last === trimmed.length - 1 && first > 0 && /^[A-Za-z]/.test(trimmed)) {
+		return { zh: trimmed.slice(first).trim(), en: trimmed.slice(0, first).trim() }
+	}
+	const zh = trimmed.slice(0, last + 1).trim()
+	return { zh, en: trimmed.slice(last + 1).trim() || ENGLISH_NAMES[zh] || '' }
 }
 
 function slugifyLatin(text: string): string {
@@ -139,8 +193,8 @@ function slugifyLatin(text: string): string {
 
 function toPinyin(zh: string): { full: string, initials: string } {
 	if (!zh) return { full: '', initials: '' }
-	const full = pinyin(zh, { toneType: 'none', nonZh: 'consecutive' }).replace(/\s+/g, '').toLowerCase()
-	const initials = pinyin(zh, { pattern: 'first', toneType: 'none', nonZh: 'removed' }).replace(/\s+/g, '').toLowerCase()
+	const full = pinyin(zh, { toneType: 'none', nonZh: 'consecutive' }).toLowerCase().replace(/[^a-z0-9]/g, '')
+	const initials = pinyin(zh, { pattern: 'first', toneType: 'none', nonZh: 'removed' }).toLowerCase().replace(/[^a-z0-9]/g, '')
 	return { full, initials }
 }
 
@@ -180,12 +234,17 @@ interface Entry {
 	en: string
 	tags: string[]
 	order: number
+	/** Duplicate cards (same name, same or subset text) folded into this entry. */
+	merged: Array<{ card: TrelloCard, category: string }>
 }
 
 interface SectionItem {
 	text: string
 	refs?: string[]
+	/** "达到40%及以上" → 40: the strength at which this effect starts. */
 	threshold?: number
+	/** "-60% 伤口感染" → -60: how much an item adds or removes. */
+	amount?: number
 }
 
 const report = {
@@ -193,7 +252,8 @@ const report = {
 	unknownLabels: new Set<string>(),
 	typeGuessed: [] as string[],
 	slugCollisions: [] as string[],
-	unresolvedLinks: [] as Array<{ from: string, url: string }>,
+	duplicateNames: [] as string[],
+	unresolvedLinks: [] as Array<{ from: string, url: string, label: string }>,
 	ambiguousLinks: [] as Array<{ from: string, url: string, chosen: string, candidates: string[] }>,
 	headings: new Map<string, { count: number, mapped: SectionKey | null, example: string }>(),
 	unparsedThresholds: [] as Array<{ from: string, line: string }>,
@@ -218,39 +278,96 @@ class LinkIndex {
 	constructor(entries: Entry[]) {
 		for (const entry of entries) {
 			this.byShortLink.set(entry.card.shortLink, entry)
+			for (const { card } of entry.merged) this.byShortLink.set(card.shortLink, entry)
 			push(this.byFull, trelloSlug(entry.card.name), entry)
 			if (entry.en) push(this.byLatin, latinKey(entry.en), entry)
 			if (entry.zh) push(this.byHan, hanKey(entry.zh), entry)
 		}
 	}
 
-	resolve(url: string, from: string, context: SectionKey | 'body'): Entry | null {
-		const match = url.match(/trello\.com\/c\/([A-Za-z0-9]+)(?:\/([^\s)"?#]+))?/)
-		if (!match) return null
-		const [, shortLink, rawSlug] = match
+	/** Original-board short link → entry, learned from links that resolved unambiguously elsewhere. */
+	private learned = new Map<string, Entry>()
 
-		const direct = this.byShortLink.get(shortLink!)
-		if (direct) return direct
-
-		if (!rawSlug) {
-			report.unresolvedLinks.push({ from, url })
-			return null
-		}
-
-		const decoded = safeDecode(rawSlug).replace(/^\d+-/, '')
-		const latin = latinKey(decoded.replace(HAN_CHARS, ' '))
-		const han = hanKey(decoded)
-
-		let candidates = this.byFull.get(trelloSlug(decoded)) ?? []
+	/** Cards matching a name: the full name first, then both scripts together, then either one. */
+	private candidatesForName(name: string): Entry[] {
+		const latin = latinKey(name.replace(HAN_CHARS, ' '))
+		const han = hanKey(name)
+		let candidates = this.byFull.get(trelloSlug(name)) ?? []
 		if (!candidates.length && latin && han) {
 			const hanSet = new Set(this.byHan.get(han) ?? [])
 			candidates = (this.byLatin.get(latin) ?? []).filter(e => hanSet.has(e))
 		}
 		if (!candidates.length && latin) candidates = this.byLatin.get(latin) ?? []
 		if (!candidates.length && han) candidates = this.byHan.get(han) ?? []
+		return candidates
+	}
 
+	/** Candidates from the URL slug, falling back to the link text. */
+	private candidatesForLink(rawSlug: string | undefined, label: string): Entry[] {
+		if (rawSlug) {
+			const fromSlug = this.candidatesForName(safeDecode(rawSlug).replace(/^\d+-/, ''))
+			if (fromSlug.length) return fromSlug
+		}
+		const text = label.replace(/[*_`]/g, '').trim()
+		if (!text || /^https?:\/\//.test(text)) return []
+		return this.candidatesForName(text)
+	}
+
+	/**
+	 * First pass over every description: when a link's slug or text names exactly
+	 * one card, remember its short link, so bare links with the same ID resolve too.
+	 */
+	learn(cards: TrelloCard[]) {
+		const votes = new Map<string, Map<Entry, number>>()
+		for (const card of cards) {
+			for (const [, label, url] of (card.desc ?? '').matchAll(MD_LINK)) {
+				const match = url!.match(TRELLO_CARD_URL)
+				if (!match || this.byShortLink.has(match[1]!)) continue
+				const candidates = this.candidatesForLink(match[2], label!)
+				if (candidates.length !== 1) continue
+				const tally = votes.get(match[1]!) ?? new Map<Entry, number>()
+				tally.set(candidates[0]!, (tally.get(candidates[0]!) ?? 0) + 1)
+				votes.set(match[1]!, tally)
+			}
+		}
+		for (const [shortLink, tally] of votes) {
+			const [best] = [...tally].sort((a, b) => b[1] - a[1])
+			this.learned.set(shortLink, best![0])
+		}
+	}
+
+	/** Short links still unknown after learning: the ones worth looking up on the original board. */
+	unknownShortLinks(cards: TrelloCard[]): string[] {
+		const unknown = new Set<string>()
+		for (const card of cards) {
+			for (const [, , url] of (card.desc ?? '').matchAll(MD_LINK)) {
+				const id = url!.match(TRELLO_CARD_URL)?.[1]
+				if (id && !this.byShortLink.has(id) && !this.learned.has(id)) unknown.add(id)
+			}
+		}
+		return [...unknown]
+	}
+
+	/** Teaches short links whose names were looked up on the original board. */
+	learnNames(names: Record<string, string>) {
+		for (const [shortLink, name] of Object.entries(names)) {
+			if (this.learned.has(shortLink)) continue
+			const candidates = this.candidatesForName(name)
+			if (candidates.length === 1) this.learned.set(shortLink, candidates[0]!)
+		}
+	}
+
+	resolve(url: string, label: string, from: string, context: SectionKey | 'body'): Entry | null {
+		const match = url.match(TRELLO_CARD_URL)
+		if (!match) return null
+		const [, shortLink, rawSlug] = match
+
+		const known = this.byShortLink.get(shortLink!) ?? this.learned.get(shortLink!)
+		if (known) return known
+
+		const candidates = this.candidatesForLink(rawSlug, label)
 		if (!candidates.length) {
-			report.unresolvedLinks.push({ from, url })
+			report.unresolvedLinks.push({ from, url, label })
 			return null
 		}
 		if (candidates.length === 1) return candidates[0]!
@@ -261,6 +378,8 @@ class LinkIndex {
 		return chosen
 	}
 }
+
+const TRELLO_CARD_URL = /trello\.com\/c\/([A-Za-z0-9]+)(?:\/([^\s)"?#]+))?/
 
 function push<K, V>(map: Map<K, V[]>, key: K, value: V) {
 	if (!key) return
@@ -280,7 +399,7 @@ function rewriteLinks(text: string, from: string, context: SectionKey | 'body', 
 	const out = text.replace(MD_LINK, (_whole, label: string, url: string) => {
 		const labelIsUrl = /^https?:\/\//.test(label.trim())
 		if (/trello\.com\/c\//.test(url)) {
-			const target = index.resolve(url, from, context)
+			const target = index.resolve(url, label, from, context)
 			if (target) {
 				refs.push(entryRef(target))
 				return `[${labelIsUrl ? entryLabel(target) : label}](/${entryRef(target)})`
@@ -296,38 +415,74 @@ function rewriteLinks(text: string, from: string, context: SectionKey | 'body', 
 	return { text: out, refs }
 }
 
-const THRESHOLD = /达到\s*(\d+(?:\.\d+)?)\s*%|(\d+(?:\.\d+)?)\s*%\s*(?:及以上|以上|\+|or more|and above)/i
+/**
+ * The text of a list-like line: "- x" bullets, "**1.** x" or "1. x" numbered
+ * steps, and escaped signed lines like "\-60% x" (returned as "-60% x").
+ */
+function listItemText(line: string): string | null {
+	const bullet = line.match(/^\s*[-*+]\s+(.*\S)\s*$/)
+	if (bullet) return bullet[1]!
+	const signed = line.match(/^\s*\\([-+])\s*(.*\S)\s*$/)
+	if (signed) return `${signed[1]}${signed[2]}`
+	const numbered = line.match(/^\s*\*{0,2}\d+\*{0,2}[.)、]\*{0,2}\s*(.*\S)\s*$/)
+	if (numbered) return numbered[1]!
+	return null
+}
+
+const THRESHOLD =/达到\s*(\d+(?:\.\d+)?)\s*%|(\d+(?:\.\d+)?)\s*%\s*(?:及以上|以上|\+|or more|and above)/i
 
 /**
  * One pass over the description: rewrites links in every line (using the
  * enclosing section to break ties between same-named cards), and collects the
  * list items under recognised headings as structured fields.
  */
-function processDescription(desc: string, entry: Entry, index: LinkIndex): { body: string, sections: Partial<Record<SectionKey, SectionItem[]>> } {
+interface ProcessedDescription {
+	body: string
+	sections: Partial<Record<SectionKey, SectionItem[]>>
+	skill: Partial<Record<'medical' | 'mechanical', number>>
+}
+
+function processDescription(desc: string, entry: Entry, index: LinkIndex): ProcessedDescription {
 	const sections: Partial<Record<SectionKey, SectionItem[]>> = {}
+	const skill: ProcessedDescription['skill'] = {}
 	const out: string[] = []
 	let current: SectionKey | null = null
+	/** False when this heading repeats a section already collected (usually its English copy). */
+	let collect = false
 
 	for (const rawLine of desc.split(/\r?\n/)) {
+		// Real headings, or short plain lines ending in a colon that name a known section ("应用成功时：").
+		const pseudo = rawLine.match(/^\s*\**([^#\n*]{1,30}?)\**\s*[:：]\s*\**\s*$/)
 		const heading = rawLine.match(/^#{1,6}\s*(.+?)\s*[:：]?\s*$/)
+			?? (pseudo && SECTION_RULES.some(([pattern]) => pattern.test(pseudo[1]!.trim())) ? pseudo : null)
 		if (heading) {
 			const title = heading[1]!.replace(/\*+/g, '').trim()
 			current = SECTION_RULES.find(([pattern]) => pattern.test(title))?.[1] ?? null
+			// "效果/Effects" on an affliction describes what it causes.
+			if (current === 'effects' && (entry.type === 'afflictions' || entry.type === 'symptoms')) current = 'causes'
+			collect = current !== null && !sections[current]
 			const seen = report.headings.get(title)
 			if (seen) seen.count++
 			else report.headings.set(title, { count: 1, mapped: current, example: entry.card.name })
+
+			for (const [pattern, kind] of SKILL_HEADINGS) {
+				const match = title.match(pattern)
+				const value = match?.[1] ?? match?.[2]
+				if (value && skill[kind] === undefined) skill[kind] = /^\d+$/.test(value) ? Number(value) : 0
+			}
 		}
 
 		const { text: line, refs } = rewriteLinks(rawLine, entry.card.name, current ?? 'body', index)
 		out.push(line)
-		if (heading || !current) continue
+		if (heading || !current || !collect) continue
 
-		const item = line.match(/^\s*[-*+]\s+(.*\S)\s*$/)
-		if (!item) continue
+		const text = listItemText(line)?.replace(/‌/g, '')
+		if (!text) continue
 
-		const text = item[1]!.replace(/‌/g, '')
 		const parsed: SectionItem = { text }
 		if (refs.length) parsed.refs = [...new Set(refs)]
+		const amount = text.match(/^([+-]\d+(?:\.\d+)?)\s*%/)
+		if (amount) parsed.amount = Number(amount[1])
 
 		const threshold = text.match(THRESHOLD)
 		if (threshold) parsed.threshold = Number(threshold[1] ?? threshold[2])
@@ -335,7 +490,7 @@ function processDescription(desc: string, entry: Entry, index: LinkIndex): { bod
 
 		;(sections[current] ??= []).push(parsed)
 	}
-	return { body: out.join('\n').replace(/‌/g, '').trim(), sections }
+	return { body: out.join('\n').replace(/‌/g, '').trim(), sections, skill }
 }
 
 // ---------------------------------------------------------------------------
@@ -363,7 +518,7 @@ function classify(board: TrelloBoard): Entry[] {
 		for (const labelId of card.idLabels) {
 			const label = labels.get(labelId)
 			if (!label?.name) continue
-			const tag = LABEL_TAGS.find(([key]) => label.name.includes(key))?.[1]
+			const tag = LABEL_TAGS.get(label.name.trim())
 			if (tag) tags.push(tag)
 			else {
 				report.unknownLabels.add(label.name)
@@ -398,12 +553,15 @@ function classify(board: TrelloBoard): Entry[] {
 			en,
 			tags: [...new Set(tags)],
 			order,
+			merged: [],
 		})
 	}
 
+	const kept = mergeDuplicates(entries)
+
 	// Slugs: English name, else pinyin, else the Trello short link. Unique per type directory.
 	const used = new Map<EntryType, Set<string>>()
-	for (const entry of entries) {
+	for (const entry of kept) {
 		const base = slugifyLatin(entry.en) || slugifyLatin(toPinyin(entry.zh).full) || `card-${entry.card.shortLink.toLowerCase()}`
 		const taken = used.get(entry.type) ?? new Set<string>()
 		used.set(entry.type, taken)
@@ -414,7 +572,50 @@ function classify(board: TrelloBoard): Entry[] {
 		entry.slug = slug
 	}
 
-	return entries
+	return kept
+}
+
+const MERGE_PREFERENCE: EntryType[] = ['symptoms', 'afflictions', 'items', 'procedures', 'info']
+
+function descLines(card: TrelloCard): Set<string> {
+	return new Set((card.desc ?? '').split(/\r?\n/).map(l => l.trim()).filter(Boolean))
+}
+
+/**
+ * Trello shows some cards on two lists (e.g. Nausea under Symptoms and Torso),
+ * which the export has as two cards. Same-named cards whose text is identical,
+ * or a subset of the other's, become one entry: the symptom copy if there is
+ * one, keeping the longer text, with the other lists recorded as `alsoIn`.
+ */
+function mergeDuplicates(entries: Entry[]): Entry[] {
+	const groups = new Map<string, Entry[]>()
+	for (const entry of entries) push(groups, entry.card.name.trim(), entry)
+
+	const dropped = new Set<Entry>()
+	for (const [name, group] of groups) {
+		if (group.length < 2) continue
+		const sorted = [...group].sort((a, b) => MERGE_PREFERENCE.indexOf(a.type) - MERGE_PREFERENCE.indexOf(b.type))
+		const keeper = sorted[0]!
+		for (const other of sorted.slice(1)) {
+			const a = descLines(keeper.card)
+			const b = descLines(other.card)
+			const subset = [...a].every(l => b.has(l)) || [...b].every(l => a.has(l))
+			if (!subset) {
+				report.duplicateNames.push(`${name}: ${entryListLabel(keeper)} and ${entryListLabel(other)} differ, kept both`)
+				continue
+			}
+			if (b.size > a.size) keeper.card = { ...keeper.card, desc: other.card.desc }
+			keeper.tags = [...new Set([...keeper.tags, ...other.tags])]
+			keeper.merged.push({ card: other.card, category: other.category })
+			dropped.add(other)
+			report.duplicateNames.push(`${name}: merged ${entryListLabel(other)} into ${entryListLabel(keeper)}${a.size === b.size ? '' : ' (text differed; kept the longer one)'}`)
+		}
+	}
+	return entries.filter(e => !dropped.has(e))
+}
+
+function entryListLabel(entry: Entry): string {
+	return `${entry.type}/${entry.category}`
 }
 
 // ---------------------------------------------------------------------------
@@ -422,7 +623,7 @@ function classify(board: TrelloBoard): Entry[] {
 
 function renderEntry(entry: Entry, index: LinkIndex): string {
 	const desc = entry.card.desc ?? ''
-	const { body, sections } = processDescription(desc, entry, index)
+	const { body, sections, skill } = processDescription(desc, entry, index)
 
 	if (entry.type === 'afflictions' && !Object.keys(sections).length) report.noSections.push(entry.card.name)
 
@@ -437,6 +638,7 @@ function renderEntry(entry: Entry, index: LinkIndex): string {
 		nameZh: entry.zh || undefined,
 		nameEn: entry.en || undefined,
 		category: entry.category,
+		alsoIn: entry.merged.length ? [...new Set(entry.merged.map(m => m.category))] : undefined,
 		source: entry.source,
 		order: entry.order,
 		tags: entry.tags,
@@ -444,6 +646,7 @@ function renderEntry(entry: Entry, index: LinkIndex): string {
 		pinyin: full || undefined,
 		pinyinInitials: initials || undefined,
 		aliases: [],
+		skill: Object.keys(skill).length ? skill : undefined,
 		...sections,
 		trello: { shortLink: entry.card.shortLink, url: entry.card.url },
 	}
@@ -472,8 +675,9 @@ function renderReport(board: TrelloBoard, entries: Entry[]): string {
 	section('Unknown lists (imported as info)', [...report.unknownLists])
 	section('Unknown labels (tag guessed)', [...report.unknownLabels])
 	section('Type guessed in mixed lists', report.typeGuessed)
+	section('Duplicate card names', report.duplicateNames)
 	section('Slug collisions', report.slugCollisions)
-	section('Unresolved links', report.unresolvedLinks.map(l => `**${l.from}**: ${l.url}`))
+	section('Unresolved links', report.unresolvedLinks.map(l => `**${l.from}**: "${l.label}" ${l.url}`))
 	section('Ambiguous links (first candidate chosen)', report.ambiguousLinks.map(l => `**${l.from}**: ${l.url} → \`${l.chosen}\` (candidates: ${l.candidates.join(', ')})`))
 	section('Afflictions with no recognised sections', report.noSections)
 	section('Thresholds not parsed in "causes"', report.unparsedThresholds.map(t => `**${t.from}**: ${t.line}`))
@@ -487,16 +691,45 @@ function renderReport(board: TrelloBoard, entries: Entry[]): string {
 	return lines.join('\n')
 }
 
+/**
+ * Looks up card names on the original (public) board for short links this
+ * board doesn't contain. Results are cached as short link → name only, so
+ * re-runs work offline and no member data is stored.
+ */
+async function lookUpOriginalNames(shortLinks: string[], cacheFile: string, offline: boolean): Promise<Record<string, string>> {
+	const cache: Record<string, string> = existsSync(cacheFile) ? JSON.parse(readFileSync(cacheFile, 'utf8')) : {}
+	const missing = shortLinks.filter(id => !(id in cache))
+
+	if (missing.length && !offline) {
+		console.log(`Looking up ${missing.length} card names on the original board…`)
+		for (const id of missing) {
+			try {
+				const response = await fetch(`https://trello.com/c/${id}.json`)
+				cache[id] = response.ok ? String((await response.json() as { name?: string }).name ?? '') : ''
+			}
+			catch {
+				continue // network error: leave uncached so a later run retries
+			}
+		}
+		mkdirSync(dirname(cacheFile), { recursive: true })
+		const sorted = Object.fromEntries(Object.entries(cache).sort(([a], [b]) => a.localeCompare(b)))
+		writeFileSync(cacheFile, `${JSON.stringify(sorted, null, '\t')}\n`)
+	}
+	return Object.fromEntries(Object.entries(cache).filter(([, name]) => name))
+}
+
 // ---------------------------------------------------------------------------
 // Main
 
-function main() {
+async function main() {
 	const { values } = parseArgs({
 		options: {
 			in: { type: 'string', default: 'data/trello/board.json' },
 			out: { type: 'string', default: 'content' },
 			report: { type: 'string', default: 'data/trello/import-report.md' },
 			force: { type: 'boolean', default: false },
+			cache: { type: 'string', default: 'data/trello/original-cards.json' },
+			offline: { type: 'boolean', default: false },
 		},
 	})
 
@@ -511,10 +744,15 @@ function main() {
 		console.error(`Refusing to overwrite existing content in ${nonEmpty.map(t => join(values.out, t)).join(', ')}.\nHand edits would be lost. Re-run with --force to overwrite.`)
 		process.exit(1)
 	}
+	// --force replaces the generated directories outright, so entries that no longer exist don't linger.
+	for (const type of nonEmpty) rmSync(join(values.out, type), { recursive: true, force: true })
 
 	const board = JSON.parse(readFileSync(values.in, 'utf8')) as TrelloBoard
 	const entries = classify(board)
 	const index = new LinkIndex(entries)
+	const cards = entries.map(e => e.card)
+	index.learn(cards)
+	index.learnNames(await lookUpOriginalNames(index.unknownShortLinks(cards), values.cache, values.offline))
 
 	for (const entry of entries) {
 		const file = join(values.out, entry.type, `${entry.slug}.md`)
@@ -529,4 +767,4 @@ function main() {
 	console.log(`Unresolved links: ${report.unresolvedLinks.length}, ambiguous: ${report.ambiguousLinks.length}, afflictions without sections: ${report.noSections.length}.`)
 }
 
-main()
+await main()
