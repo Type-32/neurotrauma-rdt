@@ -185,7 +185,14 @@ Original plan:
 
 ## Phase 6: Treatment and procedure views
 
-**Status:** partly covered already. The treatment card is the entry detail page (Phase 3). The patient scratchpad is the triage page's shareable selection (Phase 5), with no `localStorage` needed. The 治疗顺序 and 医疗箱建议 cards exist as info pages. Still to do: tickable procedure checklists, quick-reference pages designed for speed rather than imported text, and the "report an error" link.
+**Status:** done.
+
+- **Treatment card:** the entry detail page (Phase 3).
+- **Patient scratchpad:** the triage page's shareable selection (Phase 5); no `localStorage` needed.
+- **Procedure checklists** (`app/components/Entry/Checklist.vue`): procedure steps are tickable, with progress ("2 of 5 done") and Reset. Ticks are kept in session storage per page, so following a link to an item and coming back keeps your place; a new tab starts fresh. They're read after hydration, so a reload doesn't cause hydration mismatches. Procedures other than Open & Close Surgery show a callout that surgeries open and close the same way, linking to it.
+- **Quick reference** (`/reference`): the guide's 如何诊断 (3 H's), 五条戒律 (five commandments), 治疗顺序 (treatment order) and 医疗箱建议 (medkit loadouts) cards on one page, with a sticky jump bar. The text comes from those info entries (with locale fallback), so editing them updates the page. The list is `REFERENCE_SECTIONS` in `shared/utils/content.ts`; `check:content` fails if an entry it names (or one in triage's `TREATMENT_ORDER`) goes missing.
+- **Report a problem / Edit on GitHub:** at the bottom of every entry. Report opens a new GitHub issue pre-filled with the entry, page and file; Edit opens the markdown file in GitHub's editor. Repository and branch are `runtimeConfig.public.repository` (default `Type-32/neurotrauma-rdt`, branch `dev`).
+- **Dropped:** "Medical Misconduct warnings inline". That entry turned out to be a Surgery Plus item that raises medical skill, not a list of surgical mistakes.
 
 - **Treatment card:** first aid, then full treatment, then required items as chips, then a link to the procedure. Large text, dark mode, Chinese and English side by side or toggled.
 - **Procedure checklists:** surgery steps as a tickable list, with a reminder to close the surgery, and Medical Misconduct warnings inline.

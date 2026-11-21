@@ -46,6 +46,37 @@
 		"failed": "分诊数据加载失败，请检查网络后刷新。",
 		"jumpToResults": "结果（{count}）"
 	},
+	"reference": {
+		"title": "速查",
+		"description": "如何诊断、五条戒律、治疗顺序与医疗箱建议，集中在一页。",
+		"homeDescription": "诊断、治疗顺序与医疗箱建议，集中在一页。",
+		"jump": "跳转到章节",
+		"openEntry": "单独打开此页",
+		"sections": {
+			"diagnose": "如何诊断",
+			"commandments": "五条戒律",
+			"order": "治疗顺序",
+			"medkit": "医疗箱建议"
+		}
+	},
+	"checklist": {
+		"progress": "已完成 {done}/{total}",
+		"reset": "重置",
+		"step": "第 {n} 步已完成",
+		"openCloseTitle": "手术的开始与结束步骤相同",
+		"openCloseDescription": "开始：镇痛、手术刀、止血钳、牵开器；结束：缝合线。下方步骤中与之重复的即为这些步骤。",
+		"openCloseLink": "开始&结束手术"
+	},
+	"feedback": {
+		"prompt": "内容有误或缺失？",
+		"report": "报告问题",
+		"edit": "在 GitHub 上编辑",
+		"issueEntry": "条目",
+		"issuePage": "页面",
+		"issueFile": "文件",
+		"issueWhat": "哪里有问题",
+		"issueSource": "来源（游戏版本、mod 版本、wiki 链接等）"
+	},
 	"search": {
 		"title": "搜索",
 		"button": "搜索…",

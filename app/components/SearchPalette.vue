@@ -49,6 +49,7 @@ const groups = computed<CommandPaletteGroup<CommandPaletteItem>[]>(() => {
 			label: t('search.browse'),
 			items: [
 				{ label: t('triage.title'), icon: 'i-lucide-heart-pulse', to: '/triage' },
+				{ label: t('reference.title'), icon: 'i-lucide-book-marked', to: '/reference' },
 				...ENTRY_TYPES.map(type => ({
 					label: t(`types.${type}`),
 					icon: TYPE_ICONS[type],

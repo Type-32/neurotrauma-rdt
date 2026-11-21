@@ -12,6 +12,7 @@ async function toggleLocale() {
 
 const navigationItems = computed<NavigationMenuItem[]>(() => [
 	{ label: t('triage.title'), to: '/triage', icon: 'i-lucide-heart-pulse' },
+	{ label: t('reference.title'), to: '/reference', icon: 'i-lucide-book-marked' },
 	...ENTRY_TYPES.map(type => ({ label: t(`types.${type}`), to: `/${type}` })),
 ]);
 </script>

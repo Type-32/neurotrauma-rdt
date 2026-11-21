@@ -43,6 +43,12 @@ const alsoIn = computed(() => page.value?.alsoIn?.length
 	? t('entry.alsoIn', { list: page.value.alsoIn.map(c => t(`categories.${c}`)).join(', ') })
 	: '')
 
+/** Every surgery opens and closes the same way; other procedures point to that one. */
+const OPEN_CLOSE = '/procedures/open-close-surgery'
+const showOpenClose = computed(() => type.value === 'procedures' && path.value !== OPEN_CLOSE)
+
+const { reportUrl, editUrl } = useContentFeedback(() => page.value ? { path: path.value, title: page.value.title } : null)
+
 useSeoMeta({ title: () => page.value?.title })
 </script>
 
@@ -55,13 +61,22 @@ useSeoMeta({ title: () => page.value?.title })
 			</div>
 		</UPageHeader>
 
+		<UAlert
+			v-if="showOpenClose"
+			:title="t('checklist.openCloseTitle')"
+			:description="t('checklist.openCloseDescription')"
+			icon="i-lucide-info"
+			color="info"
+			variant="subtle"
+			:actions="[{ label: t('checklist.openCloseLink'), to: OPEN_CLOSE, color: 'info', variant: 'outline' }]"
+			class="mt-8"
+		/>
+
 		<div v-if="sections.length" class="mt-8 grid gap-4 lg:grid-cols-2">
-			<EntrySection
-				v-for="section in sections"
-				:key="section.key"
-				:section-key="section.key"
-				:items="section.items"
-			/>
+			<template v-for="section in sections" :key="section.key">
+				<EntryChecklist v-if="section.key === 'steps'" :path="path" :items="section.items" class="lg:col-span-2" />
+				<EntrySection v-else :section-key="section.key" :items="section.items" />
+			</template>
 		</div>
 
 		<!-- Kept in the DOM when closed, so the browser's find and the link crawler still see it. -->
@@ -79,5 +94,15 @@ useSeoMeta({ title: () => page.value?.title })
 				<ContentRenderer :value="page" class="pt-6" />
 			</template>
 		</UCollapsible>
+
+		<footer class="mt-10 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-default pt-4 text-sm text-muted">
+			<span>{{ t('feedback.prompt') }}</span>
+			<ULink :to="reportUrl" target="_blank" class="inline-flex items-center gap-1 hover:text-highlighted">
+				<UIcon name="i-lucide-flag" class="size-4" />{{ t('feedback.report') }}
+			</ULink>
+			<ULink :to="editUrl" target="_blank" class="inline-flex items-center gap-1 hover:text-highlighted">
+				<UIcon name="i-lucide-pencil" class="size-4" />{{ t('feedback.edit') }}
+			</ULink>
+		</footer>
 	</UContainer>
 </template>

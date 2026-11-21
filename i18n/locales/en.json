@@ -46,6 +46,37 @@
 		"failed": "Couldn't load triage data. Check your connection and reload.",
 		"jumpToResults": "Results ({count})"
 	},
+	"reference": {
+		"title": "Quick reference",
+		"description": "How to diagnose, the five commandments, treatment order and medkit loadouts, on one page.",
+		"homeDescription": "Diagnosis, treatment order and medkit loadouts on one page.",
+		"jump": "Jump to section",
+		"openEntry": "Open as its own page",
+		"sections": {
+			"diagnose": "How to diagnose",
+			"commandments": "Five commandments",
+			"order": "Treatment order",
+			"medkit": "Medkit loadouts"
+		}
+	},
+	"checklist": {
+		"progress": "{done} of {total} done",
+		"reset": "Reset",
+		"step": "Step {n} done",
+		"openCloseTitle": "Surgeries open and close the same way",
+		"openCloseDescription": "Open with analgesia, scalpel, hemostat and retractors; close with sutures. Steps below that repeat these are the same ones.",
+		"openCloseLink": "Open & Close Surgery"
+	},
+	"feedback": {
+		"prompt": "Something wrong or missing?",
+		"report": "Report a problem",
+		"edit": "Edit on GitHub",
+		"issueEntry": "Entry",
+		"issuePage": "Page",
+		"issueFile": "File",
+		"issueWhat": "What's wrong",
+		"issueSource": "Source (game version, mod version, wiki link…)"
+	},
 	"search": {
 		"title": "Search",
 		"button": "Search…",

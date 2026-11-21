@@ -16,7 +16,8 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { parse } from 'yaml'
 import { schemas } from '../content.schemas'
-import { BASE_CONTENT_LOCALE, CONTENT_LOCALES, ENTRY_TYPES, isEntryType } from '../shared/utils/content'
+import { BASE_CONTENT_LOCALE, CONTENT_LOCALES, ENTRY_TYPES, isEntryType, REFERENCE_SECTIONS } from '../shared/utils/content'
+import { TREATMENT_ORDER } from '../shared/utils/triage'
 
 const ROOT = join(import.meta.dirname, '..', 'content')
 const problems: string[] = []
@@ -117,6 +118,14 @@ for (const locale of CONTENT_LOCALES) {
 			}
 		}
 	}
+}
+
+// Pages that name specific entries: the quick reference, and triage's treatment order.
+for (const { path } of REFERENCE_SECTIONS) {
+	if (!baseEntries.has(path.slice(1))) problems.push(`quick reference (shared/utils/content.ts) names missing entry ${path}`)
+}
+for (const id of Object.keys(TREATMENT_ORDER)) {
+	if (!baseEntries.has(id)) problems.push(`treatment order (shared/utils/triage.ts) names missing entry /${id}`)
 }
 
 if (warnings.length) {

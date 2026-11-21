@@ -15,17 +15,24 @@ const TYPE_ICONS: Record<EntryType, string> = {
 	<UContainer class="pb-16">
 		<UPageHeader :title="$rc.public.siteName as string" :description="t('site.intro')" />
 
-		<UPageCard
-			to="/triage"
-			icon="i-lucide-heart-pulse"
-			:title="t('triage.title')"
-			:description="t('triage.homeDescription')"
-			orientation="horizontal"
-			highlight
-			highlight-color="primary"
-			spotlight
-			class="mt-8"
-		/>
+		<div class="mt-8 grid gap-4 md:grid-cols-[2fr_1fr]">
+			<UPageCard
+				to="/triage"
+				icon="i-lucide-heart-pulse"
+				:title="t('triage.title')"
+				:description="t('triage.homeDescription')"
+				highlight
+				highlight-color="primary"
+				spotlight
+			/>
+			<UPageCard
+				to="/reference"
+				icon="i-lucide-book-marked"
+				:title="t('reference.title')"
+				:description="t('reference.homeDescription')"
+				spotlight
+			/>
+		</div>
 
 		<UPageGrid class="mt-4">
 			<UPageCard

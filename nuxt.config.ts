@@ -73,7 +73,7 @@ export default defineNuxtConfig({
 
 	nitro: {
 		prerender: {
-			routes: ['/', '/triage', '/search-index.json', '/triage-index.json',...ENTRY_TYPES.map(type => `/${type}`), ...contentRoutes()],
+			routes: ['/', '/triage', '/reference','/search-index.json', '/triage-index.json',...ENTRY_TYPES.map(type => `/${type}`), ...contentRoutes()],
 		},
 	},
 
@@ -86,6 +86,11 @@ export default defineNuxtConfig({
 		public: {
 			siteName: 'Neurotrauma RDT',
 			siteUrl: '',
+			// Where "Report a problem" and "Edit on GitHub" point.
+			repository: {
+				url: 'https://github.com/Type-32/neurotrauma-rdt',
+				branch: 'dev',
+			},
 		},
 	},
 

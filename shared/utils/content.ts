@@ -26,6 +26,17 @@ export const CATEGORIES = {
 	info: ['general', 'expansions', 'expansion-guides'],
 } as const satisfies Record<EntryType, readonly string[]>
 
+/**
+ * The info entries on the quick-reference page (/reference), in order.
+ * `check:content` fails if one is renamed or removed.
+ */
+export const REFERENCE_SECTIONS = [
+	{ id: 'diagnose', path: '/info/ruhezhenduan', icon: 'i-lucide-scan-eye' },
+	{ id: 'commandments', path: '/info/shenjingchuangshangde5tiaojiel', icon: 'i-lucide-list-checks' },
+	{ id: 'order', path: '/info/zhiliaoshunxu', icon: 'i-lucide-list-ordered' },
+	{ id: 'medkit', path: '/info/yiliaoxiangjianyi', icon: 'i-lucide-briefcase-medical' },
+] as const
+
 /** Every category across types (afflictions also list categories as `alsoIn`). */
 export const ALL_CATEGORIES = [...new Set(Object.values(CATEGORIES).flat())] as const
 
