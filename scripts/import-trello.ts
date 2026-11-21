@@ -2,7 +2,7 @@
  * Imports the Trello board export into Nuxt Content markdown files.
  *
  * Usage:
- *   bun scripts/import-trello.ts [--in data/trello/board.json] [--out content]
+ *   bun scripts/import-trello.ts [--in data/trello/board.json] [--out content/en]
  *                                [--report data/trello/import-report.md] [--force]
  *
  * Get the input from the board menu: Print, export and share → Export as JSON.
@@ -254,6 +254,7 @@ const report = {
 	slugCollisions: [] as string[],
 	duplicateNames: [] as string[],
 	unresolvedLinks: [] as Array<{ from: string, url: string, label: string }>,
+	brokenLinks: [] as Array<{ from: string, label: string, url: string }>,
 	ambiguousLinks: [] as Array<{ from: string, url: string, chosen: string, candidates: string[] }>,
 	headings: new Map<string, { count: number, mapped: SectionKey | null, example: string }>(),
 	unparsedThresholds: [] as Array<{ from: string, line: string }>,
@@ -336,6 +337,14 @@ class LinkIndex {
 		}
 	}
 
+	/** The one card a name refers to, or null when it names none or several. */
+	resolveName(name: string): Entry | null {
+		const text = name.replace(/[*_`]/g, '').trim()
+		if (!text) return null
+		const candidates = this.candidatesForName(text)
+		return candidates.length === 1 ? candidates[0]! : null
+	}
+
 	/** Short links still unknown after learning: the ones worth looking up on the original board. */
 	unknownShortLinks(cards: TrelloCard[]): string[] {
 		const unknown = new Set<string>()
@@ -412,8 +421,22 @@ function rewriteLinks(text: string, from: string, context: SectionKey | 'body', 
 			: label
 		return `[${pretty}](${url})`
 	})
-	return { text: out, refs }
+	// Links that are broken in Trello itself, with no address (e.g. `[血袋](%22%E2%80%8C%22 "‌")`):
+	// link them by their text when it names one card, otherwise keep just the text.
+	const repaired = out.replace(BROKEN_LINK, (_whole, label: string, url: string) => {
+		const target = index.resolveName(label)
+		if (target) {
+			refs.push(entryRef(target))
+			return `[${label}](/${entryRef(target)})`
+		}
+		report.brokenLinks.push({ from, label, url })
+		return label
+	})
+	return { text: repaired, refs }
 }
+
+/** Markdown links whose target is neither an http(s) URL nor a site path. */
+const BROKEN_LINK = /\[([^\]]*)\]\((?!https?:\/\/|\/)([^)]*)\)/g
 
 /**
  * The text of a list-like line: "- x" bullets, "**1.** x" or "1. x" numbered
@@ -678,6 +701,7 @@ function renderReport(board: TrelloBoard, entries: Entry[]): string {
 	section('Duplicate card names', report.duplicateNames)
 	section('Slug collisions', report.slugCollisions)
 	section('Unresolved links', report.unresolvedLinks.map(l => `**${l.from}**: "${l.label}" ${l.url}`))
+	section('Links broken in Trello with no matching card (kept as plain text)', report.brokenLinks.map(l => `**${l.from}**: "${l.label}" ${l.url}`))
 	section('Ambiguous links (first candidate chosen)', report.ambiguousLinks.map(l => `**${l.from}**: ${l.url} → \`${l.chosen}\` (candidates: ${l.candidates.join(', ')})`))
 	section('Afflictions with no recognised sections', report.noSections)
 	section('Thresholds not parsed in "causes"', report.unparsedThresholds.map(t => `**${t.from}**: ${t.line}`))
@@ -725,7 +749,7 @@ async function main() {
 	const { values } = parseArgs({
 		options: {
 			in: { type: 'string', default: 'data/trello/board.json' },
-			out: { type: 'string', default: 'content' },
+			out: { type: 'string', default: 'content/en' },
 			report: { type: 'string', default: 'data/trello/import-report.md' },
 			force: { type: 'boolean', default: false },
 			cache: { type: 'string', default: 'data/trello/original-cards.json' },

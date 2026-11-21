@@ -1,0 +1,20 @@
+{
+	"site": {
+		"description": "Barotrauma 神经创伤 mod 快速诊疗参考。"
+	},
+	"locale": {
+		"switchTo": "English",
+		"switchLabel": "切换到英文"
+	},
+	"page": {
+		"notFound": "页面不存在",
+		"notFoundDescription": "该条目不存在。"
+	},
+	"types": {
+		"afflictions": "苦痛",
+		"symptoms": "症状",
+		"items": "物品",
+		"procedures": "流程",
+		"info": "信息"
+	}
+}

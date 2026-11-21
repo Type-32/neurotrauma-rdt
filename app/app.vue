@@ -1,33 +1,26 @@
 <script setup lang="ts">
-useHead({
-	meta: [{ name: "viewport", content: "width=device-width, initial-scale=1" }],
-	link: [{ rel: "icon", href: "/favicon.ico" }],
-	htmlAttrs: {
-		lang: "en",
-	},
-});
-
 const $rc = useRuntimeConfig()
+const { t } = useI18n()
+const localeHead = useLocaleHead()
 
-const title = $rc.public.siteName as string || 'Neurotrauma RDT';
-const description = "Rapid diagnosis and treatment reference for the Barotrauma Neurotrauma mod.";
+const title = $rc.public.siteName as string || 'Neurotrauma RDT'
+
+useHead(() => ({
+	meta: [{ name: 'viewport', content: 'width=device-width, initial-scale=1' }],
+	link: [{ rel: 'icon', href: '/favicon.ico' }, ...(localeHead.value.link ?? [])],
+	htmlAttrs: localeHead.value.htmlAttrs,
+	titleTemplate: (titleChunk?: string) => titleChunk && !titleChunk.includes(title)
+		? `${titleChunk} - ${title}`
+		: title,
+}))
 
 useSeoMeta({
 	title,
-	description,
+	description: () => t('site.description'),
 	ogTitle: title,
-	ogDescription: description,
-	ogImage: "https://ui.nuxt.com/assets/templates/nuxt/starter-light.png",
-	twitterCard: "summary_large_image",
-});
-
-useHead({
-	titleTemplate: (titleChunk) => {
-		return !titleChunk?.includes(unref(title))
-			? `${titleChunk} - ${unref(title)}`
-			: unref(title);
-	},
-});
+	ogDescription: () => t('site.description'),
+	twitterCard: 'summary_large_image',
+})
 </script>
 
 <template>

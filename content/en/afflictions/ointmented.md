@@ -13,8 +13,10 @@ pinyin: yaogaotufu
 pinyinInitials: ygtf
 aliases: []
 causedBy:
-  - text: '[消毒喷雾剂](%22%E2%80%8C%22 "")'
-  - text: '[抗生素软膏](%22%E2%80%8C%22 "")'
+  - text: 消毒喷雾剂
+  - text: "[抗生素软膏](/items/antibiotic-ointment)"
+    refs:
+      - items/antibiotic-ointment
 causes:
   - text: 被动地治愈和防止[伤口感染](/afflictions/infected-wounds)
     refs:
@@ -32,8 +34,8 @@ Ointmented will help protect [Wounds](https://trello.com/c/i23isLFt/110-wounds) 
 
 ## 由以下原因造成：
 
-- [消毒喷雾剂](%22%E2%80%8C%22 "")
-- [抗生素软膏](%22%E2%80%8C%22 "")
+- 消毒喷雾剂
+- [抗生素软膏](/items/antibiotic-ointment)
 
 ## 导致：
 

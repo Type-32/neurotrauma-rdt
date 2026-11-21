@@ -60,7 +60,7 @@ trello:
   url: https://trello.com/c/Bch6Qp60/6-%E5%91%BC%E5%90%B8%E5%81%9C%E6%AD%A2-respiratory-arrest
 ---
 
-呼吸停止将迅速导致[缺氧](/afflictions/oxygen-low) ，使病人窒息，必须迅速处理。靠近[手术台](/items/surgery-table)或穿戴[自动脉冲](%22%E2%80%8C%22 "")将防止呼吸停止产生的负面影响。
+呼吸停止将迅速导致[缺氧](/afflictions/oxygen-low) ，使病人窒息，必须迅速处理。靠近[手术台](/items/surgery-table)或穿戴自动脉冲将防止呼吸停止产生的负面影响。
 Respiratory arrest will quickly build up oxygen low and suffocate the victim, and must be dealt with swiftly. Being near a Surgery Table will prevent the negative effects of respiratory arrest from taking place.
 
 ---

@@ -1,0 +1,20 @@
+{
+	"site": {
+		"description": "Rapid diagnosis and treatment reference for the Barotrauma Neurotrauma mod."
+	},
+	"locale": {
+		"switchTo": "中文",
+		"switchLabel": "Switch to Chinese"
+	},
+	"page": {
+		"notFound": "Page not found",
+		"notFoundDescription": "This entry doesn't exist."
+	},
+	"types": {
+		"afflictions": "Afflictions",
+		"symptoms": "Symptoms",
+		"items": "Items",
+		"procedures": "Procedures",
+		"info": "Information"
+	}
+}

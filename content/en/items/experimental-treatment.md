@@ -34,7 +34,7 @@ trello:
 - [药膏涂敷](/afflictions/ointmented) （强度为20-100%的随机值）
 - [战斗兴奋剂](https://barotraumagame.com/wiki/Combat_Stimulant_(Affliction) "")（强度为30-100%的随机值）
 - [压力免疫](https://barotraumagame.com/wiki/Pressure_Stabilized)（强度为200-400%的随机值）
-- 一次治愈（治愈20-100%的[伤口](%22%E2%80%8C%22 ""), 原版器官损伤，[神经创伤](%22%E2%80%8C%22 "")和[失血](%22%E2%80%8C%22 "")，以及完全治愈[败血症](%22%E2%80%8C%22 "")）
+- 一次治愈（治愈20-100%的伤口, 原版器官损伤，[神经创伤](/afflictions/neurotrauma)和[失血](/afflictions/blood-loss)，以及完全治愈[败血症](/afflictions/sepsis)）
 
 ---
 
@@ -42,5 +42,5 @@ trello:
 
 ---
 
-- 任何[伤口](%22%E2%80%8C%22 "") (随机30-80%出血，随机5-20%其他伤口)
+- 任何伤口 (随机30-80%出血，随机5-20%其他伤口)
 - 晕眩2-15秒

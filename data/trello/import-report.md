@@ -1,6 +1,6 @@
 # Trello import report
 
-Board: Neurotrama Guide CN. Generated 2026-11-21T20:20:15.793Z.
+Board: Neurotrama Guide CN. Generated 2026-11-21T20:33:38.086Z.
 
 ## Entries written
 
@@ -81,6 +81,14 @@ None.
 - **外科医生制服 Surgeon Clothes**: "钝器伤" https://trello.com/c/H8XCHAS6
 - **外科医生制服 Surgeon Clothes**: "撕裂伤" https://trello.com/c/H8XCHAS6
 - **外科医生制服 Surgeon Clothes**: "咬伤" https://trello.com/c/H8XCHAS6
+
+## Links broken in Trello with no matching card (kept as plain text) (5)
+
+- **治疗顺序**: "伤口" %22%E2%80%8C%22 "‌"
+- **呼吸停止 Respiratory Arrest**: "自动脉冲" %22%E2%80%8C%22 "‌"
+- **药膏涂敷 Ointmented**: "消毒喷雾剂" %22%E2%80%8C%22 "‌"
+- **实验性药物 Experimental Treatment**: "伤口" %22%E2%80%8C%22 "‌"
+- **实验性药物 Experimental Treatment**: "伤口" %22%E2%80%8C%22 "‌"
 
 ## Ambiguous links (first candidate chosen) (0)
 

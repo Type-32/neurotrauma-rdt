@@ -38,7 +38,9 @@ causedBy:
     refs:
       - afflictions/sepsis
     threshold: 3
-  - text: '[低血氧](%22%E2%80%8C%22 "")（4%及以上，超过心脏自愈速度）'
+  - text: "[低血氧](/afflictions/hypoxemia)（4%及以上，超过心脏自愈速度）"
+    refs:
+      - afflictions/hypoxemia
     threshold: 4
 causes:
   - text: "[咳嗽](/symptoms/cough) (达到80%及以上)"
@@ -84,7 +86,7 @@ Heart damage is not lethal, as long as it is below 100%. The heart will heal at 
 - [甘露醇](/items/mannitol)
 - [辐射病](/afflictions/radiation-sickness) (29%及以上，超过心脏自愈速度)
 - [败血症](/afflictions/sepsis)（3%及以上，超过心脏自愈速度）
-- [低血氧](%22%E2%80%8C%22 "")（4%及以上，超过心脏自愈速度）
+- [低血氧](/afflictions/hypoxemia)（4%及以上，超过心脏自愈速度）
 
 ## 导致：
 

@@ -66,7 +66,9 @@ treatment:
     refs:
       - afflictions/alkalosis
       - symptoms/vomiting
-  - text: 输入中性[血袋](%22%E2%80%8C%22 "")（除非病人失血为0%）
+  - text: 输入中性[血袋](/items/blood-packs)（除非病人失血为0%）
+    refs:
+      - items/blood-packs
 trello:
   shortLink: d3aH7uVj
   url: https://trello.com/c/d3aH7uVj/52-%E9%85%B8%E4%B8%AD%E6%AF%92-acidosis
@@ -100,4 +102,4 @@ Acidosis is usually ignorable, and minimal action is required at low to medium s
 
 - 治疗病因
 - 诱发[碱中毒](/afflictions/alkalosis)（最好是[呕吐](/symptoms/vomiting)）
-- 输入中性[血袋](%22%E2%80%8C%22 "")（除非病人失血为0%）
+- 输入中性[血袋](/items/blood-packs)（除非病人失血为0%）

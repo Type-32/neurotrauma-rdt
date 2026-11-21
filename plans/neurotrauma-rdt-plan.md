@@ -7,7 +7,7 @@ A rapid diagnosis and treatment reference for the Neurotrauma mod for Barotrauma
 - Find any affliction, item or procedure in a few keystrokes.
 - Go from observed symptoms to a ranked list of likely afflictions.
 - Show first aid and full treatment on one screen, without clicking through linked cards.
-- Keep the content bilingual (Chinese and English) exactly as it is on the board. No translation work.
+- Keep the content bilingual (Chinese and English) exactly as it is on the board. No translation work is required, but entries can get separate Chinese versions later.
 
 ## Decisions made
 
@@ -19,6 +19,31 @@ A rapid diagnosis and treatment reference for the Neurotrauma mod for Barotrauma
 | Search | Fuse.js through Nuxt UI's `UCommandPalette`. Fuse is already installed as a dependency of `@nuxt/ui`. |
 | Source of truth | The site, after a one-time Trello import. Re-importing would overwrite hand fixes. |
 | Editing | Markdown edited in git (GitHub web editor or pull requests). Each push rebuilds the site. |
+| Locales | English (`en`, default) and Chinese (`zh`), with `@nuxtjs/i18n`. See "Localization". |
+| Locale in URLs | None (`no_prefix`). One URL per entry in every language, so links shared mid-round open as sent. The chosen locale is kept in a cookie. |
+| Localized content | Separate folders and collections per locale (`content/en/`, `content/zh/`), following the [Nuxt Content i18n integration](https://content.nuxt.com/docs/integrations/i18n). `zh` holds overrides; anything missing falls back to `en`. |
+
+## Localization
+
+**Routes.** `strategy: 'no_prefix'`. `/afflictions/pneumothorax` is the same page whichever language the reader uses. The locale is detected from the browser on the first visit and remembered in the `i18n_locale` cookie. The header has a 中文 / English toggle.
+
+**Content.** Each entry type has one collection per locale, named `<type>_<locale>`:
+
+| Folder | Collection | Route |
+|---|---|---|
+| `content/en/afflictions/pneumothorax.md` | `afflictions_en` | `/afflictions/pneumothorax` |
+| `content/zh/afflictions/pneumothorax.md` (optional) | `afflictions_zh` | the same route |
+
+- `content/en/` is the complete set as imported from Trello. Its bodies are bilingual, because the board mixes Chinese and English too inconsistently to split automatically. The importer writes here.
+- `content/zh/` starts empty (only a README). Add a file at the same relative path to give an entry a Chinese-only version.
+- The catch-all page `app/pages/[...slug].vue` queries the current locale's collection and falls back to `en`, as in the Nuxt Content i18n docs. The first path segment picks the entry type.
+- Every entry is prerendered once, from the list of files in `content/en/`.
+
+**Interface text.** Messages live in `i18n/locales/en.json` and `i18n/locales/zh.json`. Nuxt UI 4.13 follows the i18n locale on its own, so its components' built-in text (search placeholder, buttons) switches too. `@nuxt/content` is registered after `@nuxt/ui` so Nuxt UI's prose components render the markdown.
+
+**Known limitation.** Static pages can only be prerendered in the default locale when URLs carry no locale. A reader whose cookie says `zh` gets the English HTML first, and the page switches to Chinese while it loads: a brief flash, plus a hydration-mismatch warning in the console. The content shown afterwards is correct. Fixing this needs either locale prefixes in URLs or server rendering (Phase 8).
+
+**Later, if wanted:** split entries into Chinese and English versions one at a time, moving the English half to `content/en/` and the Chinese half to `content/zh/`. No route changes are needed for that.
 
 ## Open questions
 
@@ -28,7 +53,8 @@ A rapid diagnosis and treatment reference for the Neurotrauma mod for Barotrauma
 
 ## What the Trello board contains
 
-- 18 lists, roughly 150 to 200 cards. The Symptoms and Item lists were cut off at 25 cards by the reading tool, so the real count is higher.
+- 18 lists and 229 cards, per the JSON export.
+- The board is a copy of the original guide. Links inside cards point at the original board's card IDs, so they have to be matched by name. The original board is public; this one is not.
 - Lists group cards by body part (Head/Brain, Lungs, Heart, Torso, Extremities, Bones, Any bodypart, Blood), by type (Information, Symptoms, Item, Surgery, Procedures) and by expansion (Cybernetics, Surgery Plus, Eyes, expansion guides).
 - Each card is a markdown article, Chinese first and English second, usually split by a `---` line.
 - Affliction cards follow a template with the headings 由以下原因造成 (caused by), 导致 (leads to, with percentage thresholds), 治疗措施 (treatment) and 急救 (first aid).
@@ -56,34 +82,41 @@ The repo is a Nuxt 4 starter with Logto login, user management, a Postgres datab
 
 ## Phase 2: Import Trello
 
-1. Export the full board as JSON (Trello's own export, or the API). The MCP reading tool caps lists at 25 cards, so it cannot be the source.
-2. Write `scripts/import-trello.ts`. For each card it:
-   - maps the list to a `category` and the labels to tags;
-   - splits the description into Chinese and English halves;
-   - parses the template headings into `causedBy`, `causes` (with thresholds), `treatment` and `firstAid`;
-   - rewrites Trello card links to internal slugs, using a shortLink-to-slug map;
-   - downloads attachments and images into `public/`.
-3. Write the output to `content/{afflictions,symptoms,items,procedures,info}/*.md`: structured fields in the frontmatter, bilingual prose in the body.
-4. Produce an "unparsed" report that lists every card that did not fit the template, every link that could not be resolved, and every threshold that could not be read.
+**Status:** importer written and run. 224 entries are in `content/en/`. The report's remaining items still need working through by hand.
 
-**Done when:** every card on the board has a file, and the unparsed report has been worked through by hand.
+1. Export the full board as JSON to `data/trello/board.json` (gitignored, since it contains member data).
+2. Run `bun run import:trello` (`scripts/import-trello.ts`). For each card it:
+   - maps the list to an entry type and `category`, and the labels to tags;
+   - keeps the description whole, because Chinese and English aren't separated consistently; only the names are split into `nameZh` and `nameEn`;
+   - parses headings into `causedBy`, `causes`, `treatment`, `firstAid`, `treats`, `onSuccess`, `onFailure`, `effects` and `steps`, plus `threshold`, `amount` and `skill` values;
+   - rewrites Trello card links to internal paths, matched by the name in the URL or the link text. Remaining IDs are looked up on the public original board, and the results are cached in `data/trello/original-cards.json`;
+   - merges cards that Trello shows on two lists into one entry with `alsoIn`.
+3. The output goes to `content/en/<type>/<slug>.md`. The importer refuses to overwrite existing content unless given `--force`.
+4. The report at `data/trello/import-report.md` lists unresolved and broken links, unrecognised headings, unparsed thresholds, merged duplicates and the images still hosted on Trello.
+
+**Not done:** images are still linked to Trello, because downloading them from a private board needs an API key.
+
+**Done when:** every card on the board has a file, and the report has been worked through by hand.
 
 ## Phase 3: Content collections and detail pages
 
-Define the collections in `content.config.ts` with zod schemas:
+`content.config.ts` already defines one collection per type and locale (see "Localization") with one loose schema shared by all types. This phase tightens it into a schema per type, matching what the importer writes:
 
 ```ts
-affliction: { id, nameZh, nameEn, aliases[], pinyin, category, source, lethal, scannerVisible,
-              causedBy[], causes[{ id, threshold }], treatment[], firstAid[], items[] }
-symptom:    { id, nameZh, nameEn, aliases[], pinyin }
-item:       { id, nameZh, nameEn, aliases[], pinyin, source, effects[], duration, skill, treats[] }
-procedure:  { id, nameZh, nameEn, source, steps[{ action, item, note }] }
-info:       { id, title }
+// every type
+{ title, nameZh?, nameEn?, category, alsoIn?, source, order, tags[], pinyin?, pinyinInitials?, aliases[], trello? }
+
+// section items: { text, refs?: ['afflictions/hypoxemia'], threshold?, amount? }
+affliction: { lethal?, causedBy[], causes[], treatment[], firstAid[] }
+symptom:    { causedBy[], treatment[] }
+item:       { skill?: { medical?, mechanical? }, onSuccess[], onFailure[], treats[] }
+procedure:  { steps[] }
+info:       {}
 ```
 
 - `source` is the base mod or an expansion (Cybernetics, Surgery Plus, Eyes, Pharmacy, Infections), so expansion content can be filtered out.
 - The symptom-to-affliction index is computed at build time from `causes`. It is not stored.
-- One detail page per type, plus a category index page.
+- The catch-all page already renders every entry (title and body). This phase adds per-type layouts using the structured fields, plus a category index page.
 
 **Done when:** every imported entry renders at its own URL and internal links resolve.
 
@@ -141,5 +174,6 @@ Moving from `nuxt generate` to a hybrid deployment is a config change, not a rew
 
 - **Inconsistent card text.** The cards are only semi-structured. The unparsed report in Phase 2 is how the exceptions get caught.
 - **Thresholds.** Values such as "达到40%及以上" sit in free text and are read by pattern matching, so they need a manual check.
-- **Links to the old English board.** These cannot be mapped by shortLink and need matching by card name.
+- **Links to the original board.** Matched by name; 42 still point at cards that only exist there (mainly 伤口 Wounds and several pill cards).
 - **Missing content.** The Eyes Expansion list is empty, and Cybernetics has no images.
+- **Locale flash.** With no locale in URLs, `zh` readers briefly see English UI on a full page load (see "Localization").

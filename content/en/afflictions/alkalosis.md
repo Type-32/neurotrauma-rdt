@@ -26,7 +26,9 @@ treatment:
   - text: 诱发[酸中毒](/afflictions/acidosis)（最好是用生理盐水）
     refs:
       - afflictions/acidosis
-  - text: 输入中性[血袋]( "")（除非病人失血为0%）
+  - text: 输入中性[血袋](/items/blood-packs)（除非病人失血为0%）
+    refs:
+      - items/blood-packs
 trello:
   shortLink: YQrTDPtK
   url: https://trello.com/c/YQrTDPtK/54-%E7%A2%B1%E4%B8%AD%E6%AF%92-alkalosis
@@ -52,4 +54,4 @@ Alkalosis is usually ignorable, and minimal action is required at low to medium 
 
 - 治疗病因
 - 诱发[酸中毒](/afflictions/acidosis)（最好是用生理盐水）
-- 输入中性[血袋]( "")（除非病人失血为0%）
+- 输入中性[血袋](/items/blood-packs)（除非病人失血为0%）
