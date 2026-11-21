@@ -4,5 +4,6 @@
 		<UMain>
 			<slot />
 		</UMain>
+		<SearchPalette />
 	</div>
 </template>

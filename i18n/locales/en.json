@@ -7,6 +7,17 @@
 		"switchTo": "中文",
 		"switchLabel": "Switch to Chinese"
 	},
+	"search": {
+		"title": "Search",
+		"button": "Search…",
+		"hint": "Search by English or Chinese name, pinyin or pinyin initials.",
+		"placeholder": "Name, 中文, pinyin or initials (e.g. qx)…",
+		"browse": "Browse",
+		"results": "Results",
+		"noResults": "No matching entries.",
+		"loading": "Loading search…",
+		"failed": "Couldn't load search. Check your connection and reopen."
+	},
 	"page": {
 		"notFound": "Page not found",
 		"notFoundDescription": "This entry doesn't exist."

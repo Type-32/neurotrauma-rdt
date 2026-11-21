@@ -10,7 +10,8 @@
     "postinstall": "nuxt prepare",
     "typecheck": "nuxt typecheck",
     "import:trello": "bun scripts/import-trello.ts",
-    "check:content": "bun scripts/check-content.ts"
+    "check:content": "bun scripts/check-content.ts",
+    "test:search": "bun scripts/test-search.ts"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.157",
@@ -24,6 +25,7 @@
     "@type32/nuxt-cs-utils": "2.2.2",
     "@type32/nuxt-ui-extras": "^0.1.2",
     "@vueuse/nuxt": "15.0.0",
+    "fuse.js": "^7.5.0",
     "motion-v": "^2.13.0",
     "nuxt": "^4.6.4",
     "tailwindcss": "^4.3.5",

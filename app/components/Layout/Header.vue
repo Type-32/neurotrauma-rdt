@@ -3,6 +3,7 @@ import type { NavigationMenuItem } from "@nuxt/ui";
 import Logo from "~/components/Logo.vue";
 const $rc = useRuntimeConfig();
 const { locale, setLocale, t } = useI18n();
+const { open: searchOpen } = useSearch();
 
 /** Toggles between en and zh, staying on the same page. */
 async function toggleLocale() {
@@ -29,6 +30,20 @@ const navigationItems = computed<NavigationMenuItem[]>(() =>
 			orientation="horizontal"
 		/>
 		<template #right>
+			<UButton
+				icon="i-lucide-search"
+				color="neutral"
+				variant="subtle"
+				:aria-label="t('search.title')"
+				class="lg:min-w-48"
+				@click="searchOpen = true"
+			>
+				<span class="hidden text-muted lg:inline">{{ t('search.button') }}</span>
+				<span class="ms-auto hidden gap-0.5 lg:flex">
+					<UKbd value="meta" />
+					<UKbd value="K" />
+				</span>
+			</UButton>
 			<UButton
 				:label="t('locale.switchTo')"
 				:aria-label="t('locale.switchLabel')"
