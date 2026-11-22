@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Picking what you see: one input, a source switch (symptoms, health
+ * Picking what you see: one input, a source switch (all, symptoms, health
  * interface, scanner, analyzer) and the findings as plain words, most telling
  * first. Typing searches every source (English, 中文, pinyin, initials).
  * Each word carries a layoutId, so a picked word flies to the patient strip.
@@ -20,8 +20,11 @@ const { t, locale } = useI18n()
 
 const SOURCES = ['symptoms', 'interface', 'scanner', 'analyzer'] as const
 type Source = typeof SOURCES[number]
+/** "All" first and by default, so nothing seems missing before the reader finds the other tabs. */
+const TABS = ['all', ...SOURCES] as const
+type Tab = typeof TABS[number]
 
-const source = ref<Source>('symptoms')
+const source = ref<Tab>('all')
 const query = ref('')
 const expanded = ref(false)
 
@@ -31,7 +34,10 @@ function sourceOf(entry: TriageEntry): Source {
 
 const available = computed(() => props.entries.filter(entry => !props.exclude.includes(entry.id)))
 
-const counts = computed(() => Object.fromEntries(SOURCES.map(id => [id, available.value.filter(entry => sourceOf(entry) === id).length])) as Record<Source, number>)
+const counts = computed(() => ({
+	all: available.value.length,
+	...Object.fromEntries(SOURCES.map(id => [id, available.value.filter(entry => sourceOf(entry) === id).length])),
+}) as Record<Tab, number>)
 
 function normalize(text: string | undefined) {
 	return (text ?? '').toLowerCase().replace(/[\s'’-]+/g, '')
@@ -57,12 +63,14 @@ const words = computed(() => {
 			.sort((a, b) => a.rank - b.rank || props.weightOf(b.entry.id) - props.weightOf(a.entry.id))
 			.map(match => match.entry)
 	}
-	return available.value
-		.filter(entry => sourceOf(entry) === source.value)
-		.sort(source.value === 'symptoms'
+	const inSource = (id: Source) => available.value
+		.filter(entry => sourceOf(entry) === id)
+		.sort(id === 'symptoms'
 			// Common symptoms first: they're the ones a medic sees most.
 			? (a, b) => props.weightOf(b.id) - props.weightOf(a.id) || a.order - b.order
 			: (a, b) => lethalRank(a) - lethalRank(b) || categoryRank(a) - categoryRank(b) || a.order - b.order)
+	// All: each source in turn, symptoms first.
+	return source.value === 'all' ? SOURCES.flatMap(inSource) : inSource(source.value)
 })
 
 const limit = computed(() => props.compact ? 12 : 18)
@@ -104,7 +112,7 @@ function onEnter() {
 		<!-- Source switch: hidden while searching, since search covers every source. -->
 		<div v-if="!query" class="mt-5 flex flex-wrap gap-1" role="tablist">
 			<button
-				v-for="id in SOURCES"
+				v-for="id in TABS"
 				:key="id"
 				type="button"
 				role="tab"
@@ -151,8 +159,8 @@ function onEnter() {
 				</Motion>
 			</li>
 			<li v-if="hidden > 0 || expanded">
-				<button type="button" class="micro text-dimmed transition-colors hover:text-highlighted" @click="expanded = !expanded">
-					{{ expanded ? t('triage.fewer') : t('triage.more', { count: hidden }) }}
+				<button type="button" class="text-muted underline decoration-dotted underline-offset-[6px] transition-colors hover:text-highlighted" :class="compact ? 'text-lg' : 'text-xl sm:text-2xl'" @click="expanded = !expanded">
+					{{ expanded ? t('triage.fewer') : `+ ${t('triage.more', { count: hidden })}` }}
 				</button>
 			</li>
 		</ul>

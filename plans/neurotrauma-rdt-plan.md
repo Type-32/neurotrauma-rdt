@@ -416,6 +416,29 @@ The page becomes a conversation with one question on screen, not a wall of optio
 - Static generation stays; only the PWA goes.
 - The body schematic waits.
 
+## Phase 13 (later): AI assist
+
+**Status:** idea, not scheduled. Nothing here should change how the site works without it: the deterministic triage and search stay the source of truth, and AI only fills their inputs or explains their outputs.
+
+**What it would do**
+1. **Describe the patient in words.** "He's pale, throwing up, can barely breathe" → Claude maps it to finding ids from the triage index (seen and ruled out), and they land on the patient strip exactly as if tapped. The ranking, questions and treatment still come from `shared/utils/triage.ts`, so the answer is always the guide's, never invented. Works in English or Chinese.
+2. **Ask the guide.** A question in the dock ("what do I do about a heart attack without a defibrillator?") → an answer grounded in the guide's entries, citing and linking the entries it used. Retrieval reuses the search index to pick the relevant entries; their text goes into the prompt.
+
+**How**
+- **Needs a server.** The site is static today. Add one server route per feature (`server/api/ai/*.post.ts`) and deploy on Vercel with Nitro's `vercel` preset for those routes, keeping every page prerendered (hybrid: route rules prerender pages, the AI routes run as functions). The API key lives only in Vercel's environment (`ANTHROPIC_API_KEY`), never in the client.
+- **SDK.** Server-side, the official Anthropic TypeScript SDK (`@anthropic-ai/sdk`). It supports the features below directly. The Vercel AI SDK (`ai` + `@ai-sdk/anthropic`, with `@ai-sdk/vue` for streaming UI) is the alternative you suggested; decide when building, mainly on whether its streaming helpers are worth an extra layer.
+- **Model.** `claude-opus-5-5` for both, with `output_config.effort` set per route: `low` for mapping (a short, structured task), `medium` for answering. A cheaper model (`claude-haiku-5-5`) is an option for mapping if cost matters; that's your call after seeing real usage.
+- **Mapping uses structured outputs, not forced tool calls.** Forced `tool_choice` returns a 400 on current models. Instead, `output_config.format` with a JSON schema whose ids are an enum of the triage index's observable finding ids, split into `seen` and `ruledOut`. The response then can't contain an id that doesn't exist. Validate it again server-side anyway.
+- **Answers stream** (`client.messages.stream`), so text appears as it's written, and cite entries as links.
+- **Refusals.** Check `stop_reason` before reading output. Enable server-side refusal fallbacks (`fallbacks: "default"`, beta `server-side-fallback-2026-07-01`) so a declined request is retried on another model in the same call.
+- **Caching.** The system prompt and the finding list are the same on every request; mark them with `cache_control` so repeat requests are cheaper.
+
+**Risks and limits**
+- **Cost and abuse with no accounts.** Anyone can hit an anonymous endpoint. Rate-limit per IP (Vercel KV or Upstash), cap input length and `max_tokens`, and add a daily spend ceiling that switches the feature off.
+- **Not offline.** The rest of the site works from the CDN; AI needs a connection. Hide the AI entry points when offline or when the route errors.
+- **Wrong mappings.** The medic sees every mapped finding on the strip before anything else happens and can remove it, so a bad mapping is visible, not silent.
+- **Evaluation.** Before shipping, a small eval: ~50 written patient descriptions (both languages) with expected findings, scored for precision and recall of the mapped ids.
+
 ## Phase 8 (optional): Server features
 
 Add these only if wanted. Content pages stay prerendered and search stays in the browser. None of them needs user accounts.

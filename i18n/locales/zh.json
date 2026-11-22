@@ -14,6 +14,7 @@
 		"description": "选出患者身上看到的情况，可能的病因和处置会随之出现。",
 		"filter": "输入症状、English 或拼音",
 		"sources": {
+			"all": "全部",
 			"symptoms": "症状",
 			"interface": "健康界面",
 			"scanner": "扫描仪",

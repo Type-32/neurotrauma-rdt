@@ -14,6 +14,7 @@
 		"description": "Pick what you see on the patient. The likely cause and what to do appear as you go.",
 		"filter": "Type a symptom, 中文 or pinyin",
 		"sources": {
+			"all": "All",
 			"symptoms": "Symptoms",
 			"interface": "Health interface",
 			"scanner": "Scanner",

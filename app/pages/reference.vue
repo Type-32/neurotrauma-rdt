@@ -40,7 +40,7 @@ useSeoMeta({ title: () => t('reference.title') })
 		</MicroPageHead>
 
 		<nav
-			class="sticky top-(--ui-header-height) z-10 -mx-4 flex gap-1 overflow-x-auto border-b border-default bg-default/90 px-4 py-2 backdrop-blur sm:-mx-6 sm:px-6"
+			class="sticky top-0 z-10 -mx-4 flex gap-1 overflow-x-auto border-b border-default bg-default/90 px-4 py-2 backdrop-blur sm:-mx-6 sm:px-6"
 			:aria-label="t('reference.jump')"
 		>
 			<a
