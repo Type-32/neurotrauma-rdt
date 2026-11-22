@@ -73,7 +73,8 @@
 			"commandments": "五条戒律",
 			"order": "治疗顺序",
 			"medkit": "医疗箱建议"
-		}
+		},
+		"keys": "← → 切换"
 	},
 	"checklist": {
 		"progress": "已完成 {done}/{total}",
@@ -225,5 +226,12 @@
 		"close": "关闭",
 		"home": "Neurotrauma RDT 首页",
 		"searchShort": "搜索…"
+	},
+	"database": {
+		"title": "数据库",
+		"description": "指南中的全部条目。输入文字即可筛选。",
+		"filter": "按名称、English 或拼音筛选",
+		"noMatches": "这里没有与「{query}」匹配的条目。",
+		"elsewhere": "{type}中有 {count} 项"
 	}
 }

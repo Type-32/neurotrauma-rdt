@@ -10,6 +10,8 @@ export interface Entry {
 	title: string
 	nameZh: string
 	nameEn?: string
+	pinyin?: string
+	pinyinInitials?: string
 	category: string
 	alsoIn?: string[]
 	source: Source
@@ -22,7 +24,7 @@ export interface Entry {
 }
 
 /** The fields an index list needs, so lists don't load every entry's body. */
-const LIST_FIELDS = ['path', 'title', 'nameZh', 'nameEn', 'category', 'order', 'tags', 'source'] as const
+const LIST_FIELDS = ['path', 'title', 'nameZh', 'nameEn', 'pinyin', 'pinyinInitials', 'category', 'order', 'tags', 'source'] as const
 export type EntrySummary = Pick<Entry, typeof LIST_FIELDS[number]>
 
 /**

@@ -73,7 +73,8 @@
 			"commandments": "Five commandments",
 			"order": "Treatment order",
 			"medkit": "Medkit loadouts"
-		}
+		},
+		"keys": "← → to switch"
 	},
 	"checklist": {
 		"progress": "{done} of {total} done",
@@ -225,5 +226,12 @@
 		"close": "Close",
 		"home": "Neurotrauma RDT, home",
 		"searchShort": "Search…"
+	},
+	"database": {
+		"title": "Database",
+		"description": "Every entry in the guide. Type to narrow it down.",
+		"filter": "Filter by name, 中文 or pinyin",
+		"noMatches": "Nothing here matches “{query}”.",
+		"elsewhere": "{count} in {type}"
 	}
 }

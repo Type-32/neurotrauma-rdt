@@ -324,7 +324,7 @@ Original plan:
 
 ## Phase 12: Rebuild the interface
 
-**Status:** 12.1–12.4 built; 12.5 and 12.6 next. Replaces the look built in the art-direction work and Phase 9, and removes Phase 7 (PWA). Phase 10 (body schematic) is on hold until this is done.
+**Status:** 12.1–12.5 built; 12.6 (clean-up) next. Replaces the look built in the art-direction work and Phase 9, and removes Phase 7 (PWA). Phase 10 (body schematic) is on hold until this is done.
 
 **Built so far, and where it differs from the plan below:**
 - PWA removed; `public/sw.js` is the kill switch (checked: an old installed worker unregistered itself and its caches were cleared).
@@ -337,6 +337,10 @@ Original plan:
 - 12.4 entry pages (`app/pages/[...slug].vue`): one reading column. Name, lethality word, second-language name, then one quiet line of details (where it shows, skill checks, expansion, flags, code). The sections a medic came for lead, per type (`LEAD` in the page): first aid and treatment everywhere, plus what causes a symptom, what an item treats and its effects, and a procedure's steps. Lead lists over four items drop a size. Everything else folds below (`UCollapsible`, kept in the DOM for find). Info entries with no sections show their guide text as the page.
 - Procedure steps: a numbered list plus "Step through", which opens the same full-screen step-through as triage (`app/components/StepThrough.vue`; triage's `Treatment.vue` now wraps it). The session-storage checklist and the status panel are gone.
 - Page entrances use a CSS animation (`.rise` in `main.css`), not motion-v, so the prerendered page is visible even before or without JavaScript. motion-v is for interaction.
+- Triage picker opens on an "All" tab (every finding, symptoms first); the source tabs narrow it. "+ N more" is full-size, not a micro-label.
+- 12.5 database (`app/pages/[type]/index.vue`): the type routes stay (`/afflictions`, `/symptoms`…, all prerendered) but share one page key, so the type switch slides its marker instead of reloading and the filter carries over. Names only in a 1–4 column grid by category, lethal dot, second-language name as tooltip. The filter matches English, 中文, pinyin and initials, the tab counts follow it, and an empty result points at the types that do match.
+- 12.5 reference (`app/pages/reference.vue`): one card at a time; large numbered tabs or ← → switch, the card slides in the direction of travel, and the hash (`/reference#order`) selects the card. Prose at 18 px.
+- The dock search replaced the modal palette in 12.2.
 
 **Why:** the current pages give everything the same weight. Every panel has brackets, a number, a label and a dashed rule; triage shows 100+ boxed two-line chips at once; the answer (what to do for the patient) is the smallest thing on screen. Nothing responds when touched beyond a colour change. The palettes and fonts stay. The layout, the density and the motion are rebuilt.
 
