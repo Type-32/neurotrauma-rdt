@@ -324,7 +324,16 @@ Original plan:
 
 ## Phase 12: Rebuild the interface
 
-**Status:** planned. Replaces the look built in the art-direction work and Phase 9, and removes Phase 7 (PWA). Phase 10 (body schematic) is on hold until this is done.
+**Status:** 12.1–12.3 built, waiting for review before 12.4. Replaces the look built in the art-direction work and Phase 9, and removes Phase 7 (PWA). Phase 10 (body schematic) is on hold until this is done.
+
+**Built so far, and where it differs from the plan below:**
+- PWA removed; `public/sw.js` is the kill switch (checked: an old installed worker unregistered itself and its caches were cleared).
+- Dock (`app/components/App/Dock.vue`) and corner controls (`App/Corner.vue`) replace the header and status bar. Search results grow the dock upward in place; the modal palette is gone. Database points at `/afflictions` until 12.5.
+- Triage is the home page (`app/pages/index.vue`); `/triage` forwards there with its query. Components: `Triage/Picker`, `Strip`, `Answer`, `Question`, `Orbit`, `Treatment`. Motion presets: `app/utils/motion.ts`.
+- `evaluate(selected, ruledOut)`: ruled-out findings count against causes (score and ranking), are excluded from suggestions, and are in the URL as `&x=`. `test:triage` checks that ruling out a telling finding demotes the leader (19/19).
+- Layout: on desktop the answer takes the wide left column and the question and picker sit in a right column; on a phone they stack with the answer first. No bottom sheet: stacking read better with the dock at the bottom.
+- A symptom's own relief (e.g. for nausea) does not lead as "Treat now"; only conditions do. It still runs in the step-through.
+- Swaps (leading cause, question, treatment step) use short timed transitions, not springs: a spring's settle made `mode="wait"` feel stuck.
 
 **Why:** the current pages give everything the same weight. Every panel has brackets, a number, a label and a dashed rule; triage shows 100+ boxed two-line chips at once; the answer (what to do for the patient) is the smallest thing on screen. Nothing responds when touched beyond a colour change. The palettes and fonts stay. The layout, the density and the motion are rebuilt.
 
