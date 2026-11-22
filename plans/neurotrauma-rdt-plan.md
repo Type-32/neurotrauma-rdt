@@ -324,7 +324,7 @@ Original plan:
 
 ## Phase 12: Rebuild the interface
 
-**Status:** 12.1–12.5 built; 12.6 (clean-up) next. Replaces the look built in the art-direction work and Phase 9, and removes Phase 7 (PWA). Phase 10 (body schematic) is on hold until this is done.
+**Status:** done (12.1–12.6). Phase 10 (body schematic) and Phase 11 (content) are next. Replaces the look built in the art-direction work and Phase 9, and removes Phase 7 (PWA). Phase 10 (body schematic) is on hold until this is done.
 
 **Built so far, and where it differs from the plan below:**
 - PWA removed; `public/sw.js` is the kill switch (checked: an old installed worker unregistered itself and its caches were cleared).
@@ -344,6 +344,10 @@ Original plan:
 - **Triage flow, revised after friends tested it (2026-11-21).** Tapping one symptom used to jump straight to an answer, so testers took it as final; the narrowing question and "add more" sat in a side column and read as unrelated suggestions. Now two clear steps: (1) pick, multi-select, words mark in place, and a bar above the dock shows the count, a live "Most likely …" preview and **Get answer** (Enter); (2) answer, one column read top to bottom: Edit findings / Copy link / Clear, the patient strip, the most likely cause, **Narrow it down** directly under it (inside `TriageAnswer`'s `narrow` slot), what to do, other causes, then "Add what else you see". The step is in the URL (`&a=1`). Picking replaces the history entry; changing step and answering questions push one.
 - The selection is local state synced to the URL, not read from it: reading from the URL lost quick taps (the second tap read the query before the first navigation landed).
 - Hypertension and hypotension had no visibility tag in the guide, so triage never offered them. Tagged `scanner-visible` in `content/en` (the health scanner reports blood pressure). A re-run of `import:trello` would drop this; see the Phase 11 decision about hand edits.
+- 12.6 clean-up: removed `MicroPanel`, `MicroRule`, `MicroPageHead`, `MicroScramble`, `MicroGraphic`, `EntryRow`, the 12 pack SVGs and `scripts/import-micrographics.ts` (and `svgo`), the `.micro-frame` / `.micro-rule` / `.micro-grid` / `.micro-cursor` styles and their colour variables, the search modal's leftover state, and 27 unused interface messages. Kept: the palettes, Saans, the `micro` label style, `MicroBar` (threshold gauges), `--micro-mark` (dotted link underlines).
+- Final pass on the static build: every page in dark and light, English and Chinese, at 1600×900 and 375 wide. Long display names (e.g. Hemotransfusion Shock) overflowed a phone; they now hyphenate and wrap, one size smaller on phones.
+- **Known, not fixed:** Chinese readers get "Hydration completed but contains mismatches" on page load, because pages are prerendered in English and switch to Chinese in the browser (the "Locale flash" risk below). English has none. Fix options: prerender a Chinese copy and pick it at the edge, or render locale-dependent text only after mount.
+- **Not checked in a browser:** reduced motion. motion-v follows it through `MotionConfig reduced-motion="user"`, and the CSS animations (`.rise`, page transitions, orbit spin) have `prefers-reduced-motion` blocks.
 
 **Why:** the current pages give everything the same weight. Every panel has brackets, a number, a label and a dashed rule; triage shows 100+ boxed two-line chips at once; the answer (what to do for the patient) is the smallest thing on screen. Nothing responds when touched beyond a colour change. The palettes and fonts stay. The layout, the density and the motion are rebuilt.
 

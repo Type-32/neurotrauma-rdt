@@ -127,7 +127,7 @@ useEventListener(window, 'keydown', (event: KeyboardEvent) => {
 					<Motion v-if="step" :key="step.id" v-bind="swap('y', 28)">
 						<p v-if="step.label" class="micro" :class="step.urgent ? 'text-primary' : 'text-muted'">{{ step.label }}</p>
 						<p
-							class="mt-4 font-brand text-4xl font-medium leading-tight tracking-tight text-highlighted sm:text-5xl"
+							class="mt-4 hyphens-auto break-words font-brand text-3xl font-medium leading-tight tracking-tight text-highlighted sm:text-5xl"
 							:style="step.urgent ? { '--entry-link': 'var(--ui-primary)' } : undefined"
 						>
 							<EntryText :text="step.text" />

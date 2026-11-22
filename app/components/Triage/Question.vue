@@ -29,7 +29,7 @@ const hint = computed(() => props.suggestion.of === 1
 			class="rounded-lg bg-elevated px-6 py-6 ring-1 ring-(--ui-info)/25"
 		>
 			<p class="micro text-info">{{ t('triage.checkNext') }}</p>
-			<h2 class="mt-3 font-brand text-3xl sm:text-4xl font-semibold leading-tight tracking-tight text-highlighted">
+			<h2 class="mt-3 hyphens-auto break-words font-brand text-3xl sm:text-4xl font-semibold leading-tight tracking-tight text-highlighted">
 				{{ names.primary }}?
 			</h2>
 			<p v-if="names.secondary" class="mt-1 text-lg text-muted">{{ names.secondary }}</p>

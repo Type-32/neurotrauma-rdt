@@ -1,7 +1,6 @@
 {
 	"site": {
-		"description": "Barotrauma 神经创伤 mod 快速诊疗参考。",
-		"intro": "神经创伤 mod 快速诊疗参考。内容为中英双语，来自中文社区指南。"
+		"description": "Barotrauma 神经创伤 mod 快速诊疗参考。"
 	},
 	"locale": {
 		"switchTo": "English",
@@ -41,7 +40,6 @@
 		"open": "打开条目",
 		"treatNow": "立即处置",
 		"startTreatment": "开始治疗",
-		"stillUnexplained": "仍未解释：{list}",
 		"noCauses": "指南中没有病症会导致{list}。",
 		"checkNext": "缩小范围",
 		"tellsApart": "可区分 {of} 个可能病因中的 {splits} 个",
@@ -57,7 +55,6 @@
 		"close": "关闭",
 		"allDone": "所有步骤已完成",
 		"allDoneDescription": "继续观察患者，复查看到的情况，有变化时再回来。",
-		"loading": "正在加载分诊数据…",
 		"failed": "分诊数据加载失败，请检查网络后刷新。",
 		"candidates": "没有可能病因 | {count} 个可能病因 | {count} 个可能病因",
 		"picked": "未选择 | 已选 {count} 项 | 已选 {count} 项",
@@ -70,8 +67,6 @@
 	},
 	"reference": {
 		"title": "速查",
-		"description": "如何诊断、五条戒律、治疗顺序与医疗箱建议，集中在一页。",
-		"homeDescription": "诊断、治疗顺序与医疗箱建议，集中在一页。",
 		"jump": "跳转到章节",
 		"openEntry": "单独打开此页",
 		"sections": {
@@ -83,11 +78,7 @@
 		"keys": "← → 切换"
 	},
 	"checklist": {
-		"progress": "已完成 {done}/{total}",
-		"reset": "重置",
-		"step": "第 {n} 步已完成",
 		"openCloseTitle": "手术的开始与结束步骤相同",
-		"openCloseDescription": "开始：镇痛、手术刀、止血钳、牵开器；结束：缝合线。下方步骤中与之重复的即为这些步骤。",
 		"openCloseLink": "开始&结束手术"
 	},
 	"feedback": {
@@ -111,14 +102,6 @@
 		"procedures": "流程",
 		"info": "信息"
 	},
-	"typeDescriptions": {
-		"afflictions": "伤病与状态，按身体部位分类。",
-		"symptoms": "患者身上能看到的症状及其成因。",
-		"items": "药物、工具与设备，含技能需求。",
-		"procedures": "按顺序排列的手术步骤。",
-		"info": "如何诊断、治疗顺序、医疗箱建议与常见问题。"
-	},
-	"entries": "无条目 | {count} 个条目 | {count} 个条目",
 	"sections": {
 		"firstAid": "急救",
 		"treatment": "治疗措施",
@@ -139,12 +122,9 @@
 		"alsoIn": "另见：{list}",
 		"lethal": "致命",
 		"possiblyLethal": "可能致命",
-		"more": "更多",
 		"startSteps": "逐步进行",
 		"steps": "无步骤 | {count} 个步骤 | {count} 个步骤",
-		"doneProcedure": "如果手术仍未缝合，请先缝合。",
-		"back": "返回{name}",
-		"meta": "详情"
+		"doneProcedure": "如果手术仍未缝合，请先缝合。"
 	},
 	"categories": {
 		"head": "头部 / 脑部",
@@ -199,25 +179,6 @@
 		"info": "信息",
 		"symptom": "症状",
 		"unfinished": "疑问/未完成"
-	},
-	"statusBar": {
-		"tagline": "医疗终端",
-		"online": "在线",
-		"offline": "离线 / 缓存",
-		"lang": "语言",
-		"mode": "模式"
-	},
-	"home": {
-		"start": "开始分诊",
-		"database": "数据库",
-		"entries": "条目",
-		"lethal": "致命",
-		"lang": "语言",
-		"search": "按名称、English 或拼音搜索",
-		"shortcut": "任意页面按 /"
-	},
-	"index": {
-		"categories": "分类"
 	},
 	"dock": {
 		"search": "你在找什么？",

@@ -1,7 +1,6 @@
 {
 	"site": {
-		"description": "Rapid diagnosis and treatment reference for the Barotrauma Neurotrauma mod.",
-		"intro": "Rapid diagnosis and treatment reference for the Neurotrauma mod. Content is bilingual, from the Chinese community guide."
+		"description": "Rapid diagnosis and treatment reference for the Barotrauma Neurotrauma mod."
 	},
 	"locale": {
 		"switchTo": "中文",
@@ -41,7 +40,6 @@
 		"open": "Open entry",
 		"treatNow": "Treat now",
 		"startTreatment": "Start treatment",
-		"stillUnexplained": "Still unexplained: {list}",
 		"noCauses": "Nothing in the guide causes {list}.",
 		"checkNext": "Narrow it down",
 		"tellsApart": "Tells apart {splits} of {of} likely causes",
@@ -57,7 +55,6 @@
 		"close": "Close",
 		"allDone": "All steps done",
 		"allDoneDescription": "Keep watching the patient. Re-check what you saw, and come back if something changes.",
-		"loading": "Loading triage…",
 		"failed": "Couldn't load triage data. Check your connection and reload.",
 		"candidates": "No likely causes | 1 likely cause | {count} likely causes",
 		"picked": "Nothing picked | 1 picked | {count} picked",
@@ -70,8 +67,6 @@
 	},
 	"reference": {
 		"title": "Quick reference",
-		"description": "How to diagnose, the five commandments, treatment order and medkit loadouts, on one page.",
-		"homeDescription": "Diagnosis, treatment order and medkit loadouts on one page.",
 		"jump": "Jump to section",
 		"openEntry": "Open as its own page",
 		"sections": {
@@ -83,11 +78,7 @@
 		"keys": "← → to switch"
 	},
 	"checklist": {
-		"progress": "{done} of {total} done",
-		"reset": "Reset",
-		"step": "Step {n} done",
 		"openCloseTitle": "Surgeries open and close the same way",
-		"openCloseDescription": "Open with analgesia, scalpel, hemostat and retractors; close with sutures. Steps below that repeat these are the same ones.",
 		"openCloseLink": "Open & Close Surgery"
 	},
 	"feedback": {
@@ -111,14 +102,6 @@
 		"procedures": "Procedures",
 		"info": "Information"
 	},
-	"typeDescriptions": {
-		"afflictions": "Injuries and conditions, by body part.",
-		"symptoms": "What you see on the patient, and what causes it.",
-		"items": "Medicine, tools and equipment, with skill checks.",
-		"procedures": "Surgery steps, in order.",
-		"info": "How to diagnose, treatment order, medkit advice and FAQ."
-	},
-	"entries": "No entries | 1 entry | {count} entries",
 	"sections": {
 		"firstAid": "First aid",
 		"treatment": "Treatment",
@@ -139,12 +122,9 @@
 		"alsoIn": "Also under {list}",
 		"lethal": "Lethal",
 		"possiblyLethal": "Possibly lethal",
-		"more": "More",
 		"startSteps": "Step through",
 		"steps": "No steps | 1 step | {count} steps",
-		"doneProcedure": "Close the surgery if it is still open.",
-		"back": "Back to {name}",
-		"meta": "Details"
+		"doneProcedure": "Close the surgery if it is still open."
 	},
 	"categories": {
 		"head": "Head / brain",
@@ -199,25 +179,6 @@
 		"info": "Information",
 		"symptom": "Symptom",
 		"unfinished": "Unfinished"
-	},
-	"statusBar": {
-		"tagline": "Medic terminal",
-		"online": "Online",
-		"offline": "Offline / cached",
-		"lang": "Lang",
-		"mode": "Mode"
-	},
-	"home": {
-		"start": "Start triage",
-		"database": "Database",
-		"entries": "Entries",
-		"lethal": "Lethal",
-		"lang": "Lang",
-		"search": "Search by name, 中文 or pinyin",
-		"shortcut": "Press / anywhere"
-	},
-	"index": {
-		"categories": "Categories"
 	},
 	"dock": {
 		"search": "What are you looking for?",

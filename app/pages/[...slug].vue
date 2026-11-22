@@ -99,7 +99,7 @@ useSeoMeta({ title: () => page.value?.title })
 			<UIcon name="i-lucide-arrow-left" class="size-3.5" />{{ headline }}
 		</NuxtLink>
 
-		<h1 class="rise mt-6 font-brand text-5xl font-semibold leading-[0.98] tracking-tight text-highlighted sm:text-7xl" style="--rise: 1">
+		<h1 class="rise mt-6 hyphens-auto break-words font-brand text-4xl font-semibold leading-[0.98] tracking-tight text-highlighted sm:text-7xl" style="--rise: 1">
 			{{ names.primary }}
 		</h1>
 		<p class="rise mt-4 flex flex-wrap items-baseline gap-x-4 gap-y-1 text-xl" style="--rise: 2">

@@ -55,20 +55,20 @@ export default defineNuxtConfig({
 	},
 
 	i18n: {
-		// No locale in URLs: /afflictions/x is the same link in every language,
-		// and the chosen locale is remembered in a cookie. Content is still
-		// separate per locale (content/en, content/zh) with fallback to en;
-		// see content.config.ts.
+		// No locale in URLs: /afflictions/x is the same link in every language.
+		// Content is still separate per locale (content/en, content/zh) with
+		// fallback to en; see content.config.ts.
 		strategy: 'no_prefix',
 		defaultLocale: DEFAULT_LOCALE,
 		locales: [
 			{ code: 'en', language: 'en-US', name: 'English', file: 'en.json' },
 			{ code: 'zh', language: 'zh-CN', name: '中文', file: 'zh.json' },
 		] satisfies Array<{ code: ContentLocale, language: string, name: string, file: string }>,
-		detectBrowserLanguage: {
-			useCookie: true,
-			cookieKey: 'i18n_locale',
-		},
+		// Off: every page is prerendered in English, and the browser must hydrate
+		// in that same language or Vue reports mismatches. The reader's language
+		// (cookie, else the browser's) is applied right after hydration by
+		// app/plugins/locale.client.ts, which also remembers it.
+		detectBrowserLanguage: false,
 		experimental: {
 			// Always write /_i18n/<hash>/<locale>/messages.json at build time, whatever the deploy
 			// preset. The module only does this on its own when Nitro reports a static build, and
