@@ -130,7 +130,13 @@
 		"noSkillCheck": "No skill check",
 		"alsoIn": "Also under {list}",
 		"lethal": "Lethal",
-		"possiblyLethal": "Possibly lethal"
+		"possiblyLethal": "Possibly lethal",
+		"more": "More",
+		"startSteps": "Step through",
+		"steps": "No steps | 1 step | {count} steps",
+		"doneProcedure": "Close the surgery if it is still open.",
+		"back": "Back to {name}",
+		"meta": "Details"
 	},
 	"categories": {
 		"head": "Head / brain",
@@ -185,15 +191,6 @@
 		"info": "Information",
 		"symptom": "Symptom",
 		"unfinished": "Unfinished"
-	},
-	"status": {
-		"title": "Status",
-		"lethality": "Lethality",
-		"visibility": "Shown on",
-		"skill": "Skill check",
-		"source": "Source",
-		"alsoIn": "Also under",
-		"flags": "Flags"
 	},
 	"statusBar": {
 		"tagline": "Medic terminal",

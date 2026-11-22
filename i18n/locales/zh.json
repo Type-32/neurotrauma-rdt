@@ -130,7 +130,13 @@
 		"noSkillCheck": "无技能需求",
 		"alsoIn": "另见：{list}",
 		"lethal": "致命",
-		"possiblyLethal": "可能致命"
+		"possiblyLethal": "可能致命",
+		"more": "更多",
+		"startSteps": "逐步进行",
+		"steps": "无步骤 | {count} 个步骤 | {count} 个步骤",
+		"doneProcedure": "如果手术仍未缝合，请先缝合。",
+		"back": "返回{name}",
+		"meta": "详情"
 	},
 	"categories": {
 		"head": "头部 / 脑部",
@@ -185,15 +191,6 @@
 		"info": "信息",
 		"symptom": "症状",
 		"unfinished": "疑问/未完成"
-	},
-	"status": {
-		"title": "状态",
-		"lethality": "致命性",
-		"visibility": "可见于",
-		"skill": "技能需求",
-		"source": "来源",
-		"alsoIn": "另见",
-		"flags": "标记"
 	},
 	"statusBar": {
 		"tagline": "医疗终端",

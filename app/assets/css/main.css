@@ -306,3 +306,24 @@ html {
 	.page-enter-from,
 	.page-leave-to { transform: none; }
 }
+
+/*
+ * Page entrance: content rises into place as the page paints. Plain CSS, not
+ * motion-v, so it runs before JavaScript loads and the prerendered page is
+ * never left hidden if a script fails. Stagger with style="--rise: n".
+ */
+.rise {
+	animation: rise 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+	animation-delay: calc(var(--rise, 0) * 60ms);
+}
+
+@keyframes rise {
+	from {
+		opacity: 0;
+		transform: translateY(14px);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.rise { animation: none; }
+}
