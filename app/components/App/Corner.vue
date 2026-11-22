@@ -15,6 +15,7 @@ async function toggleLocale() {
 		<NuxtLink to="/" class="group flex items-center gap-2 text-muted transition-colors hover:text-highlighted" :aria-label="t('dock.home')">
 			<AppLogo class="size-5 transition-transform group-hover:rotate-12" />
 			<span class="micro hidden tracking-[0.2em] sm:inline">Neurotrauma RDT</span>
+			<MicroEcg class="h-3 w-12 text-primary" />
 		</NuxtLink>
 		<div class="flex items-center gap-1">
 			<UButton

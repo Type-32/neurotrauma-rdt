@@ -95,9 +95,12 @@ const barOf = (share: number) => `${Math.max(4, Math.round(share / (props.result
 							:key="leader.entry.id"
 							v-bind="swap('y', 14)"
 						>
-							<h2 class="mt-2 hyphens-auto break-words font-brand text-4xl font-semibold leading-[1.02] tracking-tight text-highlighted sm:text-6xl">
-								{{ nameOf(leader.entry.id).primary }}
-							</h2>
+							<div class="relative mt-2 overflow-hidden">
+								<h2 class="hyphens-auto break-words font-brand text-4xl font-semibold leading-[1.02] tracking-tight text-highlighted sm:text-6xl">
+									{{ nameOf(leader.entry.id).primary }}
+								</h2>
+								<MicroScan :trigger="leader.entry.id" />
+							</div>
 							<p class="mt-2 flex flex-wrap items-baseline gap-x-3 text-lg">
 								<span v-if="leader.entry.lethal" :class="leader.entry.lethal === 'lethal' ? 'text-error' : 'text-warning'">{{ lethalLabel(leader.entry.lethal) }}</span>
 								<span v-if="nameOf(leader.entry.id).secondary" class="text-muted">{{ nameOf(leader.entry.id).secondary }}</span>

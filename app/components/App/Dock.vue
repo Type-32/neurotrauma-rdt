@@ -93,10 +93,12 @@ defineShortcuts({
 
 <template>
 	<div class="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-center px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pb-6">
-		<div
-			ref="root"
-			class="dock pointer-events-auto w-full max-w-xl overflow-hidden rounded-xl border border-default shadow-[0_12px_40px_-12px_rgb(0_0_0/0.45)] backdrop-blur-xl"
-		>
+		<!-- Wrapper: the corner brackets sit just outside the dock, which clips its own overflow. -->
+		<div class="relative w-full max-w-xl">
+			<div
+				ref="root"
+				class="dock pointer-events-auto w-full overflow-hidden rounded-xl border border-default shadow-[0_12px_40px_-12px_rgb(0_0_0/0.45)] backdrop-blur-xl"
+			>
 			<!-- Results grow the dock upward. -->
 			<AnimatePresence>
 				<Motion
@@ -192,6 +194,9 @@ defineShortcuts({
 					</NuxtLink>
 				</nav>
 			</div>
+			</div>
+			<!-- Searching: the brackets close in on the dock. -->
+			<MicroCorners :active="focused" />
 		</div>
 	</div>
 </template>
