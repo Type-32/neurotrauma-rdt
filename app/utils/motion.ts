@@ -1,3 +1,5 @@
+import type { Transition } from 'motion-v'
+
 /**
  * Shared motion presets. Motion explains change: whatever is touched reacts,
  * and whatever changes as a result travels to its new place. Everything is
@@ -25,6 +27,9 @@ export const APPEAR = {
 	exit: { opacity: 0, y: -6 },
 } as const
 
+const SWAP_IN: Transition = { duration: 0.22, ease: [0.22, 1, 0.36, 1] }
+const SWAP_OUT: Transition = { duration: 0.12, ease: [0.4, 0, 1, 1] }
+
 /**
  * Swapping one thing for the next (the leading cause, the question, a
  * treatment step) with AnimatePresence mode="wait": a quick exit, then a
@@ -32,9 +37,10 @@ export const APPEAR = {
  * because a spring's long settle makes the wait feel stuck.
  */
 export function swap(axis: 'x' | 'y' = 'y', distance = 16) {
+	const offset = (value: number) => axis === 'x' ? { x: value } : { y: value }
 	return {
-		initial: { opacity: 0, [axis]: distance },
-		animate: { opacity: 1, [axis]: 0, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } },
-		exit: { opacity: 0, [axis]: -distance * 0.6, transition: { duration: 0.12, ease: [0.4, 0, 1, 1] } },
+		initial: { opacity: 0, ...offset(distance) },
+		animate: { opacity: 1, ...offset(0), transition: SWAP_IN },
+		exit: { opacity: 0, ...offset(-distance * 0.6), transition: SWAP_OUT },
 	}
 }
