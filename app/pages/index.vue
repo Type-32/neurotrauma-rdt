@@ -291,6 +291,19 @@ function clear() {
 										<Motion :key="preview" v-bind="swap('y', 8)" as="p" class="truncate text-base">{{ preview }}</Motion>
 									</AnimatePresence>
 								</div>
+								<!-- Deselect everything; Back brings it back (clear pushes a history entry). -->
+								<Motion
+									as="button"
+									type="button"
+									:while-press="PRESS"
+									:aria-label="t('triage.clearAll')"
+									:title="t('triage.clearAll')"
+									class="inline-flex shrink-0 items-center gap-2 rounded-lg px-3 py-3 text-base opacity-70 transition-opacity hover:opacity-100"
+									@click="clear"
+								>
+									<UIcon name="i-lucide-x" class="size-5" />
+									<span class="hidden sm:inline">{{ t('triage.clear') }}</span>
+								</Motion>
 								<Motion
 									as="button"
 									type="button"

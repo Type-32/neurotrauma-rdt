@@ -84,10 +84,13 @@ useEventListener(window, 'keydown', (event: KeyboardEvent) => {
 
 		<div ref="panel" tabindex="-1" class="mx-auto flex min-h-[calc(100dvh-0.25rem)] w-full max-w-3xl flex-col px-6 pb-16 pt-8 outline-none sm:px-10">
 			<header class="flex items-center justify-between gap-4">
-				<p class="micro text-muted">
-					{{ title }}
-					<span v-if="!finished" class="ms-3 text-dimmed">{{ t('triage.step', { n: current + 1, total: steps.length }) }}</span>
-				</p>
+				<div class="min-w-0">
+					<p class="micro text-muted">
+						{{ title }}
+						<span v-if="!finished" class="ms-3 text-dimmed">{{ t('triage.step', { n: current + 1, total: steps.length }) }}</span>
+					</p>
+					<MicroTicks v-if="steps.length > 1" class="mt-2.5 flex-wrap" :total="steps.length" :done="current" />
+				</div>
 				<UButton :label="t('triage.close')" icon="i-lucide-x" color="neutral" variant="ghost" class="text-muted" @click="emit('close')" />
 			</header>
 
