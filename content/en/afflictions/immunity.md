@@ -5,6 +5,7 @@ nameEn: Immunity
 category: blood
 source: base
 order: 8
+manual: true
 tags: []
 pinyin: mianyili
 pinyinInitials: myl
@@ -31,7 +32,7 @@ trello:
 ## **有助于治愈：**
 
 - [烧伤 Burns](/afflictions/burns)
-- [https://trello.com/c/H8XCHAS6](https://trello.com/c/H8XCHAS6)
+- [开放性伤口 Open Wounds](/afflictions/open-wounds)
 
 
 
@@ -49,4 +50,4 @@ Immunity helps fight [伤口感染 Infected Wounds](/afflictions/infected-wounds
 ## Helps heal:
 
 - [烧伤 Burns](/afflictions/burns)
-- [https://trello.com/c/yhDjfTqs/101-wounds](https://trello.com/c/yhDjfTqs/101-wounds)
+- [开放性伤口 Open Wounds](/afflictions/open-wounds)

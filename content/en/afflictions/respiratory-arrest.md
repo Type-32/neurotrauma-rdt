@@ -5,6 +5,7 @@ nameEn: Respiratory Arrest
 category: lungs
 source: base
 order: 0
+manual: true
 tags:
   - lethal
   - affliction
@@ -47,7 +48,9 @@ causes:
       - afflictions/acidosis
 treatment:
   - text: 治疗病因
-  - text: 装有液氧罐的https://trello.com/c/vKqsnepf
+  - text: 装有液氧罐的[急救呼吸气囊 Ambubag](/items/ambubag)
+    refs:
+      - items/ambubag
 firstAid:
   - text: 靠近[手术台](/items/surgery-table)
     refs:
@@ -82,7 +85,7 @@ Respiratory arrest will quickly build up oxygen low and suffocate the victim, an
 ## 治疗措施
 
 - 治疗病因
-- 装有液氧罐的https://trello.com/c/vKqsnepf 
+- 装有液氧罐的[急救呼吸气囊 Ambubag](/items/ambubag) 
 
 ## 急救
 

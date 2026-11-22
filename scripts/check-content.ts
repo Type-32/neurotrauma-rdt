@@ -52,6 +52,20 @@ for (const type of ['afflictions', 'symptoms'] as const) {
  */
 const warnings: string[] = []
 
+/**
+ * "Leads to" lines checked by hand that name an entry without being a cause of
+ * it, keyed `file → named entry`. They stay unlinked on purpose; linking them
+ * would tell triage something false.
+ */
+const NOT_CAUSES: Record<string, string> = {
+	'en/afflictions/bandaged.md → afflictions/dislocations': 'removes the slowdown dislocations cause; does not cause one',
+	'en/afflictions/hypoxemia.md → afflictions/neurotrauma': 'neurotrauma is named in a healing-rate note; hypoxemia → neurotrauma is its own linked line',
+	'en/afflictions/internal-damage.md → afflictions/fractures': 'a fracture is the condition for amputation, not a result',
+	'en/afflictions/liver-damage.md → afflictions/bleeding': 'weakens clotting of existing bleeding; does not start bleeding',
+	'en/afflictions/open-wounds.md → afflictions/bleeding': '"出血" inside "内出血" (internal bleeding), which is linked',
+	'en/afflictions/open-wounds.md → afflictions/fractures': 'a fracture is the condition for amputation, not a result',
+}
+
 let checked = 0
 for (const locale of CONTENT_LOCALES) {
 	for (const type of ENTRY_TYPES) {
@@ -114,6 +128,7 @@ for (const locale of CONTENT_LOCALES) {
 				const mentioned = hits
 					.filter(([entryName]) => !hits.some(([other]) => other !== entryName && other.includes(entryName)))
 					.map(([, id]) => id)
+					.filter(id => !NOT_CAUSES[`${name} → ${id}`])
 				if (mentioned.length) warnings.push(`${name}: "leads to" line names ${[...new Set(mentioned)].join(', ')} without linking it: ${item.text}`)
 			}
 		}

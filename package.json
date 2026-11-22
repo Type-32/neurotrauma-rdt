@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "import:trello": "bun scripts/import-trello.ts",
+    "localize:images": "bun scripts/localize-images.ts",
     "check:content": "bun scripts/check-content.ts",
     "test:search": "bun scripts/test-search.ts",
     "test:triage": "bun scripts/test-triage.ts"
@@ -40,7 +41,6 @@
   "devDependencies": {
     "@types/node": "^26.6.6",
     "pinyin-pro": "^3.29.5",
-    "svgo": "^4.1.0",
     "typescript": "6.0.3",
     "vue-tsc": "^3.3.14",
     "yaml": "^2.9.1"

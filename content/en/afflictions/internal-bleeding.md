@@ -5,6 +5,7 @@ nameEn: Internal Bleeding
 category: torso
 source: base
 order: 1
+manual: true
 tags:
   - lethal
   - scanner-visible
@@ -14,7 +15,9 @@ pinyin: neichuxue
 pinyinInitials: ncx
 aliases: []
 causedBy:
-  - text: "[创伤](https://trello.com/c/H8XCHAS6)（枪伤、爆炸、咬伤、撕裂伤）"
+  - text: "[创伤](/afflictions/open-wounds)（枪伤、爆炸、咬伤、撕裂伤）"
+    refs:
+      - afflictions/open-wounds
   - text: "[肝脏损伤](/afflictions/liver-damage) （达到100%时）"
     refs:
       - afflictions/liver-damage
@@ -50,7 +53,7 @@ Internal bleeding will quickly drain the blood out of the patient, and must be d
 
 ## 由以下原因造成：
 
-- [创伤](https://trello.com/c/H8XCHAS6)（枪伤、爆炸、咬伤、撕裂伤）
+- [创伤](/afflictions/open-wounds)（枪伤、爆炸、咬伤、撕裂伤）
 - [肝脏损伤](/afflictions/liver-damage) （达到100%时）
 - [主动脉破裂](/afflictions/aortic-rupture)
 

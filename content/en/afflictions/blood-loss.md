@@ -5,6 +5,7 @@ nameEn: Blood Loss
 category: blood
 source: base
 order: 3
+manual: true
 tags:
   - non-lethal
   - lethal
@@ -16,7 +17,9 @@ pinyin: shixue
 pinyinInitials: sx
 aliases: []
 causedBy:
-  - text: "[伤口](https://trello.com/c/i23isLFt/110-wounds)（出血）"
+  - text: "[伤口](/afflictions/open-wounds)（出血）"
+    refs:
+      - afflictions/open-wounds
   - text: "[输血性休克](/afflictions/hemotransfusion-shock) (在0-70%之间)"
     refs:
       - afflictions/hemotransfusion-shock
@@ -86,7 +89,7 @@ While blood loss can be extremely resource-intensive to cure if it's severe enou
 
 ## 由以下原因造成：
 
-- [伤口](https://trello.com/c/i23isLFt/110-wounds)（出血）
+- [伤口](/afflictions/open-wounds)（出血）
 - [输血性休克](/afflictions/hemotransfusion-shock) (在0-70%之间)
 - [内出血](/afflictions/internal-bleeding)
 - 使用[空血袋](/items/empty-blood-pack)

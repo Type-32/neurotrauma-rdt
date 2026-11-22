@@ -5,10 +5,12 @@ nameEn: Hypotension
 category: blood
 source: base
 order: 4
+manual: true
 tags:
   - non-lethal
   - lethal
   - mechanic
+  - scanner-visible
 lethal: true
 pinyin: dixueya
 pinyinInitials: dxy

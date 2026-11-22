@@ -5,6 +5,7 @@ nameEn: Clamped Bleeding
 category: surgery
 source: base
 order: 2
+manual: true
 tags:
   - affliction
   - interface-visible
@@ -18,4 +19,4 @@ trello:
 ---
 
 大多数外科手术的第三步。钳夹止血将防止[手术切口](/afflictions/surgery-incision)引起的[失血](/afflictions/blood-loss)。这一效果是下一步所需要的，即[牵开器](/items/retractors)。
-The third step in most surgical procedures. Having clamped bleeding will prevent https://trello.com/c/r6MWpyqS/40-blood-loss caused by https://trello.com/c/d3vggDBQ/61-surgery-incision. This affliction is required for the next step, the https://trello.com/c/eTQfECNi/64-retractors.
+The third step in most surgical procedures. Having clamped bleeding will prevent [失血 Blood Loss](/afflictions/blood-loss) caused by [手术切口 Surgery Incision](/afflictions/surgery-incision). This affliction is required for the next step, the [牵开器 Retractors](/items/retractors).

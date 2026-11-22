@@ -1,15 +1,21 @@
 <script setup lang="ts">
 /**
- * Triage, the home page, as a guided flow: "What do you see?" with one input
- * and the findings as plain words. Picked findings fly to the patient strip;
- * the most likely cause and its first aid take over as the answer; one
- * question at a time narrows it down; treatment runs as a step-through.
- * Logic is in shared/utils/triage.ts.
+ * Triage, the home page, in two clear steps.
  *
- * The patient lives in the URL (?f=s:headache,a:pneumothorax for what's seen,
- * &x=s:vomiting for what's ruled out), so a link shares the patient and Back
- * undoes the last change. The data is /triage-index.json, loaded in the
- * browser.
+ * 1. Pick: "What do you see?" Tap every finding on the patient (multi-select:
+ *    words mark in place). A bar at the bottom shows how many are picked and
+ *    a live preview of the likely cause, with "Get answer".
+ * 2. Answer: one column, read top to bottom. The patient strip (picked words
+ *    fly into it), the most likely cause, then right under it the question
+ *    that narrows it down, then what to do, then the other possible causes.
+ *    "Add what else you see" goes back to step 1 with everything kept.
+ *
+ * Treatment runs as a step-through. Logic is in shared/utils/triage.ts.
+ *
+ * The patient lives in the URL: ?f=s:headache,a:pneumothorax (seen),
+ * &x=s:vomiting (ruled out), &a=1 (answer step). A link shares the patient,
+ * and Back undoes the last answer. The data is /triage-index.json, loaded in
+ * the browser.
  */
 const { t, locale } = useI18n()
 const route = useRoute()
@@ -47,26 +53,62 @@ function encode(ids: string[]): string {
 	return ids.map(id => `${id.startsWith('symptoms/') ? 's' : 'a'}:${id.split('/')[1]}`).join(',')
 }
 
-const selected = computed(() => decode(route.query.f))
-const ruledOut = computed(() => decode(route.query.x).filter(id => !selected.value.includes(id)))
+/**
+ * Local state, updated at once on every tap and then written to the URL. Reading
+ * straight from the URL would lose quick taps: a second tap would read the
+ * query before the first tap's navigation had landed. The watcher keeps it in
+ * step with Back / Forward and with links.
+ */
+const selected = ref<string[]>([])
+const ruledOut = ref<string[]>([])
+const answerStep = ref(false)
+watch(() => route.query, (query) => {
+	selected.value = decode(query.f)
+	ruledOut.value = decode(query.x).filter(id => !selected.value.includes(id))
+	answerStep.value = query.a === '1'
+}, { immediate: true })
 
-function setPatient(nextSelected: string[], nextRuledOut: string[]) {
+/** Step 2 needs something picked; a bare ?a=1 shows step 1. */
+const answering = computed(() => answerStep.value && selected.value.length + ruledOut.value.length > 0)
+
+/**
+ * Picking replaces the history entry (a dozen taps shouldn't take a dozen
+ * Backs); moving between steps and answering questions push one.
+ */
+function setPatient(nextSelected: string[], nextRuledOut: string[], options: { answer?: boolean, push?: boolean } = {}) {
 	const query: Record<string, string> = {}
 	if (nextSelected.length) query.f = encode(nextSelected)
 	if (nextRuledOut.length) query.x = encode(nextRuledOut)
-	router.push({ query })
+	const answer = options.answer ?? answering.value
+	if (answer) query.a = '1'
+	const push = options.push ?? answering.value
+	selected.value = nextSelected
+	ruledOut.value = nextRuledOut
+	answerStep.value = answer
+	if (push) router.push({ query })
+	else router.replace({ query })
 }
 const without = (ids: string[], id: string) => ids.filter(other => other !== id)
 
+function toggle(id: string) {
+	if (selected.value.includes(id)) setPatient(without(selected.value, id), ruledOut.value)
+	else if (ruledOut.value.includes(id)) setPatient(selected.value, without(ruledOut.value, id))
+	else setPatient([...selected.value, id], ruledOut.value)
+}
 function see(id: string) {
 	if (!selected.value.includes(id)) setPatient([...selected.value, id], without(ruledOut.value, id))
 }
 function ruleOut(id: string) {
 	if (!ruledOut.value.includes(id)) setPatient(without(selected.value, id), [...ruledOut.value, id])
 }
+function showAnswer() {
+	if (selected.value.length) setPatient(selected.value, ruledOut.value, { answer: true, push: true })
+}
+function editFindings() {
+	setPatient(selected.value, ruledOut.value, { answer: false, push: true })
+}
 
 const result = computed(() => triage.value?.evaluate(selected.value, ruledOut.value) ?? null)
-const hasPatient = computed(() => selected.value.length + ruledOut.value.length > 0)
 
 // --- Names ----------------------------------------------------------------------
 function nameOf(id: string) {
@@ -77,12 +119,40 @@ function lethalOf(id: string) {
 	return triage.value?.entry(id)?.lethal
 }
 
-// --- Findings that can be picked ---------------------------------------------------
+// --- Step 1: findings and the live preview -------------------------------------------
 const observable = computed(() => index.value?.entries.filter(entry => triage.value!.isObservable(entry.id)) ?? [])
-const onStrip = computed(() => [...selected.value, ...ruledOut.value])
 const weightOf = (id: string) => triage.value?.causesOf(id).length ?? 0
 
-// --- Questions: one at a time; "Can't tell" skips for this patient -------------------
+// --- Step 1: the body map ---------------------------------------------------------------
+/** The region the words are narrowed to. Not in the URL: it's a way of looking, not part of the patient. */
+const region = ref<BodyRegion | null>(null)
+const regionsOf = (id: string) => triage.value?.regionsOf(id) ?? []
+
+const regionCounts = computed(() => Object.fromEntries(BODY_REGIONS.map(r =>
+	[r, observable.value.filter(entry => regionsOf(entry.id).includes(r)).length])) as Record<BodyRegion, number>)
+const pickedRegions = computed(() => [...new Set(selected.value.flatMap(regionsOf))])
+/** Where the likely causes are, with the most dangerous lethality in each region. */
+const suspectRegions = computed(() => {
+	const out: Partial<Record<BodyRegion, 'lethal' | 'possibly-lethal' | 'other'>> = {}
+	const rank = { 'lethal': 0, 'possibly-lethal': 1, 'other': 2 } as const
+	for (const candidate of result.value?.candidates.slice(0, 5) ?? []) {
+		const level = candidate.entry.lethal ?? 'other'
+		for (const r of regionsOf(candidate.entry.id)) {
+			if (!out[r] || rank[level] < rank[out[r]!]) out[r] = level
+		}
+	}
+	return out
+})
+const bodyMapOpen = ref(false)
+
+const preview = computed(() => {
+	const known = result.value?.plan.find(step => step.entry.type === 'afflictions')
+	if (known) return t('triage.previewTreat', { name: nameOf(known.entry.id).primary })
+	const leader = result.value?.candidates[0]
+	return leader ? t('triage.previewLikely', { name: nameOf(leader.entry.id).primary }) : t('triage.previewNone')
+})
+
+// --- Step 2: one question at a time; "Can't tell" skips it for this patient -----------
 const skipped = ref<string[]>([])
 const question = computed(() => result.value?.suggestions.find(suggestion => !skipped.value.includes(suggestion.id)) ?? null)
 
@@ -94,12 +164,18 @@ function answer(reply: 'yes' | 'no' | 'unsure') {
 	else skipped.value = [...skipped.value, id]
 }
 
-// Y / N / Space answer the question, unless typing in a field or the treatment is open.
+// Keys: step 1, Enter gets the answer; step 2, Y / N / Space answer the question.
+// Not while typing in a field or with the treatment open.
 useEventListener(window, 'keydown', (event: KeyboardEvent) => {
-	if (!question.value || treating.value || event.metaKey || event.ctrlKey || event.altKey) return
+	if (treating.value || event.metaKey || event.ctrlKey || event.altKey) return
 	const target = event.target as HTMLElement | null
 	if (target?.closest('input, textarea, [contenteditable="true"], button, a')) return
 	const key = event.key.toLowerCase()
+	if (!answering.value) {
+		if (key === 'enter') showAnswer()
+		return
+	}
+	if (!question.value) return
 	if (key === 'y') answer('yes')
 	else if (key === 'n') answer('no')
 	else if (key === ' ') {
@@ -136,73 +212,144 @@ async function share() {
 function clear() {
 	skipped.value = []
 	focusId.value = null
-	setPatient([], [])
+	setPatient([], [], { answer: false, push: true })
 }
 </script>
 
 <template>
-	<div class="mx-auto w-full max-w-6xl px-5 sm:px-8">
+	<div class="mx-auto w-full px-5 sm:px-8" :class="answering ? 'max-w-3xl' : 'max-w-5xl'">
 		<ClientOnly>
 			<template #fallback>
-				<div class="mx-auto max-w-3xl pt-[10vh]">
+				<div class="pt-[8vh]">
 					<h1 class="font-brand text-5xl font-semibold leading-none tracking-tight text-highlighted sm:text-7xl">{{ t('triage.prompt') }}</h1>
 					<p class="mt-5 max-w-xl text-lg text-muted">{{ t('triage.description') }}</p>
 				</div>
 			</template>
 
-			<div v-if="failed" class="mx-auto max-w-3xl pt-[10vh] text-xl text-error">{{ t('triage.failed') }}</div>
+			<div v-if="failed" class="pt-[8vh] text-xl text-error">{{ t('triage.failed') }}</div>
 
-			<div v-else-if="!index" class="mx-auto max-w-3xl pt-[10vh]">
+			<div v-else-if="!index" class="pt-[8vh]">
 				<h1 class="font-brand text-5xl font-semibold leading-none tracking-tight text-highlighted sm:text-7xl">{{ t('triage.prompt') }}</h1>
 				<p class="mt-5 max-w-xl text-lg text-muted">{{ t('triage.description') }}</p>
 			</div>
 
 			<LayoutGroup v-else>
-				<!-- Nothing yet: one question, centred -->
-				<div v-if="!hasPatient" class="mx-auto max-w-3xl pt-[10vh]">
-					<Motion layout-id="prompt" as="h1" :transition="SPRING_SOFT" class="font-brand text-5xl font-semibold leading-none tracking-tight text-highlighted sm:text-7xl">
-						{{ t('triage.prompt') }}
-					</Motion>
-					<Motion as="p" :initial="{ opacity: 0 }" :animate="{ opacity: 1 }" :transition="{ ...EASE, delay: 0.1 }" class="mt-5 max-w-xl text-lg text-muted">
-						{{ t('triage.description') }}
-					</Motion>
-					<TriagePicker class="mt-12" :entries="observable" :exclude="onStrip" :weight-of="weightOf" @pick="see" />
+				<!-- Step 1: pick everything you see -->
+				<div v-if="!answering" class="pb-28 pt-[8vh]">
+					<h1 class="font-brand text-5xl font-semibold leading-none tracking-tight text-highlighted sm:text-7xl">{{ t('triage.prompt') }}</h1>
+					<p class="mt-5 max-w-xl text-lg text-muted">{{ t('triage.description') }}</p>
+					<div class="mt-12 grid gap-x-12 lg:grid-cols-[19rem_minmax(0,1fr)]">
+						<!-- Body map: a column on desktop -->
+						<aside class="hidden lg:block">
+							<div class="sticky top-8">
+								<p class="micro mb-4 text-dimmed">{{ t('triage.bodyMap') }}</p>
+								<TriageBody v-model="region" :counts="regionCounts" :picked="pickedRegions" :suspect="suspectRegions" />
+							</div>
+						</aside>
+
+						<div class="min-w-0">
+							<!-- Body map on phones: collapsed, so the words stay within thumb reach -->
+							<UCollapsible v-model:open="bodyMapOpen" class="mb-6 lg:hidden">
+								<button type="button" class="flex w-full items-center gap-2 rounded-md border border-default px-3 py-2.5 text-start text-muted transition-colors hover:text-highlighted">
+									<UIcon name="i-lucide-person-standing" class="size-5" />
+									<span class="flex-1">{{ region ? t('triage.showingRegion', { region: t(`triage.regions.${region}`) }) : t('triage.bodyMap') }}</span>
+									<UIcon name="i-lucide-chevron-down" class="size-4 transition-transform" :class="bodyMapOpen && 'rotate-180'" />
+								</button>
+								<template #content>
+									<TriageBody v-model="region" class="pt-4" :counts="regionCounts" :picked="pickedRegions" :suspect="suspectRegions" />
+								</template>
+							</UCollapsible>
+
+							<TriagePicker
+								:entries="observable"
+								:selected="selected"
+								:ruled-out="ruledOut"
+								:weight-of="weightOf"
+								:region="region"
+								:regions-of="regionsOf"
+								@toggle="toggle"
+								@clear-region="region = null"
+							/>
+						</div>
+					</div>
+
+					<!-- The step's action: what's picked, a live preview, and Get answer -->
+					<div class="pointer-events-none fixed inset-x-0 bottom-[5.25rem] z-40 flex justify-center px-3 sm:bottom-24">
+						<AnimatePresence>
+							<Motion
+								v-if="selected.length"
+								key="pick-bar"
+								:initial="{ opacity: 0, y: 24 }"
+								:animate="{ opacity: 1, y: 0 }"
+								:exit="{ opacity: 0, y: 24 }"
+								:transition="SPRING_SOFT"
+								class="pointer-events-auto flex w-full max-w-xl items-center gap-4 rounded-xl bg-inverted py-2.5 pe-2.5 ps-5 text-inverted shadow-[0_12px_40px_-12px_rgb(0_0_0/0.5)]"
+							>
+								<div class="min-w-0 flex-1">
+									<p class="font-mono text-xs uppercase tracking-wider opacity-60">{{ t('triage.picked', selected.length) }}</p>
+									<AnimatePresence mode="wait" :initial="false">
+										<Motion :key="preview" v-bind="swap('y', 8)" as="p" class="truncate text-base">{{ preview }}</Motion>
+									</AnimatePresence>
+								</div>
+								<Motion
+									as="button"
+									type="button"
+									:while-press="PRESS"
+									class="inline-flex shrink-0 items-center gap-2 rounded-lg bg-primary px-5 py-3 text-lg font-medium text-white transition-opacity hover:opacity-90"
+									@click="showAnswer"
+								>
+									{{ t('triage.getAnswer') }}
+									<UIcon name="i-lucide-arrow-right" class="size-5" />
+								</Motion>
+							</Motion>
+						</AnimatePresence>
+					</div>
 				</div>
 
-				<!-- A patient: the answer leads -->
+				<!-- Step 2: the answer, one column, top to bottom -->
 				<div v-else class="pt-2">
+					<div class="flex flex-wrap items-center justify-between gap-2">
+						<button type="button" class="-ms-2 inline-flex items-center gap-2 rounded-md px-2 py-1.5 text-muted transition-colors hover:text-highlighted" @click="editFindings">
+							<UIcon name="i-lucide-arrow-left" class="size-4" />{{ t('triage.editFindings') }}
+						</button>
+						<div class="flex items-center gap-1">
+							<UButton :label="t('triage.share')" icon="i-lucide-link" color="neutral" variant="ghost" size="sm" class="text-muted" @click="share" />
+							<UButton :label="t('triage.clear')" icon="i-lucide-rotate-ccw" color="neutral" variant="ghost" size="sm" class="text-muted" @click="clear" />
+						</div>
+					</div>
+
 					<TriageStrip
+						class="mt-4"
 						:selected="selected"
 						:ruled-out="ruledOut"
 						:name-of="nameOf"
 						:lethal-of="lethalOf"
 						@remove="id => setPatient(without(selected, id), ruledOut)"
 						@restore="id => setPatient(selected, without(ruledOut, id))"
-						@share="share"
-						@clear="clear"
 					/>
 
-					<div class="mt-12 grid gap-x-20 gap-y-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
-						<TriageAnswer
-							v-if="result"
-							:result="result"
-							:focus-id="focusId"
-							:name-of="nameOf"
-							@focus="id => focusId = id"
-							@confirm="confirm"
-							@treat="treating = true"
-						/>
+					<TriageAnswer
+						v-if="result"
+						class="mt-12"
+						:result="result"
+						:focus-id="focusId"
+						:name-of="nameOf"
+						@focus="id => focusId = id"
+						@confirm="confirm"
+						@treat="treating = true"
+					>
+						<template v-if="question" #narrow>
+							<TriageQuestion :suggestion="question" :name-of="nameOf" @answer="answer" />
+						</template>
+					</TriageAnswer>
 
-						<div class="space-y-16">
-							<TriageQuestion v-if="question" :suggestion="question" :name-of="nameOf" @answer="answer" />
-							<div>
-								<Motion layout-id="prompt" as="h2" :transition="SPRING_SOFT" class="font-brand text-2xl font-semibold tracking-tight text-highlighted">
-									{{ t('triage.promptMore') }}
-								</Motion>
-								<TriagePicker class="mt-5" compact :entries="observable" :exclude="onStrip" :weight-of="weightOf" @pick="see" />
-							</div>
-						</div>
-					</div>
+					<button
+						type="button"
+						class="mt-16 inline-flex items-center gap-2 rounded-md border border-dashed border-accented px-5 py-3 text-lg text-toned transition-colors hover:border-(--ui-text-muted) hover:text-highlighted"
+						@click="editFindings"
+					>
+						<UIcon name="i-lucide-plus" class="size-5" />{{ t('triage.addMore') }}
+					</button>
 				</div>
 			</LayoutGroup>
 

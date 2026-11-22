@@ -1,11 +1,14 @@
 <script setup lang="ts">
 /**
- * Quick reference: the guide's short "how to" cards on one page, with jump
- * tabs that follow the scroll, so a medic doesn't click through info entries
- * mid-round. The text comes from the info entries themselves (with locale
- * fallback), so editing those entries updates this page.
+ * Quick reference: the guide's short "how to" cards (how to diagnose, the five
+ * commandments, treatment order, medkit loadouts), one on screen at a time.
+ * Large tabs or ← → switch between them; the current one is in the URL hash
+ * (/reference#order), so links can open a specific card. The text comes from
+ * the info entries themselves, with locale fallback.
  */
 const { t, locale } = useI18n()
+const route = useRoute()
+const router = useRouter()
 
 const { data: entries } = await useAsyncData(
 	() => `reference-${locale.value}`,
@@ -17,16 +20,28 @@ const sections = computed(() => REFERENCE_SECTIONS
 	.map((section, index) => ({ ...section, entry: entries.value[index] ?? null }))
 	.filter(section => section.entry))
 
-/** The section in the middle band of the screen, marked in the tabs. */
-const active = ref<string>(REFERENCE_SECTIONS[0].id)
-const targets = ref<HTMLElement[]>([])
-onMounted(() => {
-	targets.value = sections.value.map(section => document.getElementById(section.id)).filter((el): el is HTMLElement => !!el)
+const activeId = computed(() => {
+	const hash = route.hash.replace('#', '')
+	return sections.value.some(section => section.id === hash) ? hash : sections.value[0]?.id
 })
-useIntersectionObserver(targets, (observed) => {
-	const visible = observed.filter(entry => entry.isIntersecting)
-	if (visible.length) active.value = visible[0]!.target.id
-}, { rootMargin: '-35% 0px -60% 0px' })
+const activeIndex = computed(() => sections.value.findIndex(section => section.id === activeId.value))
+const active = computed(() => sections.value[activeIndex.value] ?? null)
+
+/** Which way the card slides: forward moves left, back moves right. */
+const direction = ref(1)
+function show(index: number) {
+	const next = sections.value[(index + sections.value.length) % sections.value.length]
+	if (!next || next.id === activeId.value) return
+	direction.value = index > activeIndex.value ? 1 : -1
+	router.replace({ hash: `#${next.id}` })
+}
+
+useEventListener(window, 'keydown', (event: KeyboardEvent) => {
+	const target = event.target as HTMLElement | null
+	if (target?.closest('input, textarea, [contenteditable="true"]') || event.metaKey || event.ctrlKey || event.altKey) return
+	if (event.key === 'ArrowRight') show(activeIndex.value + 1)
+	else if (event.key === 'ArrowLeft') show(activeIndex.value - 1)
+})
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
@@ -34,53 +49,43 @@ useSeoMeta({ title: () => t('reference.title') })
 </script>
 
 <template>
-	<UContainer class="pb-16 pt-6">
-		<MicroPageHead code="REF // QUICK" :title="t('reference.title')" :description="t('reference.description')">
-			<UButton :label="t('triage.title')" to="/" icon="i-lucide-heart-pulse" class="micro" />
-		</MicroPageHead>
+	<div class="mx-auto w-full max-w-3xl px-5 pt-[5vh] sm:px-8">
+		<h1 class="rise font-brand text-5xl font-semibold leading-none tracking-tight text-highlighted sm:text-7xl">{{ t('reference.title') }}</h1>
 
-		<nav
-			class="sticky top-(--ui-header-height) z-10 -mx-4 flex gap-1 overflow-x-auto border-b border-default bg-default/90 px-4 py-2 backdrop-blur sm:-mx-6 sm:px-6"
-			:aria-label="t('reference.jump')"
-		>
-			<a
+		<nav class="rise mt-10 grid grid-cols-2 gap-1 sm:grid-cols-4" style="--rise: 1" :aria-label="t('reference.jump')">
+			<button
 				v-for="(section, i) in sections"
 				:key="section.id"
-				:href="`#${section.id}`"
-				class="micro relative shrink-0 px-2 py-1 transition-colors hover:text-highlighted"
-				:class="active === section.id ? 'text-highlighted' : 'text-muted'"
-				:aria-current="active === section.id ? 'location' : undefined"
-				@click="active = section.id"
+				type="button"
+				class="relative rounded-md px-3 py-3 text-start transition-colors"
+				:class="activeId === section.id ? 'text-highlighted' : 'text-muted hover:text-highlighted'"
+				:aria-current="activeId === section.id ? 'true' : undefined"
+				@click="show(i)"
 			>
-				<span class="text-dimmed">{{ pad(i + 1) }}</span> {{ t(`reference.sections.${section.id}`) }}
-				<span
-					class="absolute inset-x-2 -bottom-2 h-0.5 transition-colors"
-					:class="active === section.id ? 'bg-primary' : 'bg-transparent'"
-					aria-hidden="true"
-				/>
-			</a>
+				<Motion v-if="activeId === section.id" layout-id="reference-tab" :transition="SPRING" class="absolute inset-0 rounded-md bg-accented" />
+				<span class="relative block font-mono text-xs text-dimmed">{{ pad(i + 1) }}</span>
+				<span class="relative mt-1 block text-lg leading-tight">{{ t(`reference.sections.${section.id}`) }}</span>
+			</button>
 		</nav>
+		<p class="rise mt-3 hidden text-xs text-dimmed sm:block" style="--rise: 1">{{ t('reference.keys') }}</p>
 
-		<div class="mt-6 space-y-6">
-			<MicroPanel
-				v-for="(section, i) in sections"
-				:id="section.id"
-				:key="section.id"
-				:index="i + 1"
-				:label="t(`reference.sections.${section.id}`)"
-				:meta="section.entry!.title"
-				class="scroll-mt-32"
+		<!-- initial=false: the first card renders visible in the prerendered page, before any script runs. -->
+		<AnimatePresence mode="wait" :initial="false">
+			<Motion
+				v-if="active"
+				:key="active.id"
+				v-bind="swap('x', 24 * direction)"
+				as="article"
+				class="mt-12"
 			>
-				<!-- Imported cards sometimes open with a top-level heading; inside a panel it should read as a subheading. -->
-				<div class="[&_h1]:mb-3 [&_h1]:text-xl [&_h2]:text-lg [&_h3]:text-base">
-					<ContentRenderer :value="section.entry!" />
+				<!-- Imported cards sometimes open with a top-level heading; here it reads as a subheading. -->
+				<div class="[&_h1]:mb-4 [&_h1]:text-2xl [&_h2]:text-xl [&_h3]:text-lg [&_li]:text-lg [&_p]:text-lg">
+					<ContentRenderer :value="active.entry!" />
 				</div>
-				<MicroRule class="mt-4" />
-				<NuxtLink :to="section.path" class="micro mt-3 inline-flex items-center gap-2 text-muted transition-colors hover:text-highlighted">
-					<UIcon name="i-lucide-arrow-up-right" class="size-3.5" />{{ t('reference.openEntry') }}
-					<span class="text-dimmed">~{{ section.path }}</span>
+				<NuxtLink :to="active.path" class="mt-10 inline-flex items-center gap-1.5 text-muted transition-colors hover:text-highlighted">
+					{{ t('reference.openEntry') }} <UIcon name="i-lucide-arrow-up-right" class="size-4" />
 				</NuxtLink>
-			</MicroPanel>
-		</div>
-	</UContainer>
+			</Motion>
+		</AnimatePresence>
+	</div>
 </template>

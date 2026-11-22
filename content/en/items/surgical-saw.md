@@ -5,6 +5,7 @@ nameEn: Surgical Saw
 category: item
 source: base
 order: 56
+manual: true
 tags:
   - item
   - surgery
@@ -23,7 +24,9 @@ onFailure:
     refs:
       - afflictions/internal-damage
     amount: 6
-  - text: +4% [撕裂伤](https://trello.com/c/H8XCHAS6)
+  - text: +4% [撕裂伤](/afflictions/open-wounds)
+    refs:
+      - afflictions/open-wounds
     amount: 4
 trello:
   shortLink: Ag87tfkz
@@ -42,4 +45,4 @@ trello:
 
 \+15% [出血](/afflictions/bleeding)
 \+6% [内脏损伤](/afflictions/internal-damage)
-\+4% [撕裂伤](https://trello.com/c/H8XCHAS6)
+\+4% [撕裂伤](/afflictions/open-wounds)

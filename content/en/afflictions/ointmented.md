@@ -5,6 +5,7 @@ nameEn: Ointmented
 category: any
 source: base
 order: 7
+manual: true
 tags:
   - interface-visible
   - affliction
@@ -26,9 +27,9 @@ trello:
   url: https://trello.com/c/n31GsGiJ/143-%E8%8D%AF%E8%86%8F%E6%B6%82%E6%95%B7-ointmented
 ---
 
-药膏涂敷有助于保护[伤口](https://trello.com/c/H8XCHAS6)免受感染，对[烧伤](/afflictions/burns)患者非常有用。如果将软膏涂在正在进行手术的身体部位，也有助于防止[手术感染](/afflictions/surgical-infection)。
+药膏涂敷有助于保护[伤口](/afflictions/open-wounds)免受感染，对[烧伤](/afflictions/burns)患者非常有用。如果将软膏涂在正在进行手术的身体部位，也有助于防止[手术感染](/afflictions/surgical-infection)。
 
-Ointmented will help protect [Wounds](https://trello.com/c/i23isLFt/110-wounds) from infection and is very useful for patients suffering from [Burns](/afflictions/burns). Ointmented will also help prevent [Surgical Infection](/afflictions/surgical-infection) if it is applied to the body part that surgery is being done on.
+Ointmented will help protect [Wounds](/afflictions/open-wounds) from infection and is very useful for patients suffering from [Burns](/afflictions/burns). Ointmented will also help prevent [Surgical Infection](/afflictions/surgical-infection) if it is applied to the body part that surgery is being done on.
 
 ---
 

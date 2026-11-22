@@ -5,6 +5,7 @@ nameEn: Dislocations
 category: bones
 source: base
 order: 0
+manual: true
 tags:
   - scanner-visible
   - interface-visible
@@ -14,7 +15,9 @@ pinyin: tuojiu
 pinyinInitials: tj
 aliases: []
 causedBy:
-  - text: "[创伤](https://trello.com/c/H8XCHAS6)（爆炸、钝器伤、内脏损伤）"
+  - text: "[创伤](/afflictions/internal-damage)（爆炸、钝器伤、内脏损伤）"
+    refs:
+      - afflictions/internal-damage
 treatment:
   - text: "[扳手](/items/wrench) （作为一种治疗手段，就像使用绷带一样）技能检查为60点医疗等级，如果有[镇痛](/afflictions/analgesia)的话则只需要30点医疗等级"
     refs:
@@ -37,7 +40,7 @@ Dislocations are common injuries, which most crewmembers will get often. Disloca
 
 ## 由以下原因造成：
 
-- [创伤](https://trello.com/c/H8XCHAS6)（爆炸、钝器伤、内脏损伤）
+- [创伤](/afflictions/internal-damage)（爆炸、钝器伤、内脏损伤）
 
 ## 导致：
 

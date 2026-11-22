@@ -5,6 +5,7 @@ nameEn: Heart Attack
 category: heart
 source: base
 order: 0
+manual: true
 tags:
   - lethal
   - scanner-visible
@@ -35,7 +36,9 @@ treatment:
   - text: "[链激酶](/items/streptokinase)"
     refs:
       - items/streptokinase
-  - text: "[硝化甘油药片](https://trello.com/c/4jAulufZ) （来自NT制药拓展）"
+  - text: "[硝化甘油药片](/info/nt-pharmacy-pills) （来自NT制药拓展）"
+    refs:
+      - info/nt-pharmacy-pills
   - text: 治疗病因
 trello:
   shortLink: SrJcTvaM
@@ -61,5 +64,5 @@ A heart attack must be treated as soon as possible to reduce the risk of heart f
 ## 治疗措施
 
 - [链激酶](/items/streptokinase)
-- [硝化甘油药片](https://trello.com/c/4jAulufZ) （来自NT制药拓展）
+- [硝化甘油药片](/info/nt-pharmacy-pills) （来自NT制药拓展）
 - 治疗病因

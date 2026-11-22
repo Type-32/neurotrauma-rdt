@@ -5,10 +5,12 @@ nameEn: Hypertension
 category: blood
 source: base
 order: 5
+manual: true
 tags:
   - lethal
   - non-lethal
   - mechanic
+  - scanner-visible
 lethal: true
 pinyin: gaoxueya
 pinyinInitials: gxy

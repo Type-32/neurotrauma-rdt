@@ -11,6 +11,24 @@
 
 export type Visibility = 'interface' | 'scanner' | 'analyzer'
 
+/**
+ * Where on the body a finding is, for the triage body map. The body categories
+ * map one to one; "any body part" and "blood" are the whole body. Surgery and
+ * expansion categories have no region.
+ */
+export const BODY_REGIONS = ['head', 'lungs', 'heart', 'torso', 'extremities', 'bones', 'body'] as const
+export type BodyRegion = typeof BODY_REGIONS[number]
+const CATEGORY_REGION: Record<string, BodyRegion> = {
+	head: 'head',
+	lungs: 'lungs',
+	heart: 'heart',
+	torso: 'torso',
+	extremities: 'extremities',
+	bones: 'bones',
+	any: 'body',
+	blood: 'body',
+}
+
 export interface TriageEntry {
 	/** `afflictions/pneumothorax` or `symptoms/headache`. */
 	id: string
@@ -154,6 +172,28 @@ export function createTriage(index: TriageIndex) {
 		return !!entry && (entry.type === 'symptoms' || entry.visibleIn.length > 0)
 	}
 
+	/**
+	 * A finding's body regions. An affliction's come from its category. A
+	 * symptom has none of its own, so it takes the regions of the afflictions
+	 * that lead to it: shortness of breath is in the lungs and the heart,
+	 * because pneumothorax and heart attack both cause it.
+	 */
+	const regions = new Map<string, BodyRegion[]>()
+	for (const entry of index.entries) {
+		if (entry.type !== 'afflictions') continue
+		const region = CATEGORY_REGION[entry.category]
+		regions.set(entry.id, region ? [region] : [])
+	}
+	for (const entry of index.entries) {
+		if (entry.type !== 'symptoms') continue
+		const found = new Set<BodyRegion>()
+		for (const cause of causesOf.get(entry.id) ?? []) for (const region of regions.get(cause) ?? []) found.add(region)
+		regions.set(entry.id, BODY_REGIONS.filter(region => found.has(region)))
+	}
+	function regionsOf(id: string): BodyRegion[] {
+		return regions.get(id) ?? []
+	}
+
 	function evaluate(selectedIds: Iterable<string>, ruledOutIds: Iterable<string> = []): TriageResult {
 		const selected = new Set([...selectedIds].filter(id => byId.has(id)))
 		const ruledOut = new Set([...ruledOutIds].filter(id => byId.has(id) && !selected.has(id)))
@@ -234,7 +274,7 @@ export function createTriage(index: TriageIndex) {
 		return items
 	}
 
-	return { evaluate, entry: (id: string) => byId.get(id), isObservable, causesOf: (id: string) => [...causesOf.get(id) ?? []] }
+	return { evaluate, entry: (id: string) => byId.get(id), isObservable, causesOf: (id: string) => [...causesOf.get(id) ?? []], regionsOf }
 }
 
 /** How much a ruled-out finding counts against a candidate, relative to a present one counting for it. */

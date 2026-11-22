@@ -5,6 +5,7 @@ nameEn: Surgeon Clothes
 category: surgery-plus
 source: surgery-plus
 order: 3
+manual: true
 tags:
   - item
   - very-important
@@ -19,6 +20,6 @@ trello:
 
 外科医生制服是一种可穿戴的物品，穿着时会增加无菌性，降低[手术感染](/afflictions/surgical-infection)的风险
 
-\-10% [钝器伤](https://trello.com/c/H8XCHAS6)
-\-10% [撕裂伤](https://trello.com/c/H8XCHAS6)
-\-10% [咬伤](https://trello.com/c/H8XCHAS6)
+\-10% [钝器伤](/afflictions/internal-damage)
+\-10% [撕裂伤](/afflictions/open-wounds)
+\-10% [咬伤](/afflictions/open-wounds)

@@ -29,6 +29,8 @@ function baseSchema<T extends EntryType>(type: T) {
 		pinyin: z.string().optional(),
 		pinyinInitials: z.string().optional(),
 		aliases: z.array(z.string()).default([]),
+		/** Edited by hand: `import:trello --force` keeps this file instead of regenerating it. */
+		manual: z.boolean().optional(),
 		trello: z.object({
 			shortLink: z.string(),
 			url: z.string().url(),

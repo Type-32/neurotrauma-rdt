@@ -5,6 +5,7 @@ nameEn: Toxin Filter
 category: item
 source: base
 order: 71
+manual: true
 tags: []
 pinyin: dusuguolqi
 pinyinInitials: dsglq
@@ -44,7 +45,7 @@ A filter which can be placed in the [手术台 Surgery Table](/items/surgery-tab
 
 Only [Poison (Affliction Type](https://barotraumagame.com/wiki/Poison_(Affliction_Type) "smartCard-inline") added by vanilla are valid for the toxin filter. For the patient **laying** on the table, the filter reduces each poison at a unique rate depending on its strength. Multiple poisons can be filtered at once. For each poison being filtered, the condition of the filter reduces by 0.8/s, and there is a 0.1% chance per second for the patient to receive [败血症 Sepsis](/afflictions/sepsis). These effects do not occur if the patient is not poisoned.
 
-### [Morbusine](https://trello.com/c/cECw5FD0/136-morbusine-poisoning)
+### [Morbusine](https://barotraumagame.com/wiki/Morbusine)
 
 \-1.8%/s, 0-50% affliction strength
 \-2.3%/s, 50-100% strength

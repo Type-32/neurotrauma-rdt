@@ -26,7 +26,7 @@ trello:
 
 在100% [免疫力 Immunity](/afflictions/immunity)  时发生器官排斥的概率为60% 。公式如下，其中1为100%：
 
-![gialvhanhua.png](https://trello.com/1/cards/6857be27bafb7641c21bf057/attachments/6857c3fda1872dc734330f0c/download/gialvhanhua.png)
+![gialvhanhua.png](/img/entries/34330f0c-gialvhanhua.png)
 
 
 
@@ -40,4 +40,4 @@ Reducing [免疫力 Immunity](/afflictions/immunity) is primarily done using [�
 
 At 100% [免疫力 Immunity](/afflictions/immunity), the chance for organ rejection is 60%. The formula, where 1 is 100%, is as follows:
 
-![image.png](https://trello.com/1/cards/680731058212896f71bc8da0/attachments/6810ae34113758a241fa3235/download/image.png)
+![image.png](/img/entries/41fa3235-image.png)

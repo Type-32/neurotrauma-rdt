@@ -5,6 +5,7 @@ nameEn: Foreign Bodies
 category: any
 source: base
 order: 3
+manual: true
 tags:
   - scanner-visible
   - affliction
@@ -16,7 +17,9 @@ pinyinInitials: tnyw
 aliases: []
 causedBy:
   - text: 爆炸
-  - text: "[枪伤](https://trello.com/c/H8XCHAS6)（打破骨头的枪伤总是会导致异物）"
+  - text: "[枪伤](/afflictions/open-wounds)（打破骨头的枪伤总是会导致异物）"
+    refs:
+      - afflictions/open-wounds
 causes:
   - text: "[动脉出血](/afflictions/arterial-bleeding)（达到20%及以上）"
     refs:
@@ -56,7 +59,7 @@ Foreign bodies are often acquired after firefights or being caught in an explosi
 ## 由以下原因导致：
 
 - 爆炸
-- [枪伤](https://trello.com/c/H8XCHAS6)（打破骨头的枪伤总是会导致异物）
+- [枪伤](/afflictions/open-wounds)（打破骨头的枪伤总是会导致异物）
 
 ## 导致：
 

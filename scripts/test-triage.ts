@@ -12,7 +12,7 @@
  * Also checks the treatment plan follows the guide's treatment-order card.
  */
 import { readFileSync } from 'node:fs'
-import { createTriage, type TriageIndex } from '../shared/utils/triage'
+import { BODY_REGIONS, type BodyRegion, createTriage, type TriageIndex } from '../shared/utils/triage'
 
 const file = process.argv[2] ?? '.output/public/triage-index.json'
 const index = JSON.parse(readFileSync(file, 'utf8')) as TriageIndex
@@ -106,5 +106,35 @@ const pneumo = triage.evaluate(['symptoms/shortness-of-breath', 'symptoms/increa
 const pneumoOk = pneumo.candidates[0]?.entry.id === 'afflictions/pneumothorax'
 console.log(`Shortness of breath + increased heartrate + hyperventilation → Pneumothorax first: ${pneumoOk ? 'ok' : `FAIL (got ${pneumo.candidates[0]?.entry.id})`}`)
 if (!pneumoOk) failed = true
+
+// Body regions for the triage body map: afflictions from their category,
+// symptoms from the afflictions that lead to them.
+const REGION_CASES: Array<[string, BodyRegion, boolean]> = [
+	['afflictions/pneumothorax', 'lungs', true],
+	['afflictions/pneumothorax', 'heart', false],
+	['afflictions/fractures', 'bones', true],
+	['afflictions/heart-attack', 'heart', true],
+	['afflictions/blood-loss', 'body', true],
+	// Pneumothorax leads to shortness of breath, so the symptom is in the lungs.
+	['symptoms/shortness-of-breath', 'lungs', true],
+	['symptoms/headache', 'head', true],
+]
+let regionsOk = true
+for (const [id, region, expected] of REGION_CASES) {
+	if (triage.regionsOf(id).includes(region) !== expected) {
+		regionsOk = false
+		console.log(`  REGION MISS ${id} ${expected ? 'should' : 'should not'} be in ${region} (got ${triage.regionsOf(id).join(', ') || 'none'})`)
+	}
+}
+// Every region must offer something to pick, or its button would be empty.
+for (const region of BODY_REGIONS) {
+	const count = index.entries.filter(entry => triage.isObservable(entry.id) && triage.regionsOf(entry.id).includes(region)).length
+	if (!count) {
+		regionsOk = false
+		console.log(`  REGION EMPTY ${region}`)
+	}
+}
+console.log(`Body regions: ${regionsOk ? 'ok' : 'FAIL'}`)
+if (!regionsOk) failed = true
 
 process.exit(failed ? 1 : 0)

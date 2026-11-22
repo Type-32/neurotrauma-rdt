@@ -278,7 +278,13 @@ Original plan:
 
 ## Phase 10: Triage body schematic
 
-**Status:** not started. A body diagram on the triage page, as a faster way to narrow findings by where they are. It filters the existing finding chips; it does not replace them.
+**Status:** done (2026-11-22). A body diagram on the triage page, as a faster way to narrow findings by where they are. It filters the finding words; it does not replace them.
+
+**As built:**
+- `createTriage().regionsOf(id)` in `shared/utils/triage.ts` (computed in the browser from the index, not stored in it). Afflictions by category (no affliction uses `alsoIn`); "any" and "blood" are the whole body; surgery and expansion categories have none. Symptoms take their causes' regions. Of 95 observable findings: head 19, lungs 8, heart 12, torso 19, limbs 7, bones 7, whole body 37, none 10; no finding is in more than four regions, so the weighting fallback below wasn't needed. `test:triage` checks known cases and that no region is empty.
+- `app/components/Triage/Body.vue`: a geometric front-view figure (head, torso, lungs and heart inside it, limbs, bones as a dashed line overlay, the whole body as a dashed outline), with a list of the regions and counts beside it. The figure is for pointing and hidden from screen readers; the list buttons (`aria-pressed`) carry the labels and keyboard access; hovering either highlights both. Filled = findings picked there; outlined red / amber / grey = where the five likely causes are; accent = the active filter.
+- Pick step: a 19rem column beside the words at desktop sizes; on phones a collapsed "Filter by body part" panel above them. While filtered, the picker shows "Only Lungs ×", the tab counts follow, and picked words stay visible. The region isn't in the URL.
+- Changed from the plan: the whole body is the dashed outline rather than a ring, and bones are a line overlay that is always drawn (no separate toggle).
 
 **Data**
 
@@ -311,20 +317,27 @@ Original plan:
 
 ## Phase 11: Content cleanup
 
-**Status:** not started. From the Phase 2 import report.
+**Status:** done (2026-11-22). From the Phase 2 import report.
 
-- **8 unlinked "leads to" mentions:** fix by hand in `content/en`. These also improve triage, so do them before Phase 10.
-- **42 links to cards that only exist on the original board** (mainly 伤口 Wounds and several pill cards): read those cards from the original board, add them as entries, and point the links at them. Unlink any that are not worth an entry.
-- **217 images still hosted on Trello:** download them in the importer to `public/img/entries/`, rewrite the URLs, and serve them through `@nuxt/image`. Keep them out of the precache and cache them at runtime (CacheFirst), so the first-visit download stays near 5 MB. Check the total size and whether Trello's attachment URLs need a signed-in request before committing to this.
-- **Still to confirm by hand:** the Vercel deploy from `dev`, and the Install button in a real Chrome or Edge.
+**Done (2026-11-22):**
+- Of the 8 unlinked "leads to" warnings, 2 were real and are now linked: infected wounds → [immunity](/afflictions/immunity), sufforin poisoning → [confusion](/symptoms/confusion) (both reach triage). The other 6 name an entry without being a cause of it (a fracture as the condition for amputation, "出血" inside "内出血", a healing-rate note…). They're listed with reasons in `NOT_CAUSES` in `scripts/check-content.ts`, so the check is at 0 warnings.
+- **Hand edits survive re-imports.** Decided: keep the importer, with a `manual: true` frontmatter flag (in the schema). `import:trello --force` regenerates everything else and keeps flagged files as they are. Flagged so far: hypertension, hypotension, infected-wounds, sufforin-poisoning. Any future hand edit should add the flag.
+- **Links to the original board: 0 left** (99 raw Trello card links across 35 entries, of which the report counted 42). The archived "伤口 Wounds" card was later split on the current board, so wound links go to [开放性伤口 Open Wounds](/afflictions/open-wounds) (lacerations, gunshot, bite, generic "wounds") or [内伤 Internal Damage](/afflictions/internal-damage) (blunt force, "internal wounds"); "创伤" lines follow what they list. Links into the English board's copies of existing entries go to those entries; organ procurement scalpels go to organ transplant surgery; Morbusine (base game) to the official wiki. Bare URLs became labelled links, and frontmatter items gained the matching `refs`, so triage sees them. Each `trello.url` provenance field is kept. The rewritten entries are flagged `manual: true`.
+- **New entry: [制药拓展药丸 NT Pharmacy Pills](/info/nt-pharmacy-pills)**, from the six NT Pharmacy pill cards the medkit loadouts and cardiac arrest / heart attack linked to: what each treats and its recipe, both languages, linked to our item entries.
+- **Images:** the content used only 5 Trello-hosted images (the other ~210 in the report are card attachments the importer never put into entries). They're downloaded to `public/img/entries/` (about 260 KB) and linked locally. `bun run localize:images` (`scripts/localize-images.ts`) does this and can be re-run after any import; Trello serves public attachments without signing in.
 
-**Decision needed before this phase:** once entries are edited by hand, re-running `import:trello` would overwrite the edits. Either the content folder becomes the source of truth and the importer is retired, or the importer learns to skip hand-edited files (a `manual: true` frontmatter flag).
+- ~~**8 unlinked "leads to" mentions**~~: done (see above).
+- ~~**42 links to cards that only exist on the original board**~~: done (see above).
+- ~~**217 images still hosted on Trello**~~: done (see above).
+- **Still to confirm by hand:** the Vercel deploy (once Vercel Authentication is off for the project). The Install button went with the PWA in Phase 12.
+
+**Decided:** the importer stays and skips hand-edited files marked `manual: true` (see Done above).
 
 **Suggested order:** Phase 9, then the "leads to" fixes from Phase 11, then Phase 10, then the rest of Phase 11.
 
 ## Phase 12: Rebuild the interface
 
-**Status:** 12.1–12.3 built, waiting for review before 12.4. Replaces the look built in the art-direction work and Phase 9, and removes Phase 7 (PWA). Phase 10 (body schematic) is on hold until this is done.
+**Status:** done (12.1–12.6). Phase 11 is done too; Phase 10 (body schematic) is next. Replaces the look built in the art-direction work and Phase 9, and removes Phase 7 (PWA). Phase 10 (body schematic) is on hold until this is done.
 
 **Built so far, and where it differs from the plan below:**
 - PWA removed; `public/sw.js` is the kill switch (checked: an old installed worker unregistered itself and its caches were cleared).
@@ -334,6 +347,20 @@ Original plan:
 - Layout: on desktop the answer takes the wide left column and the question and picker sit in a right column; on a phone they stack with the answer first. No bottom sheet: stacking read better with the dock at the bottom.
 - A symptom's own relief (e.g. for nausea) does not lead as "Treat now"; only conditions do. It still runs in the step-through.
 - Swaps (leading cause, question, treatment step) use short timed transitions, not springs: a spring's settle made `mode="wait"` feel stuck.
+- 12.4 entry pages (`app/pages/[...slug].vue`): one reading column. Name, lethality word, second-language name, then one quiet line of details (where it shows, skill checks, expansion, flags, code). The sections a medic came for lead, per type (`LEAD` in the page): first aid and treatment everywhere, plus what causes a symptom, what an item treats and its effects, and a procedure's steps. Lead lists over four items drop a size. Everything else folds below (`UCollapsible`, kept in the DOM for find). Info entries with no sections show their guide text as the page.
+- Procedure steps: a numbered list plus "Step through", which opens the same full-screen step-through as triage (`app/components/StepThrough.vue`; triage's `Treatment.vue` now wraps it). The session-storage checklist and the status panel are gone.
+- Page entrances use a CSS animation (`.rise` in `main.css`), not motion-v, so the prerendered page is visible even before or without JavaScript. motion-v is for interaction.
+- Triage picker opens on an "All" tab (every finding, symptoms first); the source tabs narrow it. "+ N more" is full-size, not a micro-label.
+- 12.5 database (`app/pages/[type]/index.vue`): the type routes stay (`/afflictions`, `/symptoms`…, all prerendered) but share one page key, so the type switch slides its marker instead of reloading and the filter carries over. Names only in a 1–4 column grid by category, lethal dot, second-language name as tooltip. The filter matches English, 中文, pinyin and initials, the tab counts follow it, and an empty result points at the types that do match.
+- 12.5 reference (`app/pages/reference.vue`): one card at a time; large numbered tabs or ← → switch, the card slides in the direction of travel, and the hash (`/reference#order`) selects the card. Prose at 18 px.
+- The dock search replaced the modal palette in 12.2.
+- **Triage flow, revised after friends tested it (2026-11-21).** Tapping one symptom used to jump straight to an answer, so testers took it as final; the narrowing question and "add more" sat in a side column and read as unrelated suggestions. Now two clear steps: (1) pick, multi-select, words mark in place, and a bar above the dock shows the count, a live "Most likely …" preview and **Get answer** (Enter); (2) answer, one column read top to bottom: Edit findings / Copy link / Clear, the patient strip, the most likely cause, **Narrow it down** directly under it (inside `TriageAnswer`'s `narrow` slot), what to do, other causes, then "Add what else you see". The step is in the URL (`&a=1`). Picking replaces the history entry; changing step and answering questions push one.
+- The selection is local state synced to the URL, not read from it: reading from the URL lost quick taps (the second tap read the query before the first navigation landed).
+- Hypertension and hypotension had no visibility tag in the guide, so triage never offered them. Tagged `scanner-visible` in `content/en` (the health scanner reports blood pressure). A re-run of `import:trello` would drop this; see the Phase 11 decision about hand edits.
+- 12.6 clean-up: removed `MicroPanel`, `MicroRule`, `MicroPageHead`, `MicroScramble`, `MicroGraphic`, `EntryRow`, the 12 pack SVGs and `scripts/import-micrographics.ts` (and `svgo`), the `.micro-frame` / `.micro-rule` / `.micro-grid` / `.micro-cursor` styles and their colour variables, the search modal's leftover state, and 27 unused interface messages. Kept: the palettes, Saans, the `micro` label style, `MicroBar` (threshold gauges), `--micro-mark` (dotted link underlines).
+- Final pass on the static build: every page in dark and light, English and Chinese, at 1600×900 and 375 wide. Long display names (e.g. Hemotransfusion Shock) overflowed a phone; they now hyphenate and wrap, one size smaller on phones.
+- **Fixed after the pass:** Chinese readers got "Hydration completed but contains mismatches" on every load: pages are prerendered in English, and the i18n module switched to Chinese before hydration. Browser-language detection is now off in the module; `app/plugins/locale.client.ts` hydrates in English, then switches to the reader's language (the `i18n_locale` cookie, else Chinese when the browser prefers it) once the page is live, and remembers every switch in the same cookie. Checked on the static build: no mismatches in either language, and the choice survives a reload.
+- **Not checked in a browser:** reduced motion. motion-v follows it through `MotionConfig reduced-motion="user"`, and the CSS animations (`.rise`, page transitions, orbit spin) have `prefers-reduced-motion` blocks.
 
 **Why:** the current pages give everything the same weight. Every panel has brackets, a number, a label and a dashed rule; triage shows 100+ boxed two-line chips at once; the answer (what to do for the patient) is the smallest thing on screen. Nothing responds when touched beyond a colour change. The palettes and fonts stay. The layout, the density and the motion are rebuilt.
 
@@ -413,6 +440,29 @@ The page becomes a conversation with one question on screen, not a wall of optio
 - Static generation stays; only the PWA goes.
 - The body schematic waits.
 
+## Phase 13 (later): AI assist
+
+**Status:** idea, not scheduled. Nothing here should change how the site works without it: the deterministic triage and search stay the source of truth, and AI only fills their inputs or explains their outputs.
+
+**What it would do**
+1. **Describe the patient in words.** "He's pale, throwing up, can barely breathe" → Claude maps it to finding ids from the triage index (seen and ruled out), and they land on the patient strip exactly as if tapped. The ranking, questions and treatment still come from `shared/utils/triage.ts`, so the answer is always the guide's, never invented. Works in English or Chinese.
+2. **Ask the guide.** A question in the dock ("what do I do about a heart attack without a defibrillator?") → an answer grounded in the guide's entries, citing and linking the entries it used. Retrieval reuses the search index to pick the relevant entries; their text goes into the prompt.
+
+**How**
+- **Needs a server.** The site is static today. Add one server route per feature (`server/api/ai/*.post.ts`) and deploy on Vercel with Nitro's `vercel` preset for those routes, keeping every page prerendered (hybrid: route rules prerender pages, the AI routes run as functions). The API key lives only in Vercel's environment (`ANTHROPIC_API_KEY`), never in the client.
+- **SDK.** Server-side, the official Anthropic TypeScript SDK (`@anthropic-ai/sdk`). It supports the features below directly. The Vercel AI SDK (`ai` + `@ai-sdk/anthropic`, with `@ai-sdk/vue` for streaming UI) is the alternative you suggested; decide when building, mainly on whether its streaming helpers are worth an extra layer.
+- **Model.** `claude-opus-5-5` for both, with `output_config.effort` set per route: `low` for mapping (a short, structured task), `medium` for answering. A cheaper model (`claude-haiku-5-5`) is an option for mapping if cost matters; that's your call after seeing real usage.
+- **Mapping uses structured outputs, not forced tool calls.** Forced `tool_choice` returns a 400 on current models. Instead, `output_config.format` with a JSON schema whose ids are an enum of the triage index's observable finding ids, split into `seen` and `ruledOut`. The response then can't contain an id that doesn't exist. Validate it again server-side anyway.
+- **Answers stream** (`client.messages.stream`), so text appears as it's written, and cite entries as links.
+- **Refusals.** Check `stop_reason` before reading output. Enable server-side refusal fallbacks (`fallbacks: "default"`, beta `server-side-fallback-2026-07-01`) so a declined request is retried on another model in the same call.
+- **Caching.** The system prompt and the finding list are the same on every request; mark them with `cache_control` so repeat requests are cheaper.
+
+**Risks and limits**
+- **Cost and abuse with no accounts.** Anyone can hit an anonymous endpoint. Rate-limit per IP (Vercel KV or Upstash), cap input length and `max_tokens`, and add a daily spend ceiling that switches the feature off.
+- **Not offline.** The rest of the site works from the CDN; AI needs a connection. Hide the AI entry points when offline or when the route errors.
+- **Wrong mappings.** The medic sees every mapped finding on the strip before anything else happens and can remove it, so a bad mapping is visible, not silent.
+- **Evaluation.** Before shipping, a small eval: ~50 written patient descriptions (both languages) with expected findings, scored for precision and recall of the mapped ids.
+
 ## Phase 8 (optional): Server features
 
 Add these only if wanted. Content pages stay prerendered and search stays in the browser. None of them needs user accounts.
@@ -432,4 +482,4 @@ Moving from `nuxt generate` to a hybrid deployment is a config change, not a rew
 - **Thresholds.** Values such as "达到40%及以上" sit in free text and are read by pattern matching, so they need a manual check.
 - **Links to the original board.** Matched by name; 42 still point at cards that only exist there (mainly 伤口 Wounds and several pill cards).
 - **Missing content.** The Eyes Expansion list is empty, and Cybernetics has no images.
-- **Locale flash.** With no locale in URLs, `zh` readers briefly see English UI on a full page load (see "Localization").
+- **Locale flash.** With no locale in URLs, `zh` readers briefly see English UI on a full page load (see "Localization"). By design since the hydration fix: the page hydrates in English, then switches (`app/plugins/locale.client.ts`). Removing the flash would need a prerendered Chinese copy of each page served by language at the edge.

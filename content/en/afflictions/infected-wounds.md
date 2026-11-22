@@ -5,6 +5,7 @@ nameEn: Infected Wounds
 category: any
 source: base
 order: 2
+manual: true
 tags:
   - scanner-visible
   - affliction
@@ -13,9 +14,10 @@ pinyin: shangkouganran
 pinyinInitials: skgr
 aliases: []
 causedBy:
-  - text: 放任[伤口](https://trello.com/c/H8XCHAS6/10-%E4%BC%A4%E5%8F%A3-wounds)（撕裂伤、[烧伤](/afflictions/burns)、枪伤、咬伤、深层组织损伤、出血）溃烂。如果伤口处有肮脏的绷带，这将会大大加快感染速度。
+  - text: 放任[伤口](/afflictions/open-wounds)（撕裂伤、[烧伤](/afflictions/burns)、枪伤、咬伤、深层组织损伤、出血）溃烂。如果伤口处有肮脏的绷带，这将会大大加快感染速度。
     refs:
       - afflictions/burns
+      - afflictions/open-wounds
 causes:
   - text: "[败血症](/afflictions/sepsis)（达到50%及以上）"
     refs:
@@ -25,7 +27,9 @@ causes:
     refs:
       - symptoms/inflammation
     threshold: 10
-  - text: 免疫力降低
+  - text: "[免疫力](/afflictions/immunity)降低"
+    refs:
+      - afflictions/immunity
 treatment:
   - text: "[抗生素软膏](/items/antibiotic-ointment)"
     refs:
@@ -50,13 +54,13 @@ Infected wounds are caused by letting wounds fester, and should be cleaned in or
 
 ## 由以下原因造成：
 
-- 放任[伤口](https://trello.com/c/H8XCHAS6/10-%E4%BC%A4%E5%8F%A3-wounds)（撕裂伤、[烧伤](/afflictions/burns)、枪伤、咬伤、深层组织损伤、出血）溃烂。如果伤口处有肮脏的绷带，这将会大大加快感染速度。
+- 放任[伤口](/afflictions/open-wounds)（撕裂伤、[烧伤](/afflictions/burns)、枪伤、咬伤、深层组织损伤、出血）溃烂。如果伤口处有肮脏的绷带，这将会大大加快感染速度。
 
 ## 导致：
 
 - [败血症](/afflictions/sepsis)（达到50%及以上）
 - [炎症](/symptoms/inflammation)（达到10%及以上）
-- 免疫力降低
+- [免疫力](/afflictions/immunity)降低
 
 ## 治疗措施：
 

@@ -4,6 +4,7 @@ nameZh: 医疗箱建议
 category: general
 source: base
 order: 8
+manual: true
 tags:
   - info
 pinyin: yiliaoxiangjianyi
@@ -25,14 +26,14 @@ trello:
 [血袋 Blood Packs](/items/blood-packs) 最好是O-或O+型血袋。
 [石膏 Gypsum](/items/gypsum)
 [创伤剪 Trauma Shears](/items/trauma-shears)
-[https://trello.com/c/JJqSfArs](https://trello.com/c/JJqSfArs) 或[药用鸦片 Opium](/items/opium) 与[扳手 Wrench](/items/wrench) 用于治疗脱臼。
-[https://trello.com/c/jVKwPifs](https://trello.com/c/jVKwPifs)
+[无痛药丸 Dislocation pills](/info/nt-pharmacy-pills) 或[药用鸦片 Opium](/items/opium) 与[扳手 Wrench](/items/wrench) 用于治疗脱臼。
+[感染药丸 Minor husk/sepsis pills](/info/nt-pharmacy-pills)
 
 扳手不能被放在医疗箱中，但是它十分常见，可用于治疗脱臼。
 
 ### 医生的医疗箱1
 
-[药用鸦片 Opium](/items/opium)、[吗啡 Morphine](/items/morphine) 或你选择[https://trello.com/c/mcE5BbjG](https://trello.com/c/mcE5BbjG)
+[药用鸦片 Opium](/items/opium)、[吗啡 Morphine](/items/morphine) 或你选择[小手术丸 Minor surgery pills](/info/nt-pharmacy-pills)
 [绷带 Bandages](/items/bandages)
 [缝合线 Sutures](/items/sutures) ，如果你携带了手术工具箱则可以放在其中
 [止血带 Tourniquet](/items/tourniquet)
@@ -53,9 +54,9 @@ trello:
 [急救呼吸气囊 Ambubag](/items/ambubag)
 装有[消毒剂Antiseptic](/items/antiseptic) 的[消毒喷雾器 Antiseptic Sprayer](/items/antiseptic-sprayer) 或者[抗生素软膏 Antibiotic Ointment](/items/antibiotic-ointment)
 [手动除颤器 Manual Defibrillator](/items/manual-defibrillator) 或者[自动体外除颤器 AED](/items/aed)
-[https://trello.com/c/FbTc0cWD](https://trello.com/c/FbTc0cWD) 或[甘露醇 Mannitol](/items/mannitol)
-[https://trello.com/c/jVKwPifs](https://trello.com/c/jVKwPifs)或者[广谱抗生素 Broad-spectrum Antibiotics](/items/broad-spectrum-antibiotics)
-[https://trello.com/c/pc413yh0](https://trello.com/c/pc413yh0) 或皮虫净
+[神经伤药丸 Neurotrauma pills](/info/nt-pharmacy-pills) 或[甘露醇 Mannitol](/items/mannitol)
+[感染药丸 Minor husk/sepsis pills](/info/nt-pharmacy-pills)或者[广谱抗生素 Broad-spectrum Antibiotics](/items/broad-spectrum-antibiotics)
+[驱虫药丸 Major husk pills](/info/nt-pharmacy-pills) 或皮虫净
 [可塑人造皮肤 Plastiseal](/items/plastiseal)
 
 ### 手术工具箱

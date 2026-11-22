@@ -5,6 +5,7 @@ nameEn: Bandages
 category: item
 source: base
 order: 11
+manual: true
 tags:
   - item
   - first-aid
@@ -51,4 +52,4 @@ trello:
 \+36% [绷带包扎](/afflictions/bandaged)
 \-18% [出血](/afflictions/bleeding)
 
-使用绷带也会替换所在肢体上的脏绷带。每给玩家施加一个绷带，将得到一个减少10%的移动速度的debuff。绷带包扎的效果会加速[伤口](https://trello.com/c/H8XCHAS6/10-%E4%BC%A4%E5%8F%A3-wounds)的愈合速度，并保护伤口不受[感染](https://trello.com/b/L1OlKnqk/wipneurotrauma-guide-cn)，然而如果绷带变脏并包扎在伤口上，那么感染速度将急剧增加。绷带可以使用[创伤剪](/items/trauma-shears)或者[潜水刀](/items/diving-knife)移除。
+使用绷带也会替换所在肢体上的脏绷带。每给玩家施加一个绷带，将得到一个减少10%的移动速度的debuff。绷带包扎的效果会加速[伤口](/afflictions/open-wounds)的愈合速度，并保护伤口不受[感染](https://trello.com/b/L1OlKnqk/wipneurotrauma-guide-cn)，然而如果绷带变脏并包扎在伤口上，那么感染速度将急剧增加。绷带可以使用[创伤剪](/items/trauma-shears)或者[潜水刀](/items/diving-knife)移除。

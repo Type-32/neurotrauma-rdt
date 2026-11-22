@@ -5,6 +5,9 @@
  * type with its first aid in the accent colour, the single hottest thing on
  * screen. Other candidates sit below as a short ranked list that physically
  * reorders as evidence arrives; tapping one looks at it instead.
+ *
+ * The "narrow" slot sits right under the leading cause, before what to do,
+ * so narrowing it down reads as the next step of the answer, not an extra.
  */
 const props = defineProps<{
 	result: TriageResult
@@ -92,7 +95,7 @@ const barOf = (share: number) => `${Math.max(4, Math.round(share / (props.result
 							:key="leader.entry.id"
 							v-bind="swap('y', 14)"
 						>
-							<h2 class="mt-2 font-brand text-5xl font-semibold leading-[1.02] tracking-tight text-highlighted sm:text-6xl">
+							<h2 class="mt-2 hyphens-auto break-words font-brand text-4xl font-semibold leading-[1.02] tracking-tight text-highlighted sm:text-6xl">
 								{{ nameOf(leader.entry.id).primary }}
 							</h2>
 							<p class="mt-2 flex flex-wrap items-baseline gap-x-3 text-lg">
@@ -123,12 +126,16 @@ const barOf = (share: number) => `${Math.max(4, Math.round(share / (props.result
 				</template>
 			</p>
 
+			<div v-if="$slots.narrow" class="mt-8">
+				<slot name="narrow" />
+			</div>
+
 			<!-- What to do -->
 			<AnimatePresence mode="wait">
 				<Motion
 					:key="leader.entry.id"
 					v-bind="swap('y', 8)"
-					class="mt-8"
+					class="mt-10"
 				>
 					<template v-if="leader.entry.firstAid.length">
 						<p class="micro text-primary">{{ t('triage.firstAid') }}</p>

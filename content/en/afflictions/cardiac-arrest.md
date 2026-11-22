@@ -5,6 +5,7 @@ nameEn: Cardiac Arrest
 category: heart
 source: base
 order: 1
+manual: true
 tags:
   - lethal
   - affliction
@@ -70,7 +71,9 @@ treatment:
     refs:
       - items/manual-defibrillator
       - items/aed
-  - text: "[硝化甘油药片](https://trello.com/c/4jAulufZ) （来自NT制药拓展）"
+  - text: "[硝化甘油药片](/info/nt-pharmacy-pills) （来自NT制药拓展）"
+    refs:
+      - info/nt-pharmacy-pills
 trello:
   shortLink: TAga7Gf4
   url: https://trello.com/c/TAga7Gf4/15-%E5%BF%83%E6%90%8F%E9%AA%A4%E5%81%9C-cardiac-arrest
@@ -106,4 +109,4 @@ Cardiac arrest will cause blood pressure to plummet significantly, and must be d
 - 治疗病因
 - [肾上腺素](/items/adrenaline)
 - [手动除颤器](/items/manual-defibrillator)或[AED](/items/aed)
-- [硝化甘油药片](https://trello.com/c/4jAulufZ) （来自NT制药拓展）
+- [硝化甘油药片](/info/nt-pharmacy-pills) （来自NT制药拓展）
