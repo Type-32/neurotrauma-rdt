@@ -14,9 +14,10 @@ pinyin: shangkouganran
 pinyinInitials: skgr
 aliases: []
 causedBy:
-  - text: 放任[伤口](https://trello.com/c/H8XCHAS6/10-%E4%BC%A4%E5%8F%A3-wounds)（撕裂伤、[烧伤](/afflictions/burns)、枪伤、咬伤、深层组织损伤、出血）溃烂。如果伤口处有肮脏的绷带，这将会大大加快感染速度。
+  - text: 放任[伤口](/afflictions/open-wounds)（撕裂伤、[烧伤](/afflictions/burns)、枪伤、咬伤、深层组织损伤、出血）溃烂。如果伤口处有肮脏的绷带，这将会大大加快感染速度。
     refs:
       - afflictions/burns
+      - afflictions/open-wounds
 causes:
   - text: "[败血症](/afflictions/sepsis)（达到50%及以上）"
     refs:
@@ -53,7 +54,7 @@ Infected wounds are caused by letting wounds fester, and should be cleaned in or
 
 ## 由以下原因造成：
 
-- 放任[伤口](https://trello.com/c/H8XCHAS6/10-%E4%BC%A4%E5%8F%A3-wounds)（撕裂伤、[烧伤](/afflictions/burns)、枪伤、咬伤、深层组织损伤、出血）溃烂。如果伤口处有肮脏的绷带，这将会大大加快感染速度。
+- 放任[伤口](/afflictions/open-wounds)（撕裂伤、[烧伤](/afflictions/burns)、枪伤、咬伤、深层组织损伤、出血）溃烂。如果伤口处有肮脏的绷带，这将会大大加快感染速度。
 
 ## 导致：
 

@@ -5,6 +5,7 @@ nameEn: Arterial Bleeding
 category: extremities
 source: base
 order: 0
+manual: true
 tags:
   - lethal
   - affliction
@@ -14,7 +15,9 @@ pinyin: dongmaichuxue
 pinyinInitials: dmcx
 aliases: []
 causedBy:
-  - text: "[伤口](https://trello.com/c/H8XCHAS6/10-%E4%BC%A4%E5%8F%A3-wounds) (80%及以上)"
+  - text: "[伤口](/afflictions/open-wounds) (80%及以上)"
+    refs:
+      - afflictions/open-wounds
     threshold: 80
   - text: "[创伤性截肢](/afflictions/traumatic-amputation)"
     refs:
@@ -50,7 +53,7 @@ Arterial ruptures are extremely dangerous and require emergency care as soon as 
 
 ## 由以下原因造成：
 
-- [伤口](https://trello.com/c/H8XCHAS6/10-%E4%BC%A4%E5%8F%A3-wounds) (80%及以上)
+- [伤口](/afflictions/open-wounds) (80%及以上)
 - [创伤性截肢](/afflictions/traumatic-amputation)
 - [异物](/afflictions/foreign-bodies)(20%及以上)
 - 骨折时可能发生

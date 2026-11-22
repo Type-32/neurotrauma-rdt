@@ -5,6 +5,7 @@ nameEn: Plastiseal
 category: item
 source: base
 order: 40
+manual: true
 tags:
   - item
   - first-aid
@@ -57,4 +58,4 @@ trello:
 \-24% 出血
 \-12% [烧伤](/afflictions/burns)
 
-使用可塑人造皮肤也会替换包扎在肢体上的任何脏绷带。每给玩家施加一次可塑人造皮肤都会获得减少10%的移动速度的debuff。绷带包扎的效果会加速[伤口](https://trello.com/c/H8XCHAS6/10-%E4%BC%A4%E5%8F%A3-wounds)的愈合速度，并保护伤口不受[感染](/afflictions/infected-wounds)，然而如果绷带变脏并包扎在伤口上，那么感染速度将急剧增加。可塑人造皮肤也可以在[皮肤牵开](/afflictions/retracted-skin)后使用，以治疗三级[烧伤](/afflictions/burns)。
+使用可塑人造皮肤也会替换包扎在肢体上的任何脏绷带。每给玩家施加一次可塑人造皮肤都会获得减少10%的移动速度的debuff。绷带包扎的效果会加速[伤口](/afflictions/open-wounds)的愈合速度，并保护伤口不受[感染](/afflictions/infected-wounds)，然而如果绷带变脏并包扎在伤口上，那么感染速度将急剧增加。可塑人造皮肤也可以在[皮肤牵开](/afflictions/retracted-skin)后使用，以治疗三级[烧伤](/afflictions/burns)。

@@ -5,6 +5,7 @@ nameEn: Pneumothorax
 category: lungs
 source: base
 order: 2
+manual: true
 tags:
   - affliction
   - non-lethal
@@ -16,7 +17,9 @@ causedBy:
   - text: "[骨折](/afflictions/fractures) (肋骨骨折，如果没有包扎的话)"
     refs:
       - afflictions/fractures
-  - text: "[创伤](https://trello.com/c/H8XCHAS6)（枪伤、爆炸、撕裂伤、咬伤、钝器伤、内伤)"
+  - text: "[创伤](/afflictions/open-wounds)（枪伤、爆炸、撕裂伤、咬伤、钝器伤、内伤)"
+    refs:
+      - afflictions/open-wounds
 causes:
   - text: "[呼吸困难](/symptoms/shortness-of-breath) (达到40%及以上)"
     refs:
@@ -52,7 +55,7 @@ Pneumothorax will prevent [低血氧 Hypoxemia](/afflictions/hypoxemia) from dec
 ## 由以下原因造成：
 
 - [骨折](/afflictions/fractures) (肋骨骨折，如果没有包扎的话)
-- [创伤](https://trello.com/c/H8XCHAS6)（枪伤、爆炸、撕裂伤、咬伤、钝器伤、内伤)
+- [创伤](/afflictions/open-wounds)（枪伤、爆炸、撕裂伤、咬伤、钝器伤、内伤)
 
 ## 导致：
 

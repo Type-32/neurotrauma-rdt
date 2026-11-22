@@ -203,4 +203,4 @@ trello:
 
 
 
-![man.png](https://trello.com/1/cards/6857bd74525d47997e5cfc56/attachments/686dd1bc1f507c9000aa2e40/download/man.png)
+![man.png](/img/entries/00aa2e40-man.png)

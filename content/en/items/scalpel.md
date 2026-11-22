@@ -5,6 +5,7 @@ nameEn: Scalpel
 category: item
 source: base
 order: 47
+manual: true
 tags:
   - item
   - surgery
@@ -19,7 +20,9 @@ onFailure:
     refs:
       - afflictions/bleeding
     amount: 15
-  - text: +10% [撕裂伤](https://trello.com/c/H8XCHAS6)
+  - text: +10% [撕裂伤](/afflictions/open-wounds)
+    refs:
+      - afflictions/open-wounds
     amount: 10
 trello:
   shortLink: u3LAdUsS
@@ -37,4 +40,4 @@ trello:
 ### 应用失败时：
 
 \+15% [出血](/afflictions/bleeding)
-\+10% [撕裂伤](https://trello.com/c/H8XCHAS6)
+\+10% [撕裂伤](/afflictions/open-wounds)

@@ -5,6 +5,7 @@ nameEn: Aortic Rupture
 category: torso
 source: base
 order: 0
+manual: true
 tags:
   - scanner-visible
   - affliction
@@ -14,7 +15,9 @@ pinyin: zhudongmaipolie
 pinyinInitials: zdmpl
 aliases: []
 causedBy:
-  - text: "[伤口](https://trello.com/c/H8XCHAS6/10-%E4%BC%A4%E5%8F%A3-wounds)（出血，80%及以上，如果在躯干部位）"
+  - text: "[伤口](/afflictions/open-wounds)（出血，80%及以上，如果在躯干部位）"
+    refs:
+      - afflictions/open-wounds
     threshold: 80
   - text: "[异物](/afflictions/foreign-bodies)（20%及以上，如果在躯干部位）"
     refs:
@@ -56,7 +59,7 @@ Aortic ruptures are one of the most serious injuries one can experience. The vic
 
 ## 由以下原因造成：
 
-- [伤口](https://trello.com/c/H8XCHAS6/10-%E4%BC%A4%E5%8F%A3-wounds)（出血，80%及以上，如果在躯干部位）
+- [伤口](/afflictions/open-wounds)（出血，80%及以上，如果在躯干部位）
 - [异物](/afflictions/foreign-bodies)（20%及以上，如果在躯干部位）
 
 ## 导致：

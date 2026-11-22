@@ -5,6 +5,7 @@ nameEn: Infected Stomach Cavity Surgery
 category: procedure
 source: base
 order: 5
+manual: true
 tags:
   - surgery
   - procedure
@@ -39,7 +40,9 @@ steps:
   - text: "[止血钳 Hemostat](/items/hemostat)"
     refs:
       - items/hemostat
-  - text: "[https://trello.com/c/Kw9ovTrw/59-skin-retractors](https://trello.com/c/Kw9ovTrw/59-skin-retractors)"
+  - text: "[牵开器 Retractors](/items/retractors)"
+    refs:
+      - items/retractors
   - text: "[消毒喷雾器 Antiseptic Sprayer](/items/antiseptic-sprayer) with [生理盐水 Saline](/items/saline)"
     refs:
       - items/antiseptic-sprayer
@@ -68,6 +71,6 @@ trello:
 1. Anesthetic of your choice ([镇痛 Analgesia](/afflictions/analgesia), [麻醉 Anesthesia](/afflictions/anesthesia) )
 2. [手术刀 Scalpel](/items/scalpel)
 3. [止血钳 Hemostat](/items/hemostat)
-4. [https://trello.com/c/Kw9ovTrw/59-skin-retractors](https://trello.com/c/Kw9ovTrw/59-skin-retractors)
+4. [牵开器 Retractors](/items/retractors)
 5. [消毒喷雾器 Antiseptic Sprayer](/items/antiseptic-sprayer) with [生理盐水 Saline](/items/saline)
 6. [缝合线 Sutures](/items/sutures)

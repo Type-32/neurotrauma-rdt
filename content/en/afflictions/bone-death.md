@@ -5,6 +5,7 @@ nameEn: Bone Death
 category: bones
 source: base
 order: 2
+manual: true
 tags:
   - non-lethal
   - affliction
@@ -31,7 +32,7 @@ trello:
 ---
 
 骨坏死虽然通常不致命，但如果你缺乏[骨合成植入物](/items/osteosynthesis-implants)就会致命。由于这种病症需要大量的植入物才能治愈，所以它可能相当昂贵。
-Bone death, while usually not lethal, can kill if you lack https://trello.com/c/mVYXho0A/82-osteosynthesis-implants. Due to the large amount of implants this affliction takes to cure, it can be rather expensive.
+Bone death, while usually not lethal, can kill if you lack [骨合成植入物 Osteosynthesis Implants](/items/osteosynthesis-implants). Due to the large amount of implants this affliction takes to cure, it can be rather expensive.
 
 ---
 ##由以下原因造成：

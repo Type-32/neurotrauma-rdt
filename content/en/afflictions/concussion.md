@@ -5,6 +5,7 @@ nameEn: Concussion
 category: head
 source: base
 order: 8
+manual: true
 tags:
   - affliction
   - scanner-visible
@@ -26,7 +27,9 @@ causes:
     refs:
       - symptoms/confusion
 causedBy:
-  - text: "[创伤](https://trello.com/c/H8XCHAS6)(爆炸、咬伤、钝器伤、内脏损伤)"
+  - text: "[创伤](/afflictions/internal-damage)(爆炸、咬伤、钝器伤、内脏损伤)"
+    refs:
+      - afflictions/internal-damage
 treatment:
   - text: 无。你必须等待。应该戴上那个头盔的。
 trello:
@@ -46,7 +49,7 @@ A concussion is caused by a severe attack to the head. It periodically brings na
 
 ## 由以下原因造成：
 
-- [创伤](https://trello.com/c/H8XCHAS6)(爆炸、咬伤、钝器伤、内脏损伤)
+- [创伤](/afflictions/internal-damage)(爆炸、咬伤、钝器伤、内脏损伤)
 
 ## 预防：
 

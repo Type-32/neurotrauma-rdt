@@ -5,6 +5,7 @@ nameEn: Drainage
 category: item
 source: base
 order: 19
+manual: true
 tags:
   - item
   - surgery
@@ -18,4 +19,4 @@ trello:
 ---
 
 引流管是一次性使用的物品，用于治疗[气胸](/afflictions/pneumothorax)。它是在[皮肤牵开](/afflictions/retracted-skin)之后使用的。
-Drainage is a one time use item that is used to treat https://trello.com/c/k69w3cw7/6-pneumothorax. It is used after https://trello.com/c/Tg2WHd9J/63-retracted-skin.
+Drainage is a one time use item that is used to treat [气胸 Pneumothorax](/afflictions/pneumothorax). It is used after [皮肤牵开 Retracted Skin](/afflictions/retracted-skin).

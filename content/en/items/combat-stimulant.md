@@ -5,6 +5,7 @@ nameEn: Combat Stimulant
 category: item
 source: base
 order: 16
+manual: true
 tags:
   - item
   - niche
@@ -27,9 +28,11 @@ treatment:
   - text: "[内出血 Internal Bleeding](/afflictions/internal-bleeding) 每秒治愈2%"
     refs:
       - afflictions/internal-bleeding
-  - text: "[https://trello.com/c/H8XCHAS6/10-%E4%BC%A4%E5%8F%A3-wounds-%EF%BC%88%E8%80%81%EF%BC%89](https://trello.com/c/H8XCHAS6/10-%E4%BC%A4%E5%8F%A3-wounds-%EF%BC%88%E8%80%81%EF%BC%89) , 包括缝合线效果, [脑震荡 Concussion](/afflictions/concussion) , 与[https://trello.com/c/DL3wFVR5/137-internal-wounds](https://trello.com/c/DL3wFVR5/137-internal-wounds) 每秒治愈2%"
+  - text: "[开放性伤口 Open Wounds](/afflictions/open-wounds) , 包括缝合线效果, [脑震荡 Concussion](/afflictions/concussion) , 与[内伤 Internal Damage](/afflictions/internal-damage) 每秒治愈2%"
     refs:
       - afflictions/concussion
+      - afflictions/internal-damage
+      - afflictions/open-wounds
   - text: 化学[戒断 Withdrawal](/afflictions/withdrawal) 每秒治愈2%
     refs:
       - afflictions/withdrawal
@@ -46,11 +49,12 @@ treats:
   - text: "[内出血 Internal Bleeding](/afflictions/internal-bleeding) by 2% per second"
     refs:
       - afflictions/internal-bleeding
-  - text: "[https://trello.com/c/yhDjfTqs/101-wounds](https://trello.com/c/yhDjfTqs/101-wounds), including [stitched](/items/sutures), [脑震荡 Concussion](/afflictions/concussion), and [内伤 Internal Damage](/afflictions/internal-damage) by 2% per second"
+  - text: "[开放性伤口 Open Wounds](/afflictions/open-wounds), including [stitched](/items/sutures), [脑震荡 Concussion](/afflictions/concussion), and [内伤 Internal Damage](/afflictions/internal-damage) by 2% per second"
     refs:
       - items/sutures
       - afflictions/concussion
       - afflictions/internal-damage
+      - afflictions/open-wounds
   - text: Chem [戒断 Withdrawal](/afflictions/withdrawal) by 2% per second
     refs:
       - afflictions/withdrawal
@@ -73,7 +77,7 @@ trello:
 - [失血 Blood Loss](/afflictions/blood-loss) 每秒治愈2%
 - [出血 Bleeding](/afflictions/bleeding) 每秒治愈2%
 - [内出血 Internal Bleeding](/afflictions/internal-bleeding) 每秒治愈2%
-- [https://trello.com/c/H8XCHAS6/10-%E4%BC%A4%E5%8F%A3-wounds-%EF%BC%88%E8%80%81%EF%BC%89](https://trello.com/c/H8XCHAS6/10-%E4%BC%A4%E5%8F%A3-wounds-%EF%BC%88%E8%80%81%EF%BC%89) , 包括缝合线效果, [脑震荡 Concussion](/afflictions/concussion) , 与[https://trello.com/c/DL3wFVR5/137-internal-wounds](https://trello.com/c/DL3wFVR5/137-internal-wounds) 每秒治愈2%
+- [开放性伤口 Open Wounds](/afflictions/open-wounds) , 包括缝合线效果, [脑震荡 Concussion](/afflictions/concussion) , 与[内伤 Internal Damage](/afflictions/internal-damage) 每秒治愈2%
 - 化学[戒断 Withdrawal](/afflictions/withdrawal) 每秒治愈2%
 
 提供45%至50%的眩晕抗性。
@@ -100,7 +104,7 @@ Treats:
 - [失血 Blood Loss](/afflictions/blood-loss) by 2% per second
 - [出血 Bleeding](/afflictions/bleeding) by 2% per second
 - [内出血 Internal Bleeding](/afflictions/internal-bleeding) by 2% per second
-- [https://trello.com/c/yhDjfTqs/101-wounds](https://trello.com/c/yhDjfTqs/101-wounds), including [stitched](/items/sutures), [脑震荡 Concussion](/afflictions/concussion), and [内伤 Internal Damage](/afflictions/internal-damage) by 2% per second
+- [开放性伤口 Open Wounds](/afflictions/open-wounds), including [stitched](/items/sutures), [脑震荡 Concussion](/afflictions/concussion), and [内伤 Internal Damage](/afflictions/internal-damage) by 2% per second
 - Chem [戒断 Withdrawal](/afflictions/withdrawal) by 2% per second
 
 Grants 45% to 50% Stun resistance.

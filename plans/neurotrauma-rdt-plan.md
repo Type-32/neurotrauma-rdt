@@ -311,16 +311,19 @@ Original plan:
 
 ## Phase 11: Content cleanup
 
-**Status:** "leads to" fixes and importer protection done; the Trello-only cards and images are still to do. From the Phase 2 import report.
+**Status:** done (2026-11-22). From the Phase 2 import report.
 
 **Done (2026-11-22):**
 - Of the 8 unlinked "leads to" warnings, 2 were real and are now linked: infected wounds → [immunity](/afflictions/immunity), sufforin poisoning → [confusion](/symptoms/confusion) (both reach triage). The other 6 name an entry without being a cause of it (a fracture as the condition for amputation, "出血" inside "内出血", a healing-rate note…). They're listed with reasons in `NOT_CAUSES` in `scripts/check-content.ts`, so the check is at 0 warnings.
 - **Hand edits survive re-imports.** Decided: keep the importer, with a `manual: true` frontmatter flag (in the schema). `import:trello --force` regenerates everything else and keeps flagged files as they are. Flagged so far: hypertension, hypotension, infected-wounds, sufforin-poisoning. Any future hand edit should add the flag.
+- **Links to the original board: 0 left** (99 raw Trello card links across 35 entries, of which the report counted 42). The archived "伤口 Wounds" card was later split on the current board, so wound links go to [开放性伤口 Open Wounds](/afflictions/open-wounds) (lacerations, gunshot, bite, generic "wounds") or [内伤 Internal Damage](/afflictions/internal-damage) (blunt force, "internal wounds"); "创伤" lines follow what they list. Links into the English board's copies of existing entries go to those entries; organ procurement scalpels go to organ transplant surgery; Morbusine (base game) to the official wiki. Bare URLs became labelled links, and frontmatter items gained the matching `refs`, so triage sees them. Each `trello.url` provenance field is kept. The rewritten entries are flagged `manual: true`.
+- **New entry: [制药拓展药丸 NT Pharmacy Pills](/info/nt-pharmacy-pills)**, from the six NT Pharmacy pill cards the medkit loadouts and cardiac arrest / heart attack linked to: what each treats and its recipe, both languages, linked to our item entries.
+- **Images:** the content used only 5 Trello-hosted images (the other ~210 in the report are card attachments the importer never put into entries). They're downloaded to `public/img/entries/` (about 260 KB) and linked locally. `bun run localize:images` (`scripts/localize-images.ts`) does this and can be re-run after any import; Trello serves public attachments without signing in.
 
 - ~~**8 unlinked "leads to" mentions**~~: done (see above).
-- **42 links to cards that only exist on the original board** (mainly 伤口 Wounds and several pill cards): read those cards from the original board, add them as entries, and point the links at them. Unlink any that are not worth an entry.
-- **217 images still hosted on Trello:** download them in the importer to `public/img/entries/`, rewrite the URLs, and serve them through `@nuxt/image`. Keep them out of the precache and cache them at runtime (CacheFirst), so the first-visit download stays near 5 MB. Check the total size and whether Trello's attachment URLs need a signed-in request before committing to this.
-- **Still to confirm by hand:** the Vercel deploy from `dev`, and the Install button in a real Chrome or Edge.
+- ~~**42 links to cards that only exist on the original board**~~: done (see above).
+- ~~**217 images still hosted on Trello**~~: done (see above).
+- **Still to confirm by hand:** the Vercel deploy (once Vercel Authentication is off for the project). The Install button went with the PWA in Phase 12.
 
 **Decided:** the importer stays and skips hand-edited files marked `manual: true` (see Done above).
 
@@ -328,7 +331,7 @@ Original plan:
 
 ## Phase 12: Rebuild the interface
 
-**Status:** done (12.1–12.6). Phase 10 (body schematic) and Phase 11 (content) are next. Replaces the look built in the art-direction work and Phase 9, and removes Phase 7 (PWA). Phase 10 (body schematic) is on hold until this is done.
+**Status:** done (12.1–12.6). Phase 11 is done too; Phase 10 (body schematic) is next. Replaces the look built in the art-direction work and Phase 9, and removes Phase 7 (PWA). Phase 10 (body schematic) is on hold until this is done.
 
 **Built so far, and where it differs from the plan below:**
 - PWA removed; `public/sw.js` is the kill switch (checked: an old installed worker unregistered itself and its caches were cleared).

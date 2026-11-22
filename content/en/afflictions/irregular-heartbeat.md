@@ -5,6 +5,7 @@ nameEn: Irregular Heartbeat
 category: heart
 source: base
 order: 4
+manual: true
 tags:
   - interface-visible
   - non-lethal
@@ -40,7 +41,7 @@ trello:
 ---
 
 心律不齐是指心脏不按正常速度跳动，可导致[心搏骤停](/afflictions/cardiac-arrest) 。
-Irregular heartbeat is when the heart is not beating at its normal rate and can lead to https://trello.com/c/t8TqbKwp/11-cardiac-arrest.
+Irregular heartbeat is when the heart is not beating at its normal rate and can lead to [心搏骤停 Cardiac Arrest](/afflictions/cardiac-arrest).
 
 ---
 ##由以下原因造成：

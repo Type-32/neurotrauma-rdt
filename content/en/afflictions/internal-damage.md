@@ -5,6 +5,7 @@ nameEn: Internal Damage
 category: any
 source: base
 order: 1
+manual: true
 tags:
   - scanner-visible
   - affliction
@@ -210,7 +211,7 @@ An uncommon wound which is typically caused by other afflictions and failed skil
 - Failing the skill check when using:
   - [镊子 Tweezers](/items/tweezers)
   - [缝合线 Sutures](/items/sutures)
-  - [https://trello.com/c/Kw9ovTrw/59-skin-retractors](https://trello.com/c/Kw9ovTrw/59-skin-retractors)
+  - [牵开器 Retractors](/items/retractors)
   - [手术钻 Surgical Drill](/items/surgical-drill)
   - [手术锯 Surgical Saw](/items/surgical-saw)
   - [脊髓植入物 Spinal Cord Implants](/items/spinal-cord-implants)

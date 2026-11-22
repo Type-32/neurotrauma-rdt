@@ -5,6 +5,7 @@ nameEn: Cyberbrain Implant
 category: cybernetics
 source: cybernetics
 order: 11
+manual: true
 tags:
   - item
   - niche
@@ -57,7 +58,7 @@ trello:
 
 ## **如何移除：**
 
-[器官移植手术 Organ Transplant Surgery](/procedures/organ-transplant-surgery) 中使用**一次**[https://trello.com/c/jqWPTZPq](https://trello.com/c/jqWPTZPq) 会切下植入物，使用**两次**会切除大脑，所以做手术时带着点脑子。
+[器官移植手术 Organ Transplant Surgery](/procedures/organ-transplant-surgery) 中使用**一次**[器官移植手术 Organ Transplant Surgery](/procedures/organ-transplant-surgery) 会切下植入物，使用**两次**会切除大脑，所以做手术时带着点脑子。
 
 ---
 
@@ -100,4 +101,4 @@ Same as Success but causes [内出血 Internal Bleeding](/afflictions/internal-b
 
 ## How to remove:
 
-[器官移植手术 Organ Transplant Surgery](/procedures/organ-transplant-surgery) _once_ will return the Implant, using the [https://trello.com/c/pYZLWrbE/148-organ-procurement-scalpels](https://trello.com/c/pYZLWrbE/148-organ-procurement-scalpels) a second time will remove the patient’s brain, which they probably need.
+[器官移植手术 Organ Transplant Surgery](/procedures/organ-transplant-surgery) _once_ will return the Implant, using the [器官移植手术 Organ Transplant Surgery](/procedures/organ-transplant-surgery) a second time will remove the patient’s brain, which they probably need.

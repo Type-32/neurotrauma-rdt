@@ -5,6 +5,7 @@ nameEn: Drilled Bones
 category: surgery
 source: base
 order: 4
+manual: true
 tags:
   - interface-visible
   - affliction
@@ -18,4 +19,4 @@ trello:
 ---
 
 [骨合成手术](/procedures/osteosynthetic-surgery)的第五步。在附近没有手术台的情况下，每一个骨头钻孔的效果将导致每秒1.5%的[创伤性休克](/afflictions/traumatic-shock)。
-The fifth step in https://trello.com/c/PAWSCJGJ/77-osteosynthetic-surgery. Having drilled bones without a surgery table nearby will cause 1.5% https://trello.com/c/c3VraEEu/65-traumatic-shock per second for each instance of drilled bones.
+The fifth step in [骨合成手术 Osteosynthetic Surgery](/procedures/osteosynthetic-surgery). Having drilled bones without a surgery table nearby will cause 1.5% [创伤性休克 Traumatic Shock](/afflictions/traumatic-shock) per second for each instance of drilled bones.

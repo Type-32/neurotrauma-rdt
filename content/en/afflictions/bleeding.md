@@ -5,6 +5,7 @@ nameEn: Bleeding
 category: any
 source: base
 order: 5
+manual: true
 tags:
   - interface-visible
   - affliction
@@ -14,7 +15,9 @@ pinyin: chuxue
 pinyinInitials: cx
 aliases: []
 causedBy:
-  - text: "[伤口](https://trello.com/c/H8XCHAS6)"
+  - text: "[伤口](/afflictions/open-wounds)"
+    refs:
+      - afflictions/open-wounds
   - text: 技能检查失败
 causes:
   - text: "[动脉出血](/afflictions/arterial-bleeding)(达到80%及以上)"
@@ -48,7 +51,7 @@ trello:
 
 ## 由以下情况引起：
 
-- [伤口](https://trello.com/c/H8XCHAS6)
+- [伤口](/afflictions/open-wounds)
 - 技能检查失败
 
 ## 效果：
