@@ -75,7 +75,8 @@
 		},
 		"bodyMap": "Filter by body part",
 		"showingRegion": "Only {region}",
-		"showAll": "Show all"
+		"showAll": "Show all",
+		"clearAll": "Deselect all"
 	},
 	"reference": {
 		"title": "Quick reference",

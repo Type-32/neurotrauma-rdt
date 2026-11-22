@@ -75,7 +75,8 @@
 		},
 		"bodyMap": "按部位筛选",
 		"showingRegion": "仅显示：{region}",
-		"showAll": "显示全部"
+		"showAll": "显示全部",
+		"clearAll": "全部取消"
 	},
 	"reference": {
 		"title": "速查",
