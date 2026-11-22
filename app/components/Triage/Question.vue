@@ -26,8 +26,10 @@ const hint = computed(() => props.suggestion.of === 1
 			as="section"
 			v-bind="swap('x', 28)"
 			aria-live="polite"
-			class="rounded-lg bg-elevated px-6 py-6 ring-1 ring-(--ui-info)/25"
+			class="relative overflow-hidden rounded-lg bg-elevated px-6 py-6 ring-1 ring-(--ui-info)/25"
 		>
+			<!-- Still working it out: the pack's arcs turn slowly in the corner while a question is open. -->
+			<MicroGraphic name="arcs" motion="spin-reverse" class="absolute -right-6 -top-8 size-28 text-info opacity-30" />
 			<p class="micro text-info">{{ t('triage.checkNext') }}</p>
 			<h2 class="mt-3 hyphens-auto break-words font-brand text-3xl sm:text-4xl font-semibold leading-tight tracking-tight text-highlighted">
 				{{ names.primary }}?

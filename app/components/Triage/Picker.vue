@@ -171,7 +171,9 @@ function onEnter() {
 			</button>
 		</div>
 
-		<p v-if="query && !words.length" class="mt-6 text-muted">{{ t('triage.noMatches', { query }) }}</p>
+		<p v-if="query && !words.length" class="mt-6 flex items-center gap-3 text-muted">
+			<MicroGraphic name="forbidden" motion="pulse" class="size-7 text-warning" />{{ t('triage.noMatches', { query }) }}
+		</p>
 
 		<ul class="mt-6 flex flex-wrap items-center gap-x-2 gap-y-2.5">
 			<li v-for="entry in shown" :key="entry.id">

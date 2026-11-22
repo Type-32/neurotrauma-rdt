@@ -65,6 +65,17 @@ function look(region: BodyRegion) {
 	}
 }
 
+/** Where the crosshair locks on for each region, in the figure's viewBox (200 × 380). */
+const TARGET: Partial<Record<BodyRegion, { x: number, y: number, size: number }>> = {
+	head: { x: 100, y: 38, size: 34 },
+	lungs: { x: 100, y: 110, size: 40 },
+	heart: { x: 106, y: 128, size: 26 },
+	torso: { x: 100, y: 176, size: 38 },
+	extremities: { x: 47, y: 138, size: 30 },
+	bones: { x: 83, y: 284, size: 30 },
+}
+const target = computed(() => active.value ? TARGET[active.value] : undefined)
+
 /** The list order, top to bottom of the body, whole body last. */
 const ORDER: BodyRegion[] = ['head', 'lungs', 'heart', 'torso', 'extremities', 'bones', 'body']
 
@@ -76,7 +87,8 @@ function hover(region: BodyRegion | null) {
 <template>
 	<div class="flex items-start gap-5">
 		<!-- The figure: for pointing. The list carries the labels and keyboard access. -->
-		<svg viewBox="0 0 200 380" class="w-28 shrink-0 sm:w-32" aria-hidden="true">
+		<div class="relative w-28 shrink-0 sm:w-32">
+		<svg viewBox="0 0 200 380" class="w-full" aria-hidden="true">
 			<g class="body-regions" stroke-linejoin="round">
 				<!-- Whole body: a dashed outline around the figure (wide invisible stroke to make it easy to hit). -->
 				<g class="cursor-pointer" @click="toggle('body')" @mouseenter="hover('body')" @mouseleave="hover(null)">
@@ -133,6 +145,23 @@ function hover(region: BodyRegion | null) {
 				</g>
 			</g>
 		</svg>
+
+		<!-- The chosen region: the crosshair locks on, then turns slowly. -->
+		<AnimatePresence>
+			<Motion
+				v-if="target"
+				:key="active!"
+				class="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 text-primary"
+				:style="{ left: `${target.x / 200 * 100}%`, top: `${target.y / 380 * 100}%`, width: `${target.size / 200 * 100 * 1.6}%` }"
+				:initial="{ opacity: 0, scale: 2.4, rotate: -90 }"
+				:animate="{ opacity: 1, scale: 1, rotate: 0 }"
+				:exit="{ opacity: 0, scale: 0.6 }"
+				:transition="{ type: 'spring', stiffness: 260, damping: 22 }"
+			>
+				<MicroGraphic name="target" motion="spin-slow" class="block aspect-square w-full" />
+			</Motion>
+		</AnimatePresence>
+		</div>
 
 		<!-- The list: labels, counts, keyboard access -->
 		<ul class="min-w-0 flex-1 space-y-0.5">

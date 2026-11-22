@@ -155,7 +155,9 @@ defineShortcuts({
 
 			<div class="flex items-center gap-1 p-1.5">
 				<label class="flex min-w-0 flex-1 items-center gap-2 rounded-lg px-3 py-2 transition-colors" :class="focused ? 'bg-accented/50' : 'hover:bg-accented/40'">
-					<UIcon name="i-lucide-search" class="size-4 shrink-0 text-muted" />
+					<!-- While the search index downloads, the pack's dot ring spins in place of the icon. -->
+						<MicroGraphic v-if="focused && !ready && !failed" name="dot-ring" motion="spin" class="size-4 text-primary" />
+						<UIcon v-else name="i-lucide-search" class="size-4 shrink-0 text-muted" />
 					<input
 						ref="input"
 						v-model="term"
