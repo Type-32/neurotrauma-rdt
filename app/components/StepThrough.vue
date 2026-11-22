@@ -143,7 +143,18 @@ useEventListener(window, 'keydown', (event: KeyboardEvent) => {
 						:animate="{ opacity: 1, scale: 1 }"
 						:transition="SPRING_SOFT"
 					>
-						<UIcon name="i-lucide-circle-check" class="size-12 text-success" />
+						<!-- Done: the pack's burst flares out behind the check, then keeps turning slowly. -->
+						<span class="relative inline-grid size-12 place-items-center">
+							<Motion
+								class="pointer-events-none absolute left-1/2 top-1/2 size-32 -translate-x-1/2 -translate-y-1/2 text-success"
+								:initial="{ opacity: 0, scale: 0.3, rotate: -45 }"
+								:animate="{ opacity: 0.55, scale: 1, rotate: 0 }"
+								:transition="{ type: 'spring', stiffness: 180, damping: 18, delay: 0.05 }"
+							>
+								<MicroGraphic name="burst" motion="spin-slow" class="block size-full" />
+							</Motion>
+							<UIcon name="i-lucide-circle-check" class="relative size-12 text-success" />
+						</span>
 						<p class="mt-4 font-brand text-4xl font-semibold tracking-tight text-highlighted sm:text-5xl">{{ t('triage.allDone') }}</p>
 						<p v-if="doneDescription" class="mt-3 max-w-lg text-lg text-muted">{{ doneDescription }}</p>
 					</Motion>

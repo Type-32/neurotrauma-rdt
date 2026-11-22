@@ -180,8 +180,10 @@ const barOf = (share: number) => `${Math.max(4, Math.round(share / (props.result
 			</AnimatePresence>
 		</section>
 
-		<p v-else-if="result.unexplained.length" class="text-xl text-muted">
-			{{ t('triage.noCauses', { list: join(result.unexplained) }) }}
+		<!-- Nothing in the guide explains it: the pack's "forbidden" mark, pulsing slowly. -->
+		<p v-else-if="result.unexplained.length" class="flex items-center gap-4 text-xl text-muted">
+			<MicroGraphic name="forbidden" motion="pulse" class="size-10 text-warning" />
+			<span>{{ t('triage.noCauses', { list: join(result.unexplained) }) }}</span>
 		</p>
 
 		<!-- Also possible: reorders as evidence arrives -->

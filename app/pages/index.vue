@@ -223,6 +223,9 @@ function clear() {
 				<div class="pt-[8vh]">
 					<h1 class="font-brand text-5xl font-semibold leading-none tracking-tight text-highlighted sm:text-7xl">{{ t('triage.prompt') }}</h1>
 					<p class="mt-5 max-w-xl text-lg text-muted">{{ t('triage.description') }}</p>
+					<p class="micro mt-12 inline-flex items-center gap-3 text-dimmed">
+						<MicroGraphic name="dot-ring" motion="spin" class="size-7 text-primary" />{{ t('triage.loading') }}
+					</p>
 				</div>
 			</template>
 
@@ -231,6 +234,9 @@ function clear() {
 			<div v-else-if="!index" class="pt-[8vh]">
 				<h1 class="font-brand text-5xl font-semibold leading-none tracking-tight text-highlighted sm:text-7xl">{{ t('triage.prompt') }}</h1>
 				<p class="mt-5 max-w-xl text-lg text-muted">{{ t('triage.description') }}</p>
+				<p class="micro mt-12 inline-flex items-center gap-3 text-dimmed">
+					<MicroGraphic name="dot-ring" motion="spin" class="size-7 text-primary" />{{ t('triage.loading') }}
+				</p>
 			</div>
 
 			<LayoutGroup v-else>

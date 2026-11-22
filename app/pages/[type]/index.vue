@@ -87,7 +87,9 @@ useSeoMeta({ title: () => `${t('database.title')} · ${t(`types.${entryType.valu
 
 		<!-- Nothing in this type: say so, and point to the types that match -->
 		<div v-if="!shown" class="mt-12 text-lg text-muted">
-			<p>{{ t('database.noMatches', { query }) }}</p>
+			<p class="flex items-center gap-3">
+				<MicroGraphic name="forbidden" motion="pulse" class="size-7 text-warning" />{{ t('database.noMatches', { query }) }}
+			</p>
 			<p v-if="elsewhere.length" class="mt-3 flex flex-wrap gap-x-5 gap-y-1">
 				<NuxtLink v-for="id in elsewhere" :key="id" :to="`/${id}`" class="text-highlighted underline decoration-dotted underline-offset-4 hover:text-primary">
 					{{ t('database.elsewhere', { count: counts[id], type: t(`types.${id}`) }) }}
