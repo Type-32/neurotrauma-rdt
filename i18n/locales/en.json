@@ -1,0 +1,231 @@
+{
+	"site": {
+		"description": "Rapid diagnosis and treatment reference for the Barotrauma Neurotrauma mod.",
+		"intro": "Rapid diagnosis and treatment reference for the Neurotrauma mod. Content is bilingual, from the Chinese community guide."
+	},
+	"locale": {
+		"switchTo": "中文",
+		"switchLabel": "Switch to Chinese"
+	},
+	"triage": {
+		"title": "Triage",
+		"prompt": "What do you see?",
+		"promptMore": "Anything else?",
+		"description": "Pick what you see on the patient. The likely cause and what to do appear as you go.",
+		"filter": "Type a symptom, 中文 or pinyin",
+		"sources": {
+			"symptoms": "Symptoms",
+			"interface": "Health interface",
+			"scanner": "Scanner",
+			"analyzer": "Analyzer"
+		},
+		"more": "{count} more",
+		"fewer": "Fewer",
+		"noMatches": "Nothing matches “{query}”.",
+		"patient": "Patient",
+		"remove": "Remove {name}",
+		"restore": "{name} was ruled out. Tap to undo.",
+		"share": "Copy link",
+		"copied": "Link copied",
+		"copiedDescription": "Paste it to another medic to share this patient.",
+		"clear": "Clear",
+		"mostLikely": "Most likely",
+		"lookingAt": "Looking at",
+		"alsoPossible": "Also possible",
+		"explains": "Explains {list}",
+		"against": "Not seen: {list}",
+		"firstAid": "First aid",
+		"then": "Then",
+		"noTreatment": "The guide lists no first aid or treatment for this.",
+		"confirm": "Treat this",
+		"open": "Open entry",
+		"treatNow": "Treat now",
+		"startTreatment": "Start treatment",
+		"stillUnexplained": "Still unexplained: {list}",
+		"noCauses": "Nothing in the guide causes {list}.",
+		"checkNext": "Check next",
+		"tellsApart": "Tells apart {splits} of {of} likely causes",
+		"confirms": "Confirms the likely cause",
+		"yes": "Yes",
+		"no": "No",
+		"unsure": "Can't tell",
+		"treatment": "Treatment",
+		"bring": "Bring",
+		"step": "Step {n} of {total}",
+		"done": "Done",
+		"back": "Back",
+		"close": "Close",
+		"allDone": "All steps done",
+		"allDoneDescription": "Keep watching the patient. Re-check what you saw, and come back if something changes.",
+		"loading": "Loading triage…",
+		"failed": "Couldn't load triage data. Check your connection and reload.",
+		"candidates": "No likely causes | 1 likely cause | {count} likely causes"
+	},
+	"reference": {
+		"title": "Quick reference",
+		"description": "How to diagnose, the five commandments, treatment order and medkit loadouts, on one page.",
+		"homeDescription": "Diagnosis, treatment order and medkit loadouts on one page.",
+		"jump": "Jump to section",
+		"openEntry": "Open as its own page",
+		"sections": {
+			"diagnose": "How to diagnose",
+			"commandments": "Five commandments",
+			"order": "Treatment order",
+			"medkit": "Medkit loadouts"
+		}
+	},
+	"checklist": {
+		"progress": "{done} of {total} done",
+		"reset": "Reset",
+		"step": "Step {n} done",
+		"openCloseTitle": "Surgeries open and close the same way",
+		"openCloseDescription": "Open with analgesia, scalpel, hemostat and retractors; close with sutures. Steps below that repeat these are the same ones.",
+		"openCloseLink": "Open & Close Surgery"
+	},
+	"feedback": {
+		"prompt": "Something wrong or missing?",
+		"report": "Report a problem",
+		"edit": "Edit on GitHub",
+		"issueEntry": "Entry",
+		"issuePage": "Page",
+		"issueFile": "File",
+		"issueWhat": "What's wrong",
+		"issueSource": "Source (game version, mod version, wiki link…)"
+	},
+	"page": {
+		"notFound": "Page not found",
+		"notFoundDescription": "This entry doesn't exist."
+	},
+	"types": {
+		"afflictions": "Afflictions",
+		"symptoms": "Symptoms",
+		"items": "Items",
+		"procedures": "Procedures",
+		"info": "Information"
+	},
+	"typeDescriptions": {
+		"afflictions": "Injuries and conditions, by body part.",
+		"symptoms": "What you see on the patient, and what causes it.",
+		"items": "Medicine, tools and equipment, with skill checks.",
+		"procedures": "Surgery steps, in order.",
+		"info": "How to diagnose, treatment order, medkit advice and FAQ."
+	},
+	"entries": "No entries | 1 entry | {count} entries",
+	"sections": {
+		"firstAid": "First aid",
+		"treatment": "Treatment",
+		"steps": "Steps",
+		"treats": "Treats",
+		"onSuccess": "On success",
+		"onFailure": "On failure",
+		"causes": "Leads to",
+		"causedBy": "Caused by",
+		"effects": "Effects"
+	},
+	"entry": {
+		"fullText": "Full guide text",
+		"threshold": "from {value}%",
+		"medicalSkill": "Medical {value}",
+		"mechanicalSkill": "Mechanical {value}",
+		"noSkillCheck": "No skill check",
+		"alsoIn": "Also under {list}",
+		"lethal": "Lethal",
+		"possiblyLethal": "Possibly lethal"
+	},
+	"categories": {
+		"head": "Head / brain",
+		"lungs": "Lungs",
+		"heart": "Heart",
+		"torso": "Torso",
+		"extremities": "Extremities",
+		"bones": "Bones",
+		"any": "Any body part",
+		"blood": "Blood",
+		"surgery": "Surgery",
+		"cybernetics": "Cybernetics expansion",
+		"surgery-plus": "Surgery Plus expansion",
+		"eyes": "Eyes expansion",
+		"symptom": "Symptoms",
+		"item": "Items",
+		"procedure": "Procedures",
+		"general": "General",
+		"expansions": "Expansions",
+		"expansion-guides": "Expansion guides"
+	},
+	"sources": {
+		"base": "Base mod",
+		"cybernetics": "Cybernetics expansion",
+		"surgery-plus": "Surgery Plus expansion",
+		"eyes": "Eyes expansion",
+		"expansions": "Expansions"
+	},
+	"tags": {
+		"lethal": "Lethal",
+		"possibly-lethal": "Possibly lethal",
+		"non-lethal": "Non-lethal",
+		"essential": "Essential",
+		"very-important": "Very important",
+		"important": "Important",
+		"first-aid": "First aid",
+		"interface-visible": "Health interface",
+		"scanner-visible": "Health scanner",
+		"analyzer-visible": "Hematology analyzer",
+		"not-visible": "Not visible in game",
+		"mental-symptom": "Mental symptom",
+		"mechanic": "Mechanic",
+		"surgery": "Surgery",
+		"niche": "Niche",
+		"cybernetics": "Cybernetics",
+		"surgery-plus": "Surgery Plus",
+		"known-issue": "Known issue",
+		"translator-note": "Translator's note",
+		"affliction": "Affliction",
+		"item": "Item",
+		"procedure": "Procedure",
+		"info": "Information",
+		"symptom": "Symptom",
+		"unfinished": "Unfinished"
+	},
+	"status": {
+		"title": "Status",
+		"lethality": "Lethality",
+		"visibility": "Shown on",
+		"skill": "Skill check",
+		"source": "Source",
+		"alsoIn": "Also under",
+		"flags": "Flags"
+	},
+	"statusBar": {
+		"tagline": "Medic terminal",
+		"online": "Online",
+		"offline": "Offline / cached",
+		"lang": "Lang",
+		"mode": "Mode"
+	},
+	"home": {
+		"start": "Start triage",
+		"database": "Database",
+		"entries": "Entries",
+		"lethal": "Lethal",
+		"lang": "Lang",
+		"search": "Search by name, 中文 or pinyin",
+		"shortcut": "Press / anywhere"
+	},
+	"index": {
+		"categories": "Categories"
+	},
+	"dock": {
+		"search": "What are you looking for?",
+		"triage": "Triage",
+		"reference": "Reference",
+		"database": "Database",
+		"noResults": "No matching entries.",
+		"loading": "Loading search…",
+		"failed": "Couldn't load search. Check your connection.",
+		"navigate": "Move",
+		"open": "Open",
+		"close": "Close",
+		"home": "Neurotrauma RDT, home",
+		"searchShort": "Search…"
+	}
+}

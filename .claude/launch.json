@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "static-preview",
+      "runtimeExecutable": "bunx",
+      "runtimeArgs": ["serve", ".output/public", "-l", "4173"],
+      "port": 4173
+    },
+    {
+      "name": "dev",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000
+    }
+  ]
+}

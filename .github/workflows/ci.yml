@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        node: [22]
+        node: [24]
 
     steps:
       - name: Checkout
@@ -31,3 +31,15 @@ jobs:
 
       - name: Typecheck
         run: bun run typecheck
+
+      - name: Check content
+        run: bun run check:content
+
+      - name: Generate
+        run: bun run generate
+
+      - name: Test search
+        run: bun run test:search
+
+      - name: Test triage
+        run: bun run test:triage

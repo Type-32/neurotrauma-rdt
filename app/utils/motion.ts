@@ -1,0 +1,46 @@
+import type { Transition } from 'motion-v'
+
+/**
+ * Shared motion presets. Motion explains change: whatever is touched reacts,
+ * and whatever changes as a result travels to its new place. Everything is
+ * short (under 300 ms to settle) and never blocks input. MotionConfig in
+ * app.vue sets reducedMotion="user", which turns transform and layout
+ * animations off for readers who ask for less motion.
+ */
+
+/** Snappy spring for things the user moves directly: presses, picks, reorders. */
+export const SPRING = { type: 'spring', stiffness: 560, damping: 40, mass: 0.7 } as const
+
+/** Softer spring for things that move as a consequence: answers, panels. */
+export const SPRING_SOFT = { type: 'spring', stiffness: 320, damping: 34, mass: 0.9 } as const
+
+/** Fast ease for fades and small slides. */
+export const EASE = { duration: 0.18, ease: [0.22, 1, 0.36, 1] } as const
+
+/** Pressed buttons and words sink slightly. */
+export const PRESS = { scale: 0.95 } as const
+
+/** Enter / exit for items that appear in place. */
+export const APPEAR = {
+	initial: { opacity: 0, y: 8 },
+	animate: { opacity: 1, y: 0 },
+	exit: { opacity: 0, y: -6 },
+} as const
+
+const SWAP_IN: Transition = { duration: 0.22, ease: [0.22, 1, 0.36, 1] }
+const SWAP_OUT: Transition = { duration: 0.12, ease: [0.4, 0, 1, 1] }
+
+/**
+ * Swapping one thing for the next (the leading cause, the question, a
+ * treatment step) with AnimatePresence mode="wait": a quick exit, then a
+ * slightly longer entrance, about 0.35 s in all. Timed rather than sprung,
+ * because a spring's long settle makes the wait feel stuck.
+ */
+export function swap(axis: 'x' | 'y' = 'y', distance = 16) {
+	const offset = (value: number) => axis === 'x' ? { x: value } : { y: value }
+	return {
+		initial: { opacity: 0, ...offset(distance) },
+		animate: { opacity: 1, ...offset(0), transition: SWAP_IN },
+		exit: { opacity: 0, ...offset(-distance * 0.6), transition: SWAP_OUT },
+	}
+}

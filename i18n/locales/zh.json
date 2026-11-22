@@ -1,0 +1,231 @@
+{
+	"site": {
+		"description": "Barotrauma 神经创伤 mod 快速诊疗参考。",
+		"intro": "神经创伤 mod 快速诊疗参考。内容为中英双语，来自中文社区指南。"
+	},
+	"locale": {
+		"switchTo": "English",
+		"switchLabel": "切换到英文"
+	},
+	"triage": {
+		"title": "分诊",
+		"prompt": "你看到了什么？",
+		"promptMore": "还有别的吗？",
+		"description": "选出患者身上看到的情况，可能的病因和处置会随之出现。",
+		"filter": "输入症状、English 或拼音",
+		"sources": {
+			"symptoms": "症状",
+			"interface": "健康界面",
+			"scanner": "扫描仪",
+			"analyzer": "血液分析仪"
+		},
+		"more": "另外 {count} 项",
+		"fewer": "收起",
+		"noMatches": "没有与「{query}」匹配的项。",
+		"patient": "患者",
+		"remove": "移除{name}",
+		"restore": "已排除{name}，点按撤销。",
+		"share": "复制链接",
+		"copied": "链接已复制",
+		"copiedDescription": "发给其他医生即可共享这名患者的情况。",
+		"clear": "清空",
+		"mostLikely": "最可能",
+		"lookingAt": "正在查看",
+		"alsoPossible": "也可能",
+		"explains": "可解释：{list}",
+		"against": "未见：{list}",
+		"firstAid": "急救",
+		"then": "随后",
+		"noTreatment": "指南中没有此项的急救或治疗措施。",
+		"confirm": "就是它，开始处置",
+		"open": "打开条目",
+		"treatNow": "立即处置",
+		"startTreatment": "开始治疗",
+		"stillUnexplained": "仍未解释：{list}",
+		"noCauses": "指南中没有病症会导致{list}。",
+		"checkNext": "下一步检查",
+		"tellsApart": "可区分 {of} 个可能病因中的 {splits} 个",
+		"confirms": "可确认最可能的病因",
+		"yes": "有",
+		"no": "没有",
+		"unsure": "不确定",
+		"treatment": "治疗",
+		"bring": "需要准备",
+		"step": "第 {n} 步，共 {total} 步",
+		"done": "完成",
+		"back": "上一步",
+		"close": "关闭",
+		"allDone": "所有步骤已完成",
+		"allDoneDescription": "继续观察患者，复查看到的情况，有变化时再回来。",
+		"loading": "正在加载分诊数据…",
+		"failed": "分诊数据加载失败，请检查网络后刷新。",
+		"candidates": "没有可能病因 | {count} 个可能病因 | {count} 个可能病因"
+	},
+	"reference": {
+		"title": "速查",
+		"description": "如何诊断、五条戒律、治疗顺序与医疗箱建议，集中在一页。",
+		"homeDescription": "诊断、治疗顺序与医疗箱建议，集中在一页。",
+		"jump": "跳转到章节",
+		"openEntry": "单独打开此页",
+		"sections": {
+			"diagnose": "如何诊断",
+			"commandments": "五条戒律",
+			"order": "治疗顺序",
+			"medkit": "医疗箱建议"
+		}
+	},
+	"checklist": {
+		"progress": "已完成 {done}/{total}",
+		"reset": "重置",
+		"step": "第 {n} 步已完成",
+		"openCloseTitle": "手术的开始与结束步骤相同",
+		"openCloseDescription": "开始：镇痛、手术刀、止血钳、牵开器；结束：缝合线。下方步骤中与之重复的即为这些步骤。",
+		"openCloseLink": "开始&结束手术"
+	},
+	"feedback": {
+		"prompt": "内容有误或缺失？",
+		"report": "报告问题",
+		"edit": "在 GitHub 上编辑",
+		"issueEntry": "条目",
+		"issuePage": "页面",
+		"issueFile": "文件",
+		"issueWhat": "哪里有问题",
+		"issueSource": "来源（游戏版本、mod 版本、wiki 链接等）"
+	},
+	"page": {
+		"notFound": "页面不存在",
+		"notFoundDescription": "该条目不存在。"
+	},
+	"types": {
+		"afflictions": "苦痛",
+		"symptoms": "症状",
+		"items": "物品",
+		"procedures": "流程",
+		"info": "信息"
+	},
+	"typeDescriptions": {
+		"afflictions": "伤病与状态，按身体部位分类。",
+		"symptoms": "患者身上能看到的症状及其成因。",
+		"items": "药物、工具与设备，含技能需求。",
+		"procedures": "按顺序排列的手术步骤。",
+		"info": "如何诊断、治疗顺序、医疗箱建议与常见问题。"
+	},
+	"entries": "无条目 | {count} 个条目 | {count} 个条目",
+	"sections": {
+		"firstAid": "急救",
+		"treatment": "治疗措施",
+		"steps": "步骤",
+		"treats": "用于治疗",
+		"onSuccess": "应用成功时",
+		"onFailure": "应用失败时",
+		"causes": "导致",
+		"causedBy": "由以下原因造成",
+		"effects": "效果"
+	},
+	"entry": {
+		"fullText": "完整说明",
+		"threshold": "{value}% 起",
+		"medicalSkill": "医疗 {value}",
+		"mechanicalSkill": "机械 {value}",
+		"noSkillCheck": "无技能需求",
+		"alsoIn": "另见：{list}",
+		"lethal": "致命",
+		"possiblyLethal": "可能致命"
+	},
+	"categories": {
+		"head": "头部 / 脑部",
+		"lungs": "肺部",
+		"heart": "心脏",
+		"torso": "躯干",
+		"extremities": "四肢",
+		"bones": "骨骼",
+		"any": "任何身体部位",
+		"blood": "血液",
+		"surgery": "手术",
+		"cybernetics": "赛博肢体拓展",
+		"surgery-plus": "外科Plus拓展",
+		"eyes": "眼部拓展",
+		"symptom": "症状",
+		"item": "物品",
+		"procedure": "流程",
+		"general": "综合",
+		"expansions": "拓展mod",
+		"expansion-guides": "各拓展的指南"
+	},
+	"sources": {
+		"base": "本体",
+		"cybernetics": "赛博肢体拓展",
+		"surgery-plus": "外科Plus拓展",
+		"eyes": "眼部拓展",
+		"expansions": "拓展mod"
+	},
+	"tags": {
+		"lethal": "致命",
+		"possibly-lethal": "可能致命",
+		"non-lethal": "非致命",
+		"essential": "必需",
+		"very-important": "非常重要",
+		"important": "重要",
+		"first-aid": "急救",
+		"interface-visible": "健康界面可见",
+		"scanner-visible": "健康扫描仪可见",
+		"analyzer-visible": "血液分析仪可见",
+		"not-visible": "游戏内不可见",
+		"mental-symptom": "精神症状",
+		"mechanic": "机制",
+		"surgery": "外科手术",
+		"niche": "小众",
+		"cybernetics": "赛博肢体拓展",
+		"surgery-plus": "外科Plus拓展",
+		"known-issue": "已知问题",
+		"translator-note": "译者补充",
+		"affliction": "苦痛",
+		"item": "物品",
+		"procedure": "程序",
+		"info": "信息",
+		"symptom": "症状",
+		"unfinished": "疑问/未完成"
+	},
+	"status": {
+		"title": "状态",
+		"lethality": "致命性",
+		"visibility": "可见于",
+		"skill": "技能需求",
+		"source": "来源",
+		"alsoIn": "另见",
+		"flags": "标记"
+	},
+	"statusBar": {
+		"tagline": "医疗终端",
+		"online": "在线",
+		"offline": "离线 / 缓存",
+		"lang": "语言",
+		"mode": "模式"
+	},
+	"home": {
+		"start": "开始分诊",
+		"database": "数据库",
+		"entries": "条目",
+		"lethal": "致命",
+		"lang": "语言",
+		"search": "按名称、English 或拼音搜索",
+		"shortcut": "任意页面按 /"
+	},
+	"index": {
+		"categories": "分类"
+	},
+	"dock": {
+		"search": "你在找什么？",
+		"triage": "分诊",
+		"reference": "速查",
+		"database": "数据库",
+		"noResults": "没有匹配的条目。",
+		"loading": "正在加载搜索…",
+		"failed": "搜索加载失败，请检查网络。",
+		"navigate": "移动",
+		"open": "打开",
+		"close": "关闭",
+		"home": "Neurotrauma RDT 首页",
+		"searchShort": "搜索…"
+	}
+}

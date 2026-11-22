@@ -22,3 +22,9 @@ logs
 .env
 .env.*
 !.env.example
+
+# Trello export (contains member data)
+data/trello/board.json
+
+# Vercel CLI / local build output
+.vercel
