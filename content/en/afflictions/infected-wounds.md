@@ -5,6 +5,7 @@ nameEn: Infected Wounds
 category: any
 source: base
 order: 2
+manual: true
 tags:
   - scanner-visible
   - affliction
@@ -25,7 +26,9 @@ causes:
     refs:
       - symptoms/inflammation
     threshold: 10
-  - text: 免疫力降低
+  - text: "[免疫力](/afflictions/immunity)降低"
+    refs:
+      - afflictions/immunity
 treatment:
   - text: "[抗生素软膏](/items/antibiotic-ointment)"
     refs:
@@ -56,7 +59,7 @@ Infected wounds are caused by letting wounds fester, and should be cleaned in or
 
 - [败血症](/afflictions/sepsis)（达到50%及以上）
 - [炎症](/symptoms/inflammation)（达到10%及以上）
-- 免疫力降低
+- [免疫力](/afflictions/immunity)降低
 
 ## 治疗措施：
 

@@ -5,6 +5,9 @@
  *   bun scripts/import-trello.ts [--in data/trello/board.json] [--out content/en]
  *                                [--report data/trello/import-report.md] [--force]
  *
+ * --force regenerates every entry except files whose frontmatter has
+ * `manual: true`: those are hand-edited and kept as they are.
+ *
  * Get the input from the board menu: Print, export and share → Export as JSON.
  *
  * The board is a copy of the original guide, so links inside card descriptions
@@ -767,6 +770,18 @@ async function main() {
 		console.error(`Refusing to overwrite existing content in ${nonEmpty.map(t => join(values.out, t)).join(', ')}.\nHand edits would be lost. Re-run with --force to overwrite.`)
 		process.exit(1)
 	}
+	// Hand-edited entries (`manual: true` in frontmatter) are kept as they are.
+	const manual = new Map<string, string>()
+	for (const type of nonEmpty) {
+		for (const name of readdirSync(join(values.out, type), { recursive: true, encoding: 'utf8' })) {
+			if (!name.endsWith('.md')) continue
+			const file = join(values.out, type, name)
+			const text = readFileSync(file, 'utf8')
+			// Only the frontmatter counts: the block between the first two --- lines.
+			const frontmatter = text.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? ''
+			if (/^manual:\s*true\s*$/m.test(frontmatter)) manual.set(file, text)
+		}
+	}
 	// --force replaces the generated directories outright, so entries that no longer exist don't linger.
 	for (const type of nonEmpty) rmSync(join(values.out, type), { recursive: true, force: true })
 
@@ -782,6 +797,11 @@ async function main() {
 		mkdirSync(dirname(file), { recursive: true })
 		writeFileSync(file, renderEntry(entry, index))
 	}
+	for (const [file, text] of manual) {
+		mkdirSync(dirname(file), { recursive: true })
+		writeFileSync(file, text)
+	}
+	if (manual.size) console.log(`Kept ${manual.size} hand-edited entries (manual: true).`)
 
 	mkdirSync(dirname(values.report), { recursive: true })
 	writeFileSync(values.report, renderReport(board, entries))

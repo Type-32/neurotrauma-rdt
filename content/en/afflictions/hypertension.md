@@ -5,6 +5,7 @@ nameEn: Hypertension
 category: blood
 source: base
 order: 5
+manual: true
 tags:
   - lethal
   - non-lethal

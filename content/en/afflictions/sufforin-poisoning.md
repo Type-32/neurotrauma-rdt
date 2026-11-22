@@ -5,6 +5,7 @@ nameEn: Sufforin Poisoning
 category: torso
 source: base
 order: 15
+manual: true
 tags:
   - scanner-visible
   - affliction
@@ -18,7 +19,9 @@ causedBy:
   - text: "[Sufforin](https://barotraumagame.com/wiki/Sufforin)  (升天毒剂)"
 causes:
   - text: 游戏画面模糊
-  - text: 游戏画面混乱
+  - text: "游戏画面[混乱](/symptoms/confusion)"
+    refs:
+      - symptoms/confusion
   - text: 减少 [Husk Infection](https://barotraumagame.com/wiki/Husk_Infection) （画皮寄生虫感染）（达到10%及以上）
     threshold: 10
   - text: "[肝脏损伤 Liver Damage](/afflictions/liver-damage) （到达75%及以上）"
@@ -58,7 +61,7 @@ trello:
 ## 导致：
 
 - 游戏画面模糊
-- 游戏画面混乱
+- 游戏画面[混乱](/symptoms/confusion)
 - 减少 [Husk Infection](https://barotraumagame.com/wiki/Husk_Infection) （画皮寄生虫感染）（达到10%及以上）
 - [肝脏损伤 Liver Damage](/afflictions/liver-damage) （到达75%及以上）
 - [肾脏损伤 Kidney Damage](/afflictions/kidney-damage) （到达75%及以上）

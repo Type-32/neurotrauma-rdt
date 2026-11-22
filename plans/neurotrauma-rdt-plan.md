@@ -311,14 +311,18 @@ Original plan:
 
 ## Phase 11: Content cleanup
 
-**Status:** not started. From the Phase 2 import report.
+**Status:** "leads to" fixes and importer protection done; the Trello-only cards and images are still to do. From the Phase 2 import report.
 
-- **8 unlinked "leads to" mentions:** fix by hand in `content/en`. These also improve triage, so do them before Phase 10.
+**Done (2026-11-22):**
+- Of the 8 unlinked "leads to" warnings, 2 were real and are now linked: infected wounds → [immunity](/afflictions/immunity), sufforin poisoning → [confusion](/symptoms/confusion) (both reach triage). The other 6 name an entry without being a cause of it (a fracture as the condition for amputation, "出血" inside "内出血", a healing-rate note…). They're listed with reasons in `NOT_CAUSES` in `scripts/check-content.ts`, so the check is at 0 warnings.
+- **Hand edits survive re-imports.** Decided: keep the importer, with a `manual: true` frontmatter flag (in the schema). `import:trello --force` regenerates everything else and keeps flagged files as they are. Flagged so far: hypertension, hypotension, infected-wounds, sufforin-poisoning. Any future hand edit should add the flag.
+
+- ~~**8 unlinked "leads to" mentions**~~: done (see above).
 - **42 links to cards that only exist on the original board** (mainly 伤口 Wounds and several pill cards): read those cards from the original board, add them as entries, and point the links at them. Unlink any that are not worth an entry.
 - **217 images still hosted on Trello:** download them in the importer to `public/img/entries/`, rewrite the URLs, and serve them through `@nuxt/image`. Keep them out of the precache and cache them at runtime (CacheFirst), so the first-visit download stays near 5 MB. Check the total size and whether Trello's attachment URLs need a signed-in request before committing to this.
 - **Still to confirm by hand:** the Vercel deploy from `dev`, and the Install button in a real Chrome or Edge.
 
-**Decision needed before this phase:** once entries are edited by hand, re-running `import:trello` would overwrite the edits. Either the content folder becomes the source of truth and the importer is retired, or the importer learns to skip hand-edited files (a `manual: true` frontmatter flag).
+**Decided:** the importer stays and skips hand-edited files marked `manual: true` (see Done above).
 
 **Suggested order:** Phase 9, then the "leads to" fixes from Phase 11, then Phase 10, then the rest of Phase 11.
 
