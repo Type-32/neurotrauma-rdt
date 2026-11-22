@@ -14,6 +14,8 @@ const term = ref('')
 const focused = ref(false)
 const active = ref(0)
 const input = useTemplateRef<HTMLInputElement>('input')
+const wide = useMediaQuery('(min-width: 640px)')
+const placeholder = computed(() => wide.value ? t('dock.search') : t('dock.searchShort'))
 const root = useTemplateRef<HTMLElement>('root')
 
 const DESTINATIONS = [
@@ -160,7 +162,7 @@ defineShortcuts({
 						:aria-expanded="open"
 						aria-controls="dock-results"
 						:aria-activedescendant="open && results.length ? `dock-hit-${active}` : undefined"
-						:placeholder="t('dock.search')"
+						:placeholder="placeholder"
 						:aria-label="t('dock.search')"
 						class="min-w-0 flex-1 bg-transparent text-base text-highlighted outline-none placeholder:text-muted"
 						@focus="onFocus"

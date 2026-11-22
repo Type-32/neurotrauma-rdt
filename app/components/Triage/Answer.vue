@@ -21,6 +21,12 @@ const { t, locale } = useI18n()
 
 const leader = computed(() =>
 	props.result.candidates.find(candidate => candidate.entry.id === props.focusId) ?? props.result.candidates[0] ?? null)
+/**
+ * Conditions known to be present lead. Symptom relief (a symptom's own
+ * treatment, e.g. for nausea) doesn't: it would push the cause off the top.
+ * It still runs in the treatment step-through, after the conditions.
+ */
+const known = computed(() => props.result.plan.filter(step => step.entry.type === 'afflictions'))
 const focused = computed(() => !!leader.value && leader.value !== props.result.candidates[0])
 const others = computed(() => props.result.candidates.filter(candidate => candidate !== leader.value).slice(0, 5))
 
@@ -33,11 +39,11 @@ const barOf = (share: number) => `${Math.max(4, Math.round(share / (props.result
 <template>
 	<div class="space-y-14">
 		<!-- Known conditions: treat now -->
-		<section v-if="result.plan.length">
+		<section v-if="known.length">
 			<p class="micro text-primary">{{ t('triage.treatNow') }}</p>
 			<ul class="mt-3 space-y-4">
 				<Motion
-					v-for="step in result.plan"
+					v-for="step in known"
 					:key="step.entry.id"
 					as="li"
 					layout
@@ -53,6 +59,9 @@ const barOf = (share: number) => `${Math.max(4, Math.round(share / (props.result
 					</p>
 					<p v-if="step.entry.firstAid[0]" class="mt-1 text-xl text-primary" style="--entry-link: var(--ui-primary)">
 						→ <EntryText :text="step.entry.firstAid[0].text" />
+					</p>
+					<p v-else-if="step.entry.treatment[0]" class="mt-1 text-xl text-toned">
+						→ <EntryText :text="step.entry.treatment[0].text" />
 					</p>
 				</Motion>
 			</ul>
@@ -81,10 +90,7 @@ const barOf = (share: number) => `${Math.max(4, Math.round(share / (props.result
 					<AnimatePresence mode="wait">
 						<Motion
 							:key="leader.entry.id"
-							:initial="{ opacity: 0, y: 14 }"
-							:animate="{ opacity: 1, y: 0 }"
-							:exit="{ opacity: 0, y: -10 }"
-							:transition="SPRING_SOFT"
+							v-bind="swap('y', 14)"
 						>
 							<h2 class="mt-2 font-brand text-5xl font-semibold leading-[1.02] tracking-tight text-highlighted sm:text-6xl">
 								{{ nameOf(leader.entry.id).primary }}
@@ -121,10 +127,7 @@ const barOf = (share: number) => `${Math.max(4, Math.round(share / (props.result
 			<AnimatePresence mode="wait">
 				<Motion
 					:key="leader.entry.id"
-					:initial="{ opacity: 0 }"
-					:animate="{ opacity: 1 }"
-					:exit="{ opacity: 0 }"
-					:transition="EASE"
+					v-bind="swap('y', 8)"
 					class="mt-8"
 				>
 					<template v-if="leader.entry.firstAid.length">

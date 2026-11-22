@@ -225,6 +225,7 @@
 		"navigate": "Move",
 		"open": "Open",
 		"close": "Close",
-		"home": "Neurotrauma RDT, home"
+		"home": "Neurotrauma RDT, home",
+		"searchShort": "Search…"
 	}
 }

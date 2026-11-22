@@ -24,10 +24,7 @@ const hint = computed(() => props.suggestion.of === 1
 		<Motion
 			:key="suggestion.id"
 			as="section"
-			:initial="{ opacity: 0, x: 28 }"
-			:animate="{ opacity: 1, x: 0 }"
-			:exit="{ opacity: 0, x: -28 }"
-			:transition="SPRING_SOFT"
+			v-bind="swap('x', 28)"
 			aria-live="polite"
 		>
 			<p class="micro text-info">{{ t('triage.checkNext') }}</p>

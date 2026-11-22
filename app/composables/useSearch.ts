@@ -27,8 +27,8 @@ export function useSearch() {
 		return loading
 	}
 
-	function search(query: string): SearchResult[] {
-		return searchFn ? searchFn(query) : []
+	function search(query: string, limit?: number): SearchResult[] {
+		return searchFn ? searchFn(query, limit) : []
 	}
 
 	return { open, ready, failed, load, search }

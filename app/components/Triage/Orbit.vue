@@ -58,7 +58,7 @@ const leaderColor = computed(() => props.leaderLethal ? 'var(--ui-error)' : 'var
 					:transition="SPRING_SOFT"
 					style="transform-origin: 60px 60px"
 				>
-					<circle cx="60" cy="60" :r="ring.r" fill="none" stroke="var(--micro-line)" stroke-dasharray="2 3" />
+					<circle cx="60" cy="60" :r="ring.r" fill="none" stroke="var(--ui-border-accented)" stroke-dasharray="2 3" />
 					<circle
 						:cx="60 + ring.r * Math.cos(ring.angle * Math.PI / 180)"
 						:cy="60 + ring.r * Math.sin(ring.angle * Math.PI / 180)"

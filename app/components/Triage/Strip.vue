@@ -21,10 +21,10 @@ const { t } = useI18n()
 </script>
 
 <template>
-	<div class="flex flex-wrap items-baseline gap-x-6 gap-y-3">
+	<div class="grid grid-cols-[1fr_auto] items-center gap-x-6 gap-y-3 sm:grid-cols-[auto_1fr_auto]">
 		<span class="micro text-dimmed">{{ t('triage.patient') }}</span>
 
-		<ul class="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-2">
+		<ul class="order-last col-span-2 flex min-w-0 flex-wrap items-baseline gap-2 sm:order-none sm:col-span-1">
 			<li v-for="id in selected" :key="id">
 				<Motion
 					as="button"

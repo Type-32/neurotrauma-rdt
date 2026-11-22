@@ -1,106 +1,221 @@
 <script setup lang="ts">
 /**
- * Home, laid out as a console: triage is the one hot panel, quick reference
- * beside it, a search prompt, and the database as a numbered index with live
- * counts.
+ * Triage, the home page, as a guided flow: "What do you see?" with one input
+ * and the findings as plain words. Picked findings fly to the patient strip;
+ * the most likely cause and its first aid take over as the answer; one
+ * question at a time narrows it down; treatment runs as a step-through.
+ * Logic is in shared/utils/triage.ts.
+ *
+ * The patient lives in the URL (?f=s:headache,a:pneumothorax for what's seen,
+ * &x=s:vomiting for what's ruled out), so a link shares the patient and Back
+ * undoes the last change. The data is /triage-index.json, loaded in the
+ * browser.
  */
 const { t, locale } = useI18n()
-const siteName = useRuntimeConfig().public.siteName as string
-const { open: searchOpen } = useSearch()
+const route = useRoute()
+const router = useRouter()
+const toast = useToast()
 
-// Counts come from the base locale, which every locale falls back to, so they don't change with language.
-const { data: stats } = await useAsyncData('home-stats', async () => {
-	const lists = await Promise.all(ENTRY_TYPES.map(type => queryEntries(type, BASE_CONTENT_LOCALE)))
-	return {
-		counts: Object.fromEntries(ENTRY_TYPES.map((type, i) => [type, lists[i]!.length])) as Record<EntryType, number>,
-		lethal: lists.flat().filter(entry => lethality(entry) === 'lethal').length,
+useSeoMeta({ title: () => t('triage.title') })
+
+const index = ref<TriageIndex | null>(null)
+const failed = ref(false)
+onMounted(async () => {
+	try {
+		index.value = await $fetch<TriageIndex>('/triage-index.json')
 	}
-}, { default: () => ({ counts: {} as Record<EntryType, number>, lethal: 0 }) })
+	catch {
+		failed.value = true
+	}
+})
+const triage = computed(() => index.value ? createTriage(index.value) : null)
 
-const total = computed(() => Object.values(stats.value.counts).reduce((sum, n) => sum + n, 0))
-const pad = (n: number | undefined, width = 3) => String(n ?? 0).padStart(width, '0')
+// --- The patient, stored in the URL --------------------------------------------
+const PREFIXES = { s: 'symptoms', a: 'afflictions' } as const
+
+function decode(value: unknown): string[] {
+	return String(value ?? '')
+		.split(',')
+		.map((code) => {
+			const [prefix, slug] = code.split(':')
+			const type = PREFIXES[prefix as keyof typeof PREFIXES]
+			return type && slug ? `${type}/${slug}` : null
+		})
+		.filter((id): id is string => !!id)
+}
+function encode(ids: string[]): string {
+	return ids.map(id => `${id.startsWith('symptoms/') ? 's' : 'a'}:${id.split('/')[1]}`).join(',')
+}
+
+const selected = computed(() => decode(route.query.f))
+const ruledOut = computed(() => decode(route.query.x).filter(id => !selected.value.includes(id)))
+
+function setPatient(nextSelected: string[], nextRuledOut: string[]) {
+	const query: Record<string, string> = {}
+	if (nextSelected.length) query.f = encode(nextSelected)
+	if (nextRuledOut.length) query.x = encode(nextRuledOut)
+	router.push({ query })
+}
+const without = (ids: string[], id: string) => ids.filter(other => other !== id)
+
+function see(id: string) {
+	if (!selected.value.includes(id)) setPatient([...selected.value, id], without(ruledOut.value, id))
+}
+function ruleOut(id: string) {
+	if (!ruledOut.value.includes(id)) setPatient(without(selected.value, id), [...ruledOut.value, id])
+}
+
+const result = computed(() => triage.value?.evaluate(selected.value, ruledOut.value) ?? null)
+const hasPatient = computed(() => selected.value.length + ruledOut.value.length > 0)
+
+// --- Names ----------------------------------------------------------------------
+function nameOf(id: string) {
+	const entry = index.value?.names[id]
+	return entry ? entryNames({ title: entry.nameZh, ...entry }, locale.value) : { primary: id }
+}
+function lethalOf(id: string) {
+	return triage.value?.entry(id)?.lethal
+}
+
+// --- Findings that can be picked ---------------------------------------------------
+const observable = computed(() => index.value?.entries.filter(entry => triage.value!.isObservable(entry.id)) ?? [])
+const onStrip = computed(() => [...selected.value, ...ruledOut.value])
+const weightOf = (id: string) => triage.value?.causesOf(id).length ?? 0
+
+// --- Questions: one at a time; "Can't tell" skips for this patient -------------------
+const skipped = ref<string[]>([])
+const question = computed(() => result.value?.suggestions.find(suggestion => !skipped.value.includes(suggestion.id)) ?? null)
+
+function answer(reply: 'yes' | 'no' | 'unsure') {
+	const id = question.value?.id
+	if (!id) return
+	if (reply === 'yes') see(id)
+	else if (reply === 'no') ruleOut(id)
+	else skipped.value = [...skipped.value, id]
+}
+
+// Y / N / Space answer the question, unless typing in a field or the treatment is open.
+useEventListener(window, 'keydown', (event: KeyboardEvent) => {
+	if (!question.value || treating.value || event.metaKey || event.ctrlKey || event.altKey) return
+	const target = event.target as HTMLElement | null
+	if (target?.closest('input, textarea, [contenteditable="true"], button, a')) return
+	const key = event.key.toLowerCase()
+	if (key === 'y') answer('yes')
+	else if (key === 'n') answer('no')
+	else if (key === ' ') {
+		event.preventDefault()
+		answer('unsure')
+	}
+})
+
+// --- Looking at another candidate -----------------------------------------------------
+const focusId = ref<string | null>(null)
+watch(result, (next) => {
+	if (focusId.value && !next?.candidates.some(candidate => candidate.entry.id === focusId.value)) focusId.value = null
+})
+
+// --- Treatment step-through -----------------------------------------------------------
+const treating = ref(false)
+async function confirm(id: string) {
+	focusId.value = null
+	see(id)
+	await nextTick()
+	treating.value = true
+}
+
+// --- Share and clear -------------------------------------------------------------------
+async function share() {
+	try {
+		await navigator.clipboard.writeText(window.location.href)
+		toast.add({ title: t('triage.copied'), description: t('triage.copiedDescription'), icon: 'i-lucide-link' })
+	}
+	catch {
+		// Clipboard can be blocked; the address bar still has the link.
+	}
+}
+function clear() {
+	skipped.value = []
+	focusId.value = null
+	setPatient([], [])
+}
 </script>
 
 <template>
-	<UContainer class="pb-16 pt-6">
-		<MicroPageHead code="SYS // INDEX" :title="siteName" :description="t('site.intro')">
-			<dl class="micro grid grid-cols-3 gap-x-5 gap-y-0.5 text-dimmed">
-				<dt>{{ t('home.entries') }}</dt>
-				<dt>{{ t('home.lethal') }}</dt>
-				<dt>{{ t('home.lang') }}</dt>
-				<dd class="text-base text-highlighted">{{ pad(total) }}</dd>
-				<dd class="text-base text-error">{{ pad(stats.lethal, 2) }}</dd>
-				<dd class="text-base text-highlighted">{{ locale.toUpperCase() }}</dd>
-			</dl>
-		</MicroPageHead>
-
-		<div class="mt-8 grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-			<!-- Triage: the one hot panel -->
-			<NuxtLink
-				to="/triage"
-				class="micro-frame group block bg-elevated px-5 pb-5 pt-3 focus-visible:outline-2 focus-visible:outline-primary"
-				style="--frame-color: var(--ui-primary); --frame-size: 12px"
-			>
-				<div class="flex items-center justify-between gap-3 pb-2">
-					<span class="micro text-primary"><span class="text-dimmed">01 //</span> {{ t('triage.title') }}</span>
-					<span class="micro text-dimmed">RDT</span>
+	<div class="mx-auto w-full max-w-6xl px-5 sm:px-8">
+		<ClientOnly>
+			<template #fallback>
+				<div class="mx-auto max-w-3xl pt-[10vh]">
+					<h1 class="font-brand text-5xl font-semibold leading-none tracking-tight text-highlighted sm:text-7xl">{{ t('triage.prompt') }}</h1>
+					<p class="mt-5 max-w-xl text-lg text-muted">{{ t('triage.description') }}</p>
 				</div>
-				<MicroRule :delay="0.15" />
-				<div class="mt-4 flex items-center gap-6">
-					<div class="min-w-0 flex-1">
-						<h2 class="font-brand text-3xl font-semibold leading-none tracking-tight text-highlighted sm:text-4xl">{{ t('triage.title') }}</h2>
-						<p class="mt-3 max-w-md text-sm text-muted">{{ t('triage.homeDescription') }}</p>
-						<p class="micro mt-5 inline-flex items-center gap-2 text-primary">
-							&gt; {{ t('home.start') }}
-							<UIcon name="i-lucide-arrow-right" class="size-3.5 transition-transform group-hover:translate-x-1" />
-						</p>
+			</template>
+
+			<div v-if="failed" class="mx-auto max-w-3xl pt-[10vh] text-xl text-error">{{ t('triage.failed') }}</div>
+
+			<div v-else-if="!index" class="mx-auto max-w-3xl pt-[10vh]">
+				<h1 class="font-brand text-5xl font-semibold leading-none tracking-tight text-highlighted sm:text-7xl">{{ t('triage.prompt') }}</h1>
+				<p class="mt-5 max-w-xl text-lg text-muted">{{ t('triage.description') }}</p>
+			</div>
+
+			<LayoutGroup v-else>
+				<!-- Nothing yet: one question, centred -->
+				<div v-if="!hasPatient" class="mx-auto max-w-3xl pt-[10vh]">
+					<Motion layout-id="prompt" as="h1" :transition="SPRING_SOFT" class="font-brand text-5xl font-semibold leading-none tracking-tight text-highlighted sm:text-7xl">
+						{{ t('triage.prompt') }}
+					</Motion>
+					<Motion as="p" :initial="{ opacity: 0 }" :animate="{ opacity: 1 }" :transition="{ ...EASE, delay: 0.1 }" class="mt-5 max-w-xl text-lg text-muted">
+						{{ t('triage.description') }}
+					</Motion>
+					<TriagePicker class="mt-12" :entries="observable" :exclude="onStrip" :weight-of="weightOf" @pick="see" />
+				</div>
+
+				<!-- A patient: the answer leads -->
+				<div v-else class="pt-2">
+					<TriageStrip
+						:selected="selected"
+						:ruled-out="ruledOut"
+						:name-of="nameOf"
+						:lethal-of="lethalOf"
+						@remove="id => setPatient(without(selected, id), ruledOut)"
+						@restore="id => setPatient(selected, without(ruledOut, id))"
+						@share="share"
+						@clear="clear"
+					/>
+
+					<div class="mt-12 grid gap-x-20 gap-y-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
+						<TriageAnswer
+							v-if="result"
+							:result="result"
+							:focus-id="focusId"
+							:name-of="nameOf"
+							@focus="id => focusId = id"
+							@confirm="confirm"
+							@treat="treating = true"
+						/>
+
+						<div class="space-y-16">
+							<TriageQuestion v-if="question" :suggestion="question" :name-of="nameOf" @answer="answer" />
+							<div>
+								<Motion layout-id="prompt" as="h2" :transition="SPRING_SOFT" class="font-brand text-2xl font-semibold tracking-tight text-highlighted">
+									{{ t('triage.promptMore') }}
+								</Motion>
+								<TriagePicker class="mt-5" compact :entries="observable" :exclude="onStrip" :weight-of="weightOf" @pick="see" />
+							</div>
+						</div>
 					</div>
-					<MicroGraphic name="orbit" spin class="hidden size-28 text-primary/70 sm:block" />
 				</div>
-			</NuxtLink>
+			</LayoutGroup>
 
-			<!-- Quick reference -->
-			<MicroPanel :index="2" :label="t('reference.title')" :meta="`[${pad(REFERENCE_SECTIONS.length, 2)}]`" :description="t('reference.homeDescription')">
-				<ul class="divide-y divide-dashed divide-(--micro-line)">
-					<li v-for="(section, i) in REFERENCE_SECTIONS" :key="section.id">
-						<NuxtLink :to="`/reference#${section.id}`" class="group flex items-center gap-3 py-2 text-sm text-toned transition-colors hover:text-highlighted">
-							<span class="micro text-dimmed">{{ pad(i + 1, 2) }}</span>
-							<span class="flex-1">{{ t(`reference.sections.${section.id}`) }}</span>
-							<UIcon name="i-lucide-arrow-up-right" class="size-3.5 text-dimmed transition-colors group-hover:text-highlighted" />
-						</NuxtLink>
-					</li>
-				</ul>
-			</MicroPanel>
-		</div>
-
-		<!-- Search prompt -->
-		<button
-			type="button"
-			class="mt-4 flex w-full items-center gap-3 border border-dashed border-accented bg-elevated/40 px-4 py-3 text-start font-mono text-sm transition-colors hover:border-(--micro-mark) hover:bg-elevated focus-visible:outline-2 focus-visible:outline-primary"
-			@click="searchOpen = true"
-		>
-			<span class="text-primary" aria-hidden="true">&gt;</span>
-			<span class="micro-cursor min-w-0 flex-1 truncate text-muted">{{ t('home.search') }}</span>
-			<span class="micro hidden text-dimmed sm:inline">{{ t('home.shortcut') }}</span>
-			<UKbd value="/" />
-		</button>
-
-		<!-- Database index -->
-		<MicroPanel :index="3" :label="t('home.database')" :meta="`[${pad(total)}]`" class="mt-4">
-			<ul>
-				<li v-for="(type, i) in ENTRY_TYPES" :key="type">
-					<NuxtLink :to="`/${type}`" class="group flex items-baseline gap-3 py-2.5">
-						<span class="micro w-6 shrink-0 text-dimmed">{{ pad(i + 1, 2) }}</span>
-						<span class="micro w-9 shrink-0 text-muted transition-colors group-hover:text-primary">{{ TYPE_CODES[type] }}</span>
-						<span class="min-w-0 shrink">
-							<span class="font-medium text-highlighted">{{ t(`types.${type}`) }}</span>
-							<span class="ms-2 hidden text-sm text-muted md:inline">{{ t(`typeDescriptions.${type}`) }}</span>
-						</span>
-						<span class="mx-1 min-w-6 flex-1 border-b border-dotted border-(--micro-line) transition-colors group-hover:border-(--micro-mark)" aria-hidden="true" />
-						<span class="micro text-toned transition-colors group-hover:text-highlighted">[{{ pad(stats.counts[type]) }}]</span>
-					</NuxtLink>
-				</li>
-			</ul>
-		</MicroPanel>
-	</UContainer>
+			<AnimatePresence>
+				<TriageTreatment
+					v-if="treating && result?.plan.length"
+					key="treatment"
+					:plan="result.plan"
+					:items="result.items"
+					:name-of="nameOf"
+					@close="treating = false"
+				/>
+			</AnimatePresence>
+		</ClientOnly>
+	</div>
 </template>

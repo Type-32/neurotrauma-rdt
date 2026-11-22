@@ -24,3 +24,17 @@ export const APPEAR = {
 	animate: { opacity: 1, y: 0 },
 	exit: { opacity: 0, y: -6 },
 } as const
+
+/**
+ * Swapping one thing for the next (the leading cause, the question, a
+ * treatment step) with AnimatePresence mode="wait": a quick exit, then a
+ * slightly longer entrance, about 0.35 s in all. Timed rather than sprung,
+ * because a spring's long settle makes the wait feel stuck.
+ */
+export function swap(axis: 'x' | 'y' = 'y', distance = 16) {
+	return {
+		initial: { opacity: 0, [axis]: distance },
+		animate: { opacity: 1, [axis]: 0, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } },
+		exit: { opacity: 0, [axis]: -distance * 0.6, transition: { duration: 0.12, ease: [0.4, 0, 1, 1] } },
+	}
+}

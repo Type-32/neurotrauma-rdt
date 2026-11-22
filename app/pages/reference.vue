@@ -36,7 +36,7 @@ useSeoMeta({ title: () => t('reference.title') })
 <template>
 	<UContainer class="pb-16 pt-6">
 		<MicroPageHead code="REF // QUICK" :title="t('reference.title')" :description="t('reference.description')">
-			<UButton :label="t('triage.title')" to="/triage" icon="i-lucide-heart-pulse" class="micro" />
+			<UButton :label="t('triage.title')" to="/" icon="i-lucide-heart-pulse" class="micro" />
 		</MicroPageHead>
 
 		<nav
