@@ -10,8 +10,7 @@
 	"triage": {
 		"title": "Triage",
 		"prompt": "What do you see?",
-		"promptMore": "Anything else?",
-		"description": "Pick what you see on the patient. The likely cause and what to do appear as you go.",
+		"description": "Tap everything you see on the patient, then get the answer.",
 		"filter": "Type a symptom, 中文 or pinyin",
 		"sources": {
 			"all": "All",
@@ -44,7 +43,7 @@
 		"startTreatment": "Start treatment",
 		"stillUnexplained": "Still unexplained: {list}",
 		"noCauses": "Nothing in the guide causes {list}.",
-		"checkNext": "Check next",
+		"checkNext": "Narrow it down",
 		"tellsApart": "Tells apart {splits} of {of} likely causes",
 		"confirms": "Confirms the likely cause",
 		"yes": "Yes",
@@ -60,7 +59,14 @@
 		"allDoneDescription": "Keep watching the patient. Re-check what you saw, and come back if something changes.",
 		"loading": "Loading triage…",
 		"failed": "Couldn't load triage data. Check your connection and reload.",
-		"candidates": "No likely causes | 1 likely cause | {count} likely causes"
+		"candidates": "No likely causes | 1 likely cause | {count} likely causes",
+		"picked": "Nothing picked | 1 picked | {count} picked",
+		"getAnswer": "Get answer",
+		"editFindings": "Edit findings",
+		"addMore": "Add what else you see",
+		"previewLikely": "Most likely {name}",
+		"previewTreat": "Treat {name}",
+		"previewNone": "No likely cause yet"
 	},
 	"reference": {
 		"title": "Quick reference",

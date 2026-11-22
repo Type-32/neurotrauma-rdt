@@ -3,18 +3,21 @@
  * Picking what you see: one input, a source switch (all, symptoms, health
  * interface, scanner, analyzer) and the findings as plain words, most telling
  * first. Typing searches every source (English, 中文, pinyin, initials).
- * Each word carries a layoutId, so a picked word flies to the patient strip.
+ *
+ * Multi-select: tapping a word marks it in place (filled), tapping again
+ * clears it, so a medic picks everything they see before asking for an
+ * answer. Ruled-out findings show struck through; tapping one undoes it.
+ * Marked words carry a layoutId, so they fly to the patient strip when the
+ * answer opens.
  */
 const props = defineProps<{
 	entries: TriageEntry[]
-	/** Ids already on the patient strip (selected or ruled out): not offered again. */
-	exclude: string[]
+	selected: string[]
+	ruledOut: string[]
 	/** How many findings lead to each, for ordering symptoms. */
 	weightOf: (id: string) => number
-	/** Smaller words and fewer shown, once there's an answer beside it. */
-	compact?: boolean
 }>()
-const emit = defineEmits<{ pick: [id: string] }>()
+const emit = defineEmits<{ toggle: [id: string] }>()
 
 const { t, locale } = useI18n()
 
@@ -32,7 +35,9 @@ function sourceOf(entry: TriageEntry): Source {
 	return entry.type === 'symptoms' ? 'symptoms' : entry.visibleIn[0]!
 }
 
-const available = computed(() => props.entries.filter(entry => !props.exclude.includes(entry.id)))
+const available = computed(() => props.entries)
+const isSelected = (id: string) => props.selected.includes(id)
+const isRuledOut = (id: string) => props.ruledOut.includes(id)
 
 const counts = computed(() => ({
 	all: available.value.length,
@@ -73,8 +78,11 @@ const words = computed(() => {
 	return source.value === 'all' ? SOURCES.flatMap(inSource) : inSource(source.value)
 })
 
-const limit = computed(() => props.compact ? 12 : 18)
-const shown = computed(() => expanded.value || query.value ? words.value : words.value.slice(0, limit.value))
+const LIMIT = 24
+// Marked words are never hidden behind "more", so the reader always sees what they picked.
+const shown = computed(() => expanded.value || query.value
+	? words.value
+	: words.value.filter((entry, i) => i < LIMIT || isSelected(entry.id) || isRuledOut(entry.id)))
 const hidden = computed(() => words.value.length - shown.value.length)
 
 watch(source, () => { expanded.value = false })
@@ -83,14 +91,16 @@ function names(entry: TriageEntry) {
 	return entryNames({ title: entry.nameZh, nameZh: entry.nameZh, nameEn: entry.nameEn }, locale.value)
 }
 
-function pick(id: string) {
-	emit('pick', id)
-	query.value = ''
+function toggle(id: string) {
+	emit('toggle', id)
 }
 
-/** Enter picks the first match. */
+/** Enter marks the first match and clears the filter for the next one. */
 function onEnter() {
-	if (query.value && words.value[0]) pick(words.value[0].id)
+	if (query.value && words.value[0]) {
+		if (!isSelected(words.value[0].id)) toggle(words.value[0].id)
+		query.value = ''
+	}
 }
 </script>
 
@@ -103,8 +113,7 @@ function onEnter() {
 				type="search"
 				:placeholder="t('triage.filter')"
 				:aria-label="t('triage.filter')"
-				class="min-w-0 flex-1 bg-transparent text-highlighted outline-none placeholder:text-dimmed"
-				:class="compact ? 'text-lg' : 'text-xl'"
+				class="min-w-0 flex-1 bg-transparent text-xl text-highlighted outline-none placeholder:text-dimmed"
 				@keydown.enter.prevent="onEnter"
 			>
 		</label>
@@ -124,7 +133,7 @@ function onEnter() {
 			>
 				<Motion
 					v-if="source === id"
-					:layout-id="`picker-source-${compact ? 'c' : 'w'}`"
+					layout-id="picker-source"
 					:transition="SPRING"
 					class="absolute inset-0 rounded-md bg-accented"
 				/>
@@ -135,31 +144,36 @@ function onEnter() {
 
 		<p v-if="query && !words.length" class="mt-6 text-muted">{{ t('triage.noMatches', { query }) }}</p>
 
-		<ul class="mt-6 flex flex-wrap items-baseline gap-x-5 gap-y-2.5">
+		<ul class="mt-6 flex flex-wrap items-center gap-x-2 gap-y-2.5">
 			<li v-for="entry in shown" :key="entry.id">
 				<Motion
 					as="button"
 					type="button"
-					:layout-id="`finding-${entry.id}`"
+					:layout-id="isSelected(entry.id) || isRuledOut(entry.id) ? `finding-${entry.id}` : undefined"
 					:transition="SPRING"
 					:while-press="PRESS"
-					:while-hover="{ y: -2 }"
-					class="group inline-flex items-baseline gap-1.5 text-start text-toned transition-colors hover:text-highlighted focus-visible:text-highlighted focus-visible:outline-none"
-					:class="compact ? 'text-lg' : 'text-xl sm:text-2xl'"
+					:aria-pressed="isSelected(entry.id)"
+					class="group inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-start text-xl transition-colors focus-visible:outline-2 focus-visible:outline-primary sm:text-2xl"
+					:class="isSelected(entry.id)
+						? 'bg-inverted text-inverted'
+						: isRuledOut(entry.id)
+							? 'text-dimmed line-through decoration-1 hover:text-muted'
+							: 'text-toned hover:bg-accented/60 hover:text-highlighted'"
 					:title="names(entry).secondary"
-					@click="pick(entry.id)"
+					@click="toggle(entry.id)"
 				>
+					<UIcon v-if="isSelected(entry.id)" name="i-lucide-check" class="size-4 shrink-0" />
 					<span
-						v-if="entry.lethal"
-						class="size-1.5 shrink-0 -translate-y-0.5 self-center rounded-full"
+						v-else-if="entry.lethal"
+						class="size-1.5 shrink-0 rounded-full"
 						:class="entry.lethal === 'lethal' ? 'bg-error' : 'bg-warning'"
 						aria-hidden="true"
 					/>
-					<span class="underline decoration-transparent decoration-2 underline-offset-[6px] transition-[text-decoration-color] group-hover:decoration-primary group-focus-visible:decoration-primary">{{ names(entry).primary }}</span>
+					{{ names(entry).primary }}
 				</Motion>
 			</li>
 			<li v-if="hidden > 0 || expanded">
-				<button type="button" class="text-muted underline decoration-dotted underline-offset-[6px] transition-colors hover:text-highlighted" :class="compact ? 'text-lg' : 'text-xl sm:text-2xl'" @click="expanded = !expanded">
+				<button type="button" class="px-3 py-1.5 text-xl text-muted underline decoration-dotted underline-offset-[6px] transition-colors hover:text-highlighted sm:text-2xl" @click="expanded = !expanded">
 					{{ expanded ? t('triage.fewer') : `+ ${t('triage.more', { count: hidden })}` }}
 				</button>
 			</li>

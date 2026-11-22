@@ -9,6 +9,7 @@ tags:
   - non-lethal
   - lethal
   - mechanic
+  - scanner-visible
 lethal: true
 pinyin: dixueya
 pinyinInitials: dxy

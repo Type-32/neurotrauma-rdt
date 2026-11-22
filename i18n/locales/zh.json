@@ -10,8 +10,7 @@
 	"triage": {
 		"title": "分诊",
 		"prompt": "你看到了什么？",
-		"promptMore": "还有别的吗？",
-		"description": "选出患者身上看到的情况，可能的病因和处置会随之出现。",
+		"description": "点选患者身上看到的所有情况，然后查看结果。",
 		"filter": "输入症状、English 或拼音",
 		"sources": {
 			"all": "全部",
@@ -44,7 +43,7 @@
 		"startTreatment": "开始治疗",
 		"stillUnexplained": "仍未解释：{list}",
 		"noCauses": "指南中没有病症会导致{list}。",
-		"checkNext": "下一步检查",
+		"checkNext": "缩小范围",
 		"tellsApart": "可区分 {of} 个可能病因中的 {splits} 个",
 		"confirms": "可确认最可能的病因",
 		"yes": "有",
@@ -60,7 +59,14 @@
 		"allDoneDescription": "继续观察患者，复查看到的情况，有变化时再回来。",
 		"loading": "正在加载分诊数据…",
 		"failed": "分诊数据加载失败，请检查网络后刷新。",
-		"candidates": "没有可能病因 | {count} 个可能病因 | {count} 个可能病因"
+		"candidates": "没有可能病因 | {count} 个可能病因 | {count} 个可能病因",
+		"picked": "未选择 | 已选 {count} 项 | 已选 {count} 项",
+		"getAnswer": "查看结果",
+		"editFindings": "修改所见",
+		"addMore": "添加其他所见",
+		"previewLikely": "最可能：{name}",
+		"previewTreat": "处置：{name}",
+		"previewNone": "暂无可能病因"
 	},
 	"reference": {
 		"title": "速查",
