@@ -16,8 +16,11 @@ const props = defineProps<{
 	ruledOut: string[]
 	/** How many findings lead to each, for ordering symptoms. */
 	weightOf: (id: string) => number
+	/** The body-map region the words are narrowed to, if any. */
+	region?: BodyRegion | null
+	regionsOf?: (id: string) => BodyRegion[]
 }>()
-const emit = defineEmits<{ toggle: [id: string] }>()
+const emit = defineEmits<{ 'toggle': [id: string], 'clear-region': [] }>()
 
 const { t, locale } = useI18n()
 
@@ -35,9 +38,12 @@ function sourceOf(entry: TriageEntry): Source {
 	return entry.type === 'symptoms' ? 'symptoms' : entry.visibleIn[0]!
 }
 
-const available = computed(() => props.entries)
 const isSelected = (id: string) => props.selected.includes(id)
 const isRuledOut = (id: string) => props.ruledOut.includes(id)
+// Narrowed to a body region; picked words always stay, so nothing picked disappears.
+const available = computed(() => props.region && props.regionsOf
+	? props.entries.filter(entry => props.regionsOf!(entry.id).includes(props.region!) || isSelected(entry.id) || isRuledOut(entry.id))
+	: props.entries)
 
 const counts = computed(() => ({
 	all: available.value.length,
@@ -119,6 +125,29 @@ function onEnter() {
 		</label>
 
 		<!-- Source switch: hidden while searching, since search covers every source. -->
+		<!-- Narrowed by the body map: say so, with a way back. -->
+		<AnimatePresence>
+			<Motion
+				v-if="region"
+				key="region"
+				:initial="{ opacity: 0, height: 0 }"
+				:animate="{ opacity: 1, height: 'auto' }"
+				:exit="{ opacity: 0, height: 0 }"
+				:transition="SPRING_SOFT"
+				class="overflow-hidden"
+			>
+				<button
+					type="button"
+					class="mt-5 inline-flex items-center gap-2 rounded-md bg-primary/12 px-3 py-1.5 text-sm text-primary transition-colors hover:bg-primary/20"
+					@click="emit('clear-region')"
+				>
+					{{ t('triage.showingRegion', { region: t(`triage.regions.${region}`) }) }}
+					<UIcon name="i-lucide-x" class="size-3.5" />
+					<span class="sr-only">{{ t('triage.showAll') }}</span>
+				</button>
+			</Motion>
+		</AnimatePresence>
+
 		<div v-if="!query" class="mt-5 flex flex-wrap gap-1" role="tablist">
 			<button
 				v-for="id in TABS"

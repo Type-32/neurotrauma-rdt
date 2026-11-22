@@ -278,7 +278,13 @@ Original plan:
 
 ## Phase 10: Triage body schematic
 
-**Status:** not started. A body diagram on the triage page, as a faster way to narrow findings by where they are. It filters the existing finding chips; it does not replace them.
+**Status:** done (2026-11-22). A body diagram on the triage page, as a faster way to narrow findings by where they are. It filters the finding words; it does not replace them.
+
+**As built:**
+- `createTriage().regionsOf(id)` in `shared/utils/triage.ts` (computed in the browser from the index, not stored in it). Afflictions by category (no affliction uses `alsoIn`); "any" and "blood" are the whole body; surgery and expansion categories have none. Symptoms take their causes' regions. Of 95 observable findings: head 19, lungs 8, heart 12, torso 19, limbs 7, bones 7, whole body 37, none 10; no finding is in more than four regions, so the weighting fallback below wasn't needed. `test:triage` checks known cases and that no region is empty.
+- `app/components/Triage/Body.vue`: a geometric front-view figure (head, torso, lungs and heart inside it, limbs, bones as a dashed line overlay, the whole body as a dashed outline), with a list of the regions and counts beside it. The figure is for pointing and hidden from screen readers; the list buttons (`aria-pressed`) carry the labels and keyboard access; hovering either highlights both. Filled = findings picked there; outlined red / amber / grey = where the five likely causes are; accent = the active filter.
+- Pick step: a 19rem column beside the words at desktop sizes; on phones a collapsed "Filter by body part" panel above them. While filtered, the picker shows "Only Lungs ×", the tab counts follow, and picked words stay visible. The region isn't in the URL.
+- Changed from the plan: the whole body is the dashed outline rather than a ring, and bones are a line overlay that is always drawn (no separate toggle).
 
 **Data**
 

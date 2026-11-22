@@ -123,6 +123,28 @@ function lethalOf(id: string) {
 const observable = computed(() => index.value?.entries.filter(entry => triage.value!.isObservable(entry.id)) ?? [])
 const weightOf = (id: string) => triage.value?.causesOf(id).length ?? 0
 
+// --- Step 1: the body map ---------------------------------------------------------------
+/** The region the words are narrowed to. Not in the URL: it's a way of looking, not part of the patient. */
+const region = ref<BodyRegion | null>(null)
+const regionsOf = (id: string) => triage.value?.regionsOf(id) ?? []
+
+const regionCounts = computed(() => Object.fromEntries(BODY_REGIONS.map(r =>
+	[r, observable.value.filter(entry => regionsOf(entry.id).includes(r)).length])) as Record<BodyRegion, number>)
+const pickedRegions = computed(() => [...new Set(selected.value.flatMap(regionsOf))])
+/** Where the likely causes are, with the most dangerous lethality in each region. */
+const suspectRegions = computed(() => {
+	const out: Partial<Record<BodyRegion, 'lethal' | 'possibly-lethal' | 'other'>> = {}
+	const rank = { 'lethal': 0, 'possibly-lethal': 1, 'other': 2 } as const
+	for (const candidate of result.value?.candidates.slice(0, 5) ?? []) {
+		const level = candidate.entry.lethal ?? 'other'
+		for (const r of regionsOf(candidate.entry.id)) {
+			if (!out[r] || rank[level] < rank[out[r]!]) out[r] = level
+		}
+	}
+	return out
+})
+const bodyMapOpen = ref(false)
+
 const preview = computed(() => {
 	const known = result.value?.plan.find(step => step.entry.type === 'afflictions')
 	if (known) return t('triage.previewTreat', { name: nameOf(known.entry.id).primary })
@@ -195,7 +217,7 @@ function clear() {
 </script>
 
 <template>
-	<div class="mx-auto w-full px-5 sm:px-8" :class="answering ? 'max-w-3xl' : 'max-w-4xl'">
+	<div class="mx-auto w-full px-5 sm:px-8" :class="answering ? 'max-w-3xl' : 'max-w-5xl'">
 		<ClientOnly>
 			<template #fallback>
 				<div class="pt-[8vh]">
@@ -216,7 +238,40 @@ function clear() {
 				<div v-if="!answering" class="pb-28 pt-[8vh]">
 					<h1 class="font-brand text-5xl font-semibold leading-none tracking-tight text-highlighted sm:text-7xl">{{ t('triage.prompt') }}</h1>
 					<p class="mt-5 max-w-xl text-lg text-muted">{{ t('triage.description') }}</p>
-					<TriagePicker class="mt-12" :entries="observable" :selected="selected" :ruled-out="ruledOut" :weight-of="weightOf" @toggle="toggle" />
+					<div class="mt-12 grid gap-x-12 lg:grid-cols-[19rem_minmax(0,1fr)]">
+						<!-- Body map: a column on desktop -->
+						<aside class="hidden lg:block">
+							<div class="sticky top-8">
+								<p class="micro mb-4 text-dimmed">{{ t('triage.bodyMap') }}</p>
+								<TriageBody v-model="region" :counts="regionCounts" :picked="pickedRegions" :suspect="suspectRegions" />
+							</div>
+						</aside>
+
+						<div class="min-w-0">
+							<!-- Body map on phones: collapsed, so the words stay within thumb reach -->
+							<UCollapsible v-model:open="bodyMapOpen" class="mb-6 lg:hidden">
+								<button type="button" class="flex w-full items-center gap-2 rounded-md border border-default px-3 py-2.5 text-start text-muted transition-colors hover:text-highlighted">
+									<UIcon name="i-lucide-person-standing" class="size-5" />
+									<span class="flex-1">{{ region ? t('triage.showingRegion', { region: t(`triage.regions.${region}`) }) : t('triage.bodyMap') }}</span>
+									<UIcon name="i-lucide-chevron-down" class="size-4 transition-transform" :class="bodyMapOpen && 'rotate-180'" />
+								</button>
+								<template #content>
+									<TriageBody v-model="region" class="pt-4" :counts="regionCounts" :picked="pickedRegions" :suspect="suspectRegions" />
+								</template>
+							</UCollapsible>
+
+							<TriagePicker
+								:entries="observable"
+								:selected="selected"
+								:ruled-out="ruledOut"
+								:weight-of="weightOf"
+								:region="region"
+								:regions-of="regionsOf"
+								@toggle="toggle"
+								@clear-region="region = null"
+							/>
+						</div>
+					</div>
 
 					<!-- The step's action: what's picked, a live preview, and Get answer -->
 					<div class="pointer-events-none fixed inset-x-0 bottom-[5.25rem] z-40 flex justify-center px-3 sm:bottom-24">

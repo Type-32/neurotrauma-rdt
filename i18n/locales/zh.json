@@ -63,7 +63,19 @@
 		"addMore": "添加其他所见",
 		"previewLikely": "最可能：{name}",
 		"previewTreat": "处置：{name}",
-		"previewNone": "暂无可能病因"
+		"previewNone": "暂无可能病因",
+		"regions": {
+			"head": "头部",
+			"lungs": "肺部",
+			"heart": "心脏",
+			"torso": "躯干",
+			"extremities": "四肢",
+			"bones": "骨骼",
+			"body": "全身"
+		},
+		"bodyMap": "按部位筛选",
+		"showingRegion": "仅显示：{region}",
+		"showAll": "显示全部"
 	},
 	"reference": {
 		"title": "速查",

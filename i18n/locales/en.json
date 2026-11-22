@@ -63,7 +63,19 @@
 		"addMore": "Add what else you see",
 		"previewLikely": "Most likely {name}",
 		"previewTreat": "Treat {name}",
-		"previewNone": "No likely cause yet"
+		"previewNone": "No likely cause yet",
+		"regions": {
+			"head": "Head",
+			"lungs": "Lungs",
+			"heart": "Heart",
+			"torso": "Torso",
+			"extremities": "Limbs",
+			"bones": "Bones",
+			"body": "Whole body"
+		},
+		"bodyMap": "Filter by body part",
+		"showingRegion": "Only {region}",
+		"showAll": "Show all"
 	},
 	"reference": {
 		"title": "Quick reference",
